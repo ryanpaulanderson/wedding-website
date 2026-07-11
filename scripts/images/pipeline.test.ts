@@ -219,6 +219,39 @@ describe("Blob synchronization", () => {
     await expect(readFile(paths.catalogFile, "utf8")).resolves.toBe(originalCatalog);
   });
 
+  it("rolls back successful uploads when another variant upload fails", async () => {
+    const paths = await createTestPaths();
+    await writeConfiguredImage(
+      paths,
+      "couple",
+      imageConfig("couple", {
+        homeHero: { width: 800, height: 450, focalPoint: { x: 0.5, y: 0.5 } },
+        storyPortrait: { width: 600, height: 800, focalPoint: { x: 0.5, y: 0.4 } },
+      }),
+    );
+    const originalCatalog = await readFile(paths.catalogFile, "utf8");
+    const deleteMock = vi.fn(async () => undefined);
+    const putMock = vi.fn(async (pathname: string) => {
+      if (pathname.includes("storyPortrait")) {
+        throw new Error("story upload failed");
+      }
+      return {
+        pathname,
+        url: `https://test.public.blob.vercel-storage.com/${pathname}`,
+      };
+    });
+    const client = createBlobClient({ put: putMock, del: deleteMock });
+
+    await expect(syncImages(paths, client)).rejects.toThrow("story upload failed");
+
+    expect(putMock).toHaveBeenCalledTimes(2);
+    expect(deleteMock).toHaveBeenCalledOnce();
+    expect(deleteMock).toHaveBeenCalledWith([
+      expect.stringContaining("/wedding-images/couple/homeHero-"),
+    ]);
+    await expect(readFile(paths.catalogFile, "utf8")).resolves.toBe(originalCatalog);
+  });
+
   it("refuses to replace the catalog when no variants are configured", async () => {
     const paths = await createTestPaths();
     const originalCatalog = `${JSON.stringify({

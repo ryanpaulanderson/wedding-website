@@ -520,6 +520,51 @@ function buildCatalog(
   return catalog;
 }
 
+function normalizeError(reason: unknown): Error {
+  return reason instanceof Error ? reason : new Error(String(reason));
+}
+
+async function uploadVariants(
+  variants: PreparedVariant[],
+  client: BlobClient,
+): Promise<BlobEntry[]> {
+  const results = await Promise.allSettled(
+    variants.map((variant) =>
+      client.put(variant.pathname, variant.buffer, {
+        access: "public",
+        addRandomSuffix: false,
+        cacheControlMaxAge: 31_536_000,
+      }),
+    ),
+  );
+  const uploadedEntries = results.flatMap((result) =>
+    result.status === "fulfilled" ? [result.value] : [],
+  );
+  const uploadErrors = results.flatMap((result) =>
+    result.status === "rejected" ? [normalizeError(result.reason)] : [],
+  );
+
+  if (uploadErrors.length === 0) {
+    return uploadedEntries;
+  }
+
+  if (uploadedEntries.length > 0) {
+    try {
+      await client.del(uploadedEntries.map(({ url }) => url));
+    } catch (rollbackError) {
+      throw new AggregateError(
+        [...uploadErrors, normalizeError(rollbackError)],
+        `Image sync failed and rollback of ${uploadedEntries.length} uploaded variant(s) also failed.`,
+      );
+    }
+  }
+
+  if (uploadErrors.length === 1) {
+    throw uploadErrors[0];
+  }
+  throw new AggregateError(uploadErrors, `Image sync failed for ${uploadErrors.length} variants.`);
+}
+
 export async function syncImages(
   paths = getDefaultPipelinePaths(),
   client: BlobClient = defaultBlobClient,
@@ -534,15 +579,7 @@ export async function syncImages(
   const remoteEntries = new Map(existingBlobs.map((blob) => [blob.pathname, blob]));
   const toUpload = prepared.variants.filter((variant) => !remoteEntries.has(variant.pathname));
 
-  const uploadedEntries = await Promise.all(
-    toUpload.map((variant) =>
-      client.put(variant.pathname, variant.buffer, {
-        access: "public",
-        addRandomSuffix: false,
-        cacheControlMaxAge: 31_536_000,
-      }),
-    ),
-  );
+  const uploadedEntries = await uploadVariants(toUpload, client);
   for (const entry of uploadedEntries) {
     remoteEntries.set(entry.pathname, entry);
   }
