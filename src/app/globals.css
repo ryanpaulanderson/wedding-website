@@ -1,0 +1,36 @@
+@import "../styles/tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--color-background);
+}
+
+body {
+  min-block-size: 100vh;
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-inline-size: 100%;
+}
