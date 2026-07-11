@@ -22,16 +22,17 @@ made and record enough context to revisit them later without reopening every dis
 
 ## Decision summary
 
-| Area                | Status   | Current direction                                                                      |
-| ------------------- | -------- | -------------------------------------------------------------------------------------- |
-| Application hosting | Accepted | Vercel Hobby                                                                           |
-| CI/CD               | Accepted | GitHub required checks + Vercel Git deployments                                        |
-| RSVP database       | Proposed | Neon Free PostgreSQL through Prisma                                                    |
-| Guest RSVP access   | Open     | Private per-household invitation token or shared lookup flow                           |
-| Admin access        | Open     | Minimal authenticated admin page or database-console-only workflow                     |
-| Email               | Open     | No transactional email initially, or a low-volume provider if confirmations are wanted |
-| Domain              | Open     | Custom domain purchased separately and connected to Vercel                             |
-| Analytics           | Open     | Privacy-friendly, minimal analytics or none                                            |
+| Area                  | Status   | Current direction                                                                      |
+| --------------------- | -------- | -------------------------------------------------------------------------------------- |
+| Application hosting   | Accepted | Vercel Hobby                                                                           |
+| CI/CD                 | Accepted | GitHub required checks + Vercel Git deployments                                        |
+| Temporary site access | Accepted | Shared password on all Vercel deployments; local execution bypasses it                 |
+| RSVP database         | Proposed | Neon Free PostgreSQL through Prisma                                                    |
+| Guest RSVP access     | Open     | Private per-household invitation token or shared lookup flow                           |
+| Admin access          | Open     | Minimal authenticated admin page or database-console-only workflow                     |
+| Email                 | Open     | No transactional email initially, or a low-volume provider if confirmations are wanted |
+| Domain                | Accepted | `www.carolineandryan.org`; apex redirects to `www`                                     |
+| Analytics             | Open     | Privacy-friendly, minimal analytics or none                                            |
 
 ## Proposed architecture
 
@@ -88,6 +89,35 @@ run a duplicate production deployment.
 
 Rollback strategy: revert the change in Git to create a new production deployment, with
 Vercel's deployment rollback available for an urgent recovery.
+
+### Temporary hosted-site password gate
+
+**Status:** Accepted
+
+Protect every Vercel production and preview deployment with a shared password while the website
+is under development. Local execution remains open, including local production builds and browser
+tests. This gate provides temporary development privacy only; it is not guest identity, RSVP
+authorization, or a substitute for authorization at future data boundaries.
+
+The gate uses three server-only Vercel environment variables:
+
+- `SITE_PASSWORD_GATE=enabled` activates protection. `disabled` makes hosted deployments public.
+- `SITE_PASSWORD_HASH` contains the salted scrypt hash generated for the shared password.
+- `SITE_SESSION_SECRET` signs a 30-day, HTTP-only access cookie.
+
+Only `isSitePasswordGateEnabled()` interprets the switch. Local execution always bypasses it. On
+Vercel, missing or invalid switch values fail closed. Enabled deployments with missing or malformed
+secrets show an unavailable state and never grant access. Protected responses are private,
+non-cacheable, and excluded from search indexing.
+
+Removal is deliberately two-stage:
+
+1. Set `SITE_PASSWORD_GATE=disabled` for Production and Preview, redeploy, and verify the site is
+   public and indexable.
+2. Remove the isolated proxy, access route, session utility, protected layout, tests, environment
+   variables, and temporary documentation in a cleanup pull request.
+
+The first step launches the public site; the second carries no launch dependency.
 
 ### RSVP storage: Neon PostgreSQL with Prisma
 
@@ -149,6 +179,10 @@ Security and privacy baseline:
   seeded fictional guests; consider per-branch databases only if migrations make that valuable.
 - **Production:** dedicated Neon database/branch with narrowly scoped credentials.
 
+The canonical production URL is `https://www.carolineandryan.org`. The apex domain permanently
+redirects to `www`. DNS remains managed by Squarespace Domains and points the apex and `www` records
+to the values assigned by Vercel.
+
 Database migrations should run as an explicit release step with a production-safe Prisma command,
 not unpredictably during application startup. The exact release workflow will be decided when the
 first schema is created.
@@ -175,8 +209,10 @@ We should resolve these roughly in order:
 
 ## Decision log
 
-| Date       | Decision                                               | Status   | Notes                                                                        |
-| ---------- | ------------------------------------------------------ | -------- | ---------------------------------------------------------------------------- |
-| 2026-07-11 | Begin with Vercel + Neon as the architecture candidate | Proposed | Optimizes for low cost and low maintenance while fitting the existing stack. |
-| 2026-07-11 | Host the application on Vercel Hobby                   | Accepted | One code maintainer removes the relevant Hobby Git collaboration concern.    |
-| 2026-07-11 | Use GitHub checks and Vercel Git deployments for CI/CD | Accepted | Pull requests get checks and previews; merges to `main` deploy production.   |
+| Date       | Decision                                                  | Status   | Notes                                                                           |
+| ---------- | --------------------------------------------------------- | -------- | ------------------------------------------------------------------------------- |
+| 2026-07-11 | Begin with Vercel + Neon as the architecture candidate    | Proposed | Optimizes for low cost and low maintenance while fitting the existing stack.    |
+| 2026-07-11 | Host the application on Vercel Hobby                      | Accepted | One code maintainer removes the relevant Hobby Git collaboration concern.       |
+| 2026-07-11 | Use GitHub checks and Vercel Git deployments for CI/CD    | Accepted | Pull requests get checks and previews; merges to `main` deploy production.      |
+| 2026-07-11 | Use `www.carolineandryan.org` as the canonical domain     | Accepted | The apex domain permanently redirects to `www`; Squarespace retains DNS.        |
+| 2026-07-11 | Protect hosted development with a removable password gate | Accepted | All Vercel deployments are gated for 30 days per session; local runs bypass it. |
