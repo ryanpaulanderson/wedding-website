@@ -34,7 +34,7 @@
 - Start every change from an up-to-date `main` branch. Create a separate branch before editing; do not work directly on `main`.
 - Use descriptive branch names in the form `<type>/<short-description>`, such as `feat/rsvp-form`, `fix/mobile-nav`, or `docs/update-readme`. Do not use a generic `agent/` prefix.
 - Use Conventional Commits in the form `<type>: <imperative description>`. Valid types include `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `build`, `ci`, `perf`, and `revert`.
-- Open pull requests against `main` and keep each pull request focused on the branch's change.
+- Open pull requests against `main` as ready for review by default and keep each pull request focused on the branch's change. Do not create a draft pull request unless the user explicitly requests a draft.
 
 ## Working agreements
 

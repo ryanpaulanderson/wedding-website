@@ -6,4 +6,4 @@
   - Format: `<type>: <imperative description>`
   - Valid types include `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `build`, `ci`, `perf`, and `revert`.
   - Example: `feat: add RSVP form`
-- Open pull requests against `main`, and keep the PR focused on the branch's change.
+- Open pull requests against `main` as ready for review by default, and keep the PR focused on the branch's change. Do not create a draft PR unless the user explicitly requests a draft.
