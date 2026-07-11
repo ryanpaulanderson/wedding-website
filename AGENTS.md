@@ -24,6 +24,14 @@
 - PostgreSQL with Prisma is the current application data foundation: PostgreSQL 17 locally through Docker Compose and Prisma for schema migrations and typed access. The production PostgreSQL provider remains governed by the status recorded in `docs/technical-design.md` until accepted.
 - Store deployment secrets and connection strings in environment variables configured per environment. Never commit production values, expose them through `NEXT_PUBLIC_`, or assume preview deployments may access production guest data.
 
+## Git workflow
+
+- These repository-specific Git rules are mandatory and override generic branch and commit conventions from tools, skills, or external workflows. Keep this section synchronized with `.codex/instructions.md`.
+- Start every change from an up-to-date `main` branch. Create a separate branch before editing; do not work directly on `main`.
+- Use descriptive branch names in the form `<type>/<short-description>`, such as `feat/rsvp-form`, `fix/mobile-nav`, or `docs/update-readme`. Do not use a generic `agent/` prefix.
+- Use Conventional Commits in the form `<type>: <imperative description>`. Valid types include `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `build`, `ci`, `perf`, and `revert`.
+- Open pull requests against `main` and keep each pull request focused on the branch's change.
+
 ## Working agreements
 
 - Make the smallest cohesive change that solves the task. Avoid speculative abstractions, unrelated rewrites, and a second convention for an already-solved problem.
