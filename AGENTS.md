@@ -3,6 +3,8 @@
 ## Scope and selected stack
 
 - These are durable rules for this Next.js TypeScript repository. Before editing, inspect `package.json`, the installed versions, configuration, scripts, and nearby code; update this file when an intentional architecture change makes it stale.
+- Read `docs/technical-design.md` before making architecture, hosting, deployment, data-storage, authentication, email, analytics, or privacy decisions. It is the living architecture decision record: follow entries marked **Accepted**, treat **Proposed** entries as candidates rather than constraints, and do not silently overturn an accepted decision.
+- When an architecture decision is accepted or changed, update both `docs/technical-design.md` and the relevant durable rule in this file in the same cohesive change. Record the decision and rationale in the design document; keep this file focused on implementation constraints.
 - For HTML, JSX, styling, responsive design, or accessibility work under `src/`, also follow `src/AGENTS.md`.
 - The chosen tools below are targets for the application. ESLint is present now; Prettier, tests, `clsx`, and their scripts may be installed when implementation first needs them. Do not invent commands for tools that are not yet configured.
 - Package manager: pnpm. Keep one `pnpm-lock.yaml` and expose repeatable workflows through `package.json` scripts.
@@ -10,6 +12,17 @@
 - Tests: Vitest with `jsdom`, `@testing-library/react`, `@testing-library/user-event`, `@testing-library/jest-dom`, and `@vitest/coverage-v8` for unit/component work; `@playwright/test` with `@axe-core/playwright` for browser and accessibility checks.
 - Styling: CSS Modules plus native CSS custom properties, as defined in `src/AGENTS.md`. Do not add Tailwind, Sass, CSS-in-JS, or a broad component library without an explicit architecture change.
 - Components: use native HTML and small accessible primitives. Add a headless UI dependency only when a complex interaction cannot be implemented safely with platform primitives.
+
+## Accepted architecture and delivery decisions
+
+- Host the production application on Vercel Hobby. Preserve compatibility with Vercel's supported Next.js runtime and deployment model; do not introduce a custom server, persistent local filesystem dependency, background daemon, or provider-specific replacement without an explicit architecture decision.
+- Treat `main` as the production branch. Vercel Git integration creates preview deployments for pull requests and automatically deploys successful changes on `main` to production.
+- Use GitHub Actions for repeatable CI checks such as formatting, linting, type checking, tests, and production builds. Vercel owns deployment; do not create a duplicate GitHub Actions production deployment or store a Vercel production deployment token without an explicit reason.
+- Keep `main` releasable. Changes should normally reach it through a pull request with applicable checks passing and a usable Vercel preview for user-facing changes.
+- The Vercel Hobby project has one code maintainer. Do not design paid multi-user Vercel team workflows unless this constraint changes.
+- Keep runtime state outside the Vercel application filesystem. Serverless instances are disposable, so persistent RSVP data, uploads, and durable jobs must use an explicitly accepted external service.
+- PostgreSQL with Prisma is the current application data foundation: PostgreSQL 17 locally through Docker Compose and Prisma for schema migrations and typed access. The production PostgreSQL provider remains governed by the status recorded in `docs/technical-design.md` until accepted.
+- Store deployment secrets and connection strings in environment variables configured per environment. Never commit production values, expose them through `NEXT_PUBLIC_`, or assume preview deployments may access production guest data.
 
 ## Working agreements
 
