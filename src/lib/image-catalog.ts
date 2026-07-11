@@ -76,11 +76,34 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 export function mergePreparedImageCache(catalog: ImageCatalog, value: unknown): ImageCatalog {
-  if (!isRecord(value) || !Array.isArray(value.variants)) {
+  if (
+    !isRecord(value) ||
+    !Array.isArray(value.variants) ||
+    !Array.isArray(value.configuredAssetIds) ||
+    !value.configuredAssetIds.every((assetId) => typeof assetId === "string") ||
+    !Array.isArray(value.skippedAssetIds) ||
+    !value.skippedAssetIds.every((assetId) => typeof assetId === "string")
+  ) {
     throw new Error("The local prepared image cache is invalid; run `pnpm images:prepare` again.");
   }
 
-  const merged = structuredClone(catalog);
+  const configuredAssetIds = new Set(value.configuredAssetIds);
+  const skippedAssetIds = new Set(value.skippedAssetIds);
+  const merged: ImageCatalog = { version: 1, assets: {} };
+
+  for (const assetId of skippedAssetIds) {
+    if (!configuredAssetIds.has(assetId)) {
+      throw new Error(
+        "The local prepared image cache is invalid; run `pnpm images:prepare` again.",
+      );
+    }
+
+    const existingAsset = catalog.assets[assetId];
+    if (existingAsset) {
+      merged.assets[assetId] = structuredClone(existingAsset);
+    }
+  }
+
   for (const rawVariant of value.variants) {
     if (
       !isRecord(rawVariant) ||
@@ -100,11 +123,18 @@ export function mergePreparedImageCache(catalog: ImageCatalog, value: unknown): 
       );
     }
 
-    const existingVariant = merged.assets[rawVariant.assetId]?.variants[rawVariant.variantId];
+    if (!configuredAssetIds.has(rawVariant.assetId) || skippedAssetIds.has(rawVariant.assetId)) {
+      throw new Error(
+        "The local prepared image cache is invalid; run `pnpm images:prepare` again.",
+      );
+    }
+
+    const existingVariant = catalog.assets[rawVariant.assetId]?.variants[rawVariant.variantId];
     const asset = (merged.assets[rawVariant.assetId] ??= {
       alt: rawVariant.alt,
       variants: {},
     });
+    asset.alt = rawVariant.alt;
     asset.variants[rawVariant.variantId] = {
       url: existingVariant?.url ?? rawVariant.localSrc,
       pathname: rawVariant.pathname,

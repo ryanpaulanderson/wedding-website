@@ -219,6 +219,20 @@ describe("Blob synchronization", () => {
     await expect(readFile(paths.catalogFile, "utf8")).resolves.toBe(originalCatalog);
   });
 
+  it("refuses to replace the catalog when no variants are configured", async () => {
+    const paths = await createTestPaths();
+    const originalCatalog = `${JSON.stringify({
+      version: 1,
+      assets: { couple: { alt: "A couple", variants: { homeHero: {} } } },
+    })}\n`;
+    await writeFile(paths.catalogFile, originalCatalog, "utf8");
+    const client = createBlobClient();
+
+    await expect(syncImages(paths, client)).rejects.toThrow("no image variants were prepared");
+    await expect(readFile(paths.catalogFile, "utf8")).resolves.toBe(originalCatalog);
+    expect(client.list).not.toHaveBeenCalled();
+  });
+
   it("paginates remote listings and prunes only after explicit confirmation", async () => {
     const paths = await createTestPaths();
     const referencedPathname = "wedding-images/couple/homeHero-hash.webp";

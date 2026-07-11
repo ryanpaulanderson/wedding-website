@@ -43,6 +43,8 @@ export type PreparedVariant = ImageVariantConfig & {
 export type PreparedImages = {
   variants: PreparedVariant[];
   skippedConfigs: string[];
+  configuredAssetIds: string[];
+  skippedAssetIds: string[];
 };
 
 export type ImageCatalogVariant = {
@@ -268,13 +270,15 @@ async function findSourceFile(configPath: string): Promise<string | undefined> {
 async function loadImageDefinitions(
   paths: PipelinePaths,
   allowMissingSources: boolean,
-): Promise<
-  Array<{
+): Promise<{
+  definitions: Array<{
     configPath: string;
     sourcePath: string;
     config: ImageConfig;
-  }>
-> {
+  }>;
+  configuredAssetIds: string[];
+  skipped: Array<{ configPath: string; assetId: string }>;
+}> {
   const configPaths = await collectConfigFiles(paths.sourceDirectory);
   const configs = await Promise.all(
     configPaths.map(async (configPath) => {
@@ -316,12 +320,18 @@ async function loadImageDefinitions(
     );
   }
 
-  return definitions
-    .filter(
-      (definition): definition is typeof definition & { sourcePath: string } =>
-        definition.sourcePath !== undefined,
-    )
-    .sort((left, right) => left.config.id.localeCompare(right.config.id));
+  return {
+    definitions: definitions
+      .filter(
+        (definition): definition is typeof definition & { sourcePath: string } =>
+          definition.sourcePath !== undefined,
+      )
+      .sort((left, right) => left.config.id.localeCompare(right.config.id)),
+    configuredAssetIds: configs.map(({ config }) => config.id).sort(),
+    skipped: missingSources
+      .map(({ configPath, config }) => ({ configPath, assetId: config.id }))
+      .sort((left, right) => left.assetId.localeCompare(right.assetId)),
+  };
 }
 
 export function calculateFocalCrop(
@@ -423,8 +433,10 @@ export async function prepareImages(
   options: { allowMissingSources?: boolean } = {},
 ): Promise<PreparedImages> {
   const allowMissingSources = options.allowMissingSources ?? false;
-  const allConfigPaths = await collectConfigFiles(paths.sourceDirectory);
-  const definitions = await loadImageDefinitions(paths, allowMissingSources);
+  const { definitions, configuredAssetIds, skipped } = await loadImageDefinitions(
+    paths,
+    allowMissingSources,
+  );
 
   await rm(paths.previewDirectory, { recursive: true, force: true });
   await mkdir(paths.previewDirectory, { recursive: true });
@@ -442,8 +454,8 @@ export async function prepareImages(
     ),
   );
   const variants = variantGroups.flat();
-  const loadedConfigPaths = new Set(definitions.map(({ configPath }) => configPath));
-  const skippedConfigs = allConfigPaths.filter((configPath) => !loadedConfigPaths.has(configPath));
+  const skippedConfigs = skipped.map(({ configPath }) => configPath);
+  const skippedAssetIds = skipped.map(({ assetId }) => assetId);
 
   await writeFile(
     path.join(paths.cacheDirectory, "prepared-images.json"),
@@ -452,6 +464,8 @@ export async function prepareImages(
         generatedAt: new Date().toISOString(),
         variants: variants.map((variant) => ({ ...variant, buffer: undefined })),
         skippedConfigs,
+        configuredAssetIds,
+        skippedAssetIds,
       },
       null,
       2,
@@ -459,7 +473,7 @@ export async function prepareImages(
     "utf8",
   );
 
-  return { variants, skippedConfigs };
+  return { variants, skippedConfigs, configuredAssetIds, skippedAssetIds };
 }
 
 async function listAllBlobs(client: BlobClient): Promise<BlobEntry[]> {
@@ -511,6 +525,11 @@ export async function syncImages(
   client: BlobClient = defaultBlobClient,
 ): Promise<{ catalog: ImageCatalog; uploaded: string[]; skipped: string[] }> {
   const prepared = await prepareImages(paths);
+  if (prepared.variants.length === 0) {
+    throw new Error(
+      "Image sync refused because no image variants were prepared; the existing catalog was not changed.",
+    );
+  }
   const existingBlobs = await listAllBlobs(client);
   const remoteEntries = new Map(existingBlobs.map((blob) => [blob.pathname, blob]));
   const toUpload = prepared.variants.filter((variant) => !remoteEntries.has(variant.pathname));

@@ -68,6 +68,8 @@ describe("mergePreparedImageCache", () => {
     const localCatalog = mergePreparedImageCache(
       { version: 1, assets: {} },
       {
+        configuredAssetIds: ["stock-couple"],
+        skippedAssetIds: [],
         variants: [
           {
             assetId: "stock-couple",
@@ -92,6 +94,49 @@ describe("mergePreparedImageCache", () => {
 
     expect(image.src).toBe("/_local-images/stock-couple/homeHero-hash.webp");
     expect(image.alt).toBe("A stock couple outdoors");
+  });
+
+  it("removes stale assets and variants while refreshing alt text", () => {
+    const staleCatalog = structuredClone(catalog);
+    staleCatalog.assets["couple-portrait"].variants.storyPortrait = {
+      ...staleCatalog.assets["couple-portrait"].variants.homeHero,
+      pathname: "wedding-images/couple-portrait/storyPortrait-old.webp",
+      localSrc: "/_local-images/couple-portrait/storyPortrait-old.webp",
+    };
+    staleCatalog.assets.removed = structuredClone(staleCatalog.assets["couple-portrait"]);
+
+    const merged = mergePreparedImageCache(staleCatalog, {
+      configuredAssetIds: ["couple-portrait"],
+      skippedAssetIds: [],
+      variants: [
+        {
+          assetId: "couple-portrait",
+          variantId: "homeHero",
+          alt: "Updated accessible description",
+          pathname: "wedding-images/couple-portrait/homeHero-new.webp",
+          localSrc: "/_local-images/couple-portrait/homeHero-new.webp",
+          width: 1600,
+          height: 900,
+          quality: 88,
+          blurDataURL: "data:image/webp;base64,bmV3",
+          contentHash: "new",
+        },
+      ],
+    });
+
+    expect(Object.keys(merged.assets)).toEqual(["couple-portrait"]);
+    expect(Object.keys(merged.assets["couple-portrait"].variants)).toEqual(["homeHero"]);
+    expect(merged.assets["couple-portrait"].alt).toBe("Updated accessible description");
+  });
+
+  it("preserves the catalog fallback for configured assets with missing local sources", () => {
+    const merged = mergePreparedImageCache(catalog, {
+      configuredAssetIds: ["couple-portrait"],
+      skippedAssetIds: ["couple-portrait"],
+      variants: [],
+    });
+
+    expect(merged).toEqual(catalog);
   });
 
   it("rejects malformed cache data", () => {
