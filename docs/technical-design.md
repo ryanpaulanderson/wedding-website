@@ -22,16 +22,16 @@ made and record enough context to revisit them later without reopening every dis
 
 ## Decision summary
 
-| Area | Status | Current direction |
-| --- | --- | --- |
-| Application hosting | Accepted | Vercel Hobby |
-| CI/CD | Accepted | GitHub required checks + Vercel Git deployments |
-| RSVP database | Proposed | Neon Free PostgreSQL through Prisma |
-| Guest RSVP access | Open | Private per-household invitation token or shared lookup flow |
-| Admin access | Open | Minimal authenticated admin page or database-console-only workflow |
-| Email | Open | No transactional email initially, or a low-volume provider if confirmations are wanted |
-| Domain | Open | Custom domain purchased separately and connected to Vercel |
-| Analytics | Open | Privacy-friendly, minimal analytics or none |
+| Area                | Status   | Current direction                                                                      |
+| ------------------- | -------- | -------------------------------------------------------------------------------------- |
+| Application hosting | Accepted | Vercel Hobby                                                                           |
+| CI/CD               | Accepted | GitHub required checks + Vercel Git deployments                                        |
+| RSVP database       | Proposed | Neon Free PostgreSQL through Prisma                                                    |
+| Guest RSVP access   | Open     | Private per-household invitation token or shared lookup flow                           |
+| Admin access        | Open     | Minimal authenticated admin page or database-console-only workflow                     |
+| Email               | Open     | No transactional email initially, or a low-volume provider if confirmations are wanted |
+| Domain              | Open     | Custom domain purchased separately and connected to Vercel                             |
+| Analytics           | Open     | Privacy-friendly, minimal analytics or none                                            |
 
 ## Proposed architecture
 
@@ -175,8 +175,8 @@ We should resolve these roughly in order:
 
 ## Decision log
 
-| Date | Decision | Status | Notes |
-| --- | --- | --- | --- |
+| Date       | Decision                                               | Status   | Notes                                                                        |
+| ---------- | ------------------------------------------------------ | -------- | ---------------------------------------------------------------------------- |
 | 2026-07-11 | Begin with Vercel + Neon as the architecture candidate | Proposed | Optimizes for low cost and low maintenance while fitting the existing stack. |
-| 2026-07-11 | Host the application on Vercel Hobby | Accepted | One code maintainer removes the relevant Hobby Git collaboration concern. |
-| 2026-07-11 | Use GitHub checks and Vercel Git deployments for CI/CD | Accepted | Pull requests get checks and previews; merges to `main` deploy production. |
+| 2026-07-11 | Host the application on Vercel Hobby                   | Accepted | One code maintainer removes the relevant Hobby Git collaboration concern.    |
+| 2026-07-11 | Use GitHub checks and Vercel Git deployments for CI/CD | Accepted | Pull requests get checks and previews; merges to `main` deploy production.   |
