@@ -1,0 +1,13 @@
+:root {
+  --color-background: #f7f6f3;
+  --color-surface: #ffffff;
+  --color-text: #20201f;
+  --color-text-muted: #62605d;
+  --color-border: #dedbd5;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --space-page: clamp(1rem, 4vw, 3rem);
+  --space-card: clamp(1.5rem, 5vw, 3.5rem);
+  --radius-card: 1rem;
+  --shadow-card: 0 1.5rem 4rem rgb(32 32 31 / 8%);
+  --motion-fast: 160ms;
+}

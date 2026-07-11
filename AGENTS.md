@@ -4,7 +4,7 @@
 
 - These are durable rules for this Next.js TypeScript repository. Before editing, inspect `package.json`, the installed versions, configuration, scripts, and nearby code; update this file when an intentional architecture change makes it stale.
 - For HTML, JSX, styling, responsive design, or accessibility work under `src/`, also follow `src/AGENTS.md`.
-- The chosen tools below are targets for the application. ESLint is present now; Prettier, tests, `clsx`, and their scripts may be installed when implementation first needs them. Do not invent commands for tools that are not yet configured.
+- The formatter, test stack, `clsx`, and standard scripts below are configured in this repository. Use the checked-in configuration and do not substitute parallel tools.
 - Package manager: pnpm. Keep one `pnpm-lock.yaml` and expose repeatable workflows through `package.json` scripts.
 - Formatter: Prettier 3, run separately from ESLint. Use `eslint-config-prettier`, not `eslint-plugin-prettier`. Configure `tabWidth: 2`, `printWidth: 100`, `semi: true`, `singleQuote: false`, `trailingComma: "all"`, and `endOfLine: "lf"`; leave other options at their defaults.
 - Tests: Vitest with `jsdom`, `@testing-library/react`, `@testing-library/user-event`, `@testing-library/jest-dom`, and `@vitest/coverage-v8` for unit/component work; `@playwright/test` with `@axe-core/playwright` for browser and accessibility checks.
