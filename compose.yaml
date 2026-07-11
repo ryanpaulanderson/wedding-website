@@ -27,7 +27,33 @@ services:
       timeout: 5s
       retries: 10
 
+  e2e:
+    image: mcr.microsoft.com/playwright:v1.61.0-noble
+    profiles: ["test"]
+    init: true
+    ipc: host
+    working_dir: /workspace
+    environment:
+      CI: "true"
+    entrypoint: ["/bin/bash", "-lc"]
+    command:
+      - >
+        corepack enable &&
+        pnpm config set store-dir /pnpm/store &&
+        pnpm install --frozen-lockfile &&
+        pnpm build &&
+        pnpm test:e2e
+    volumes:
+      - .:/workspace
+      - e2e_node_modules:/workspace/node_modules
+      - e2e_pnpm_store:/pnpm/store
+    depends_on:
+      database:
+        condition: service_healthy
+
 volumes:
   node_modules:
   pnpm_store:
   postgres_data:
+  e2e_node_modules:
+  e2e_pnpm_store:
