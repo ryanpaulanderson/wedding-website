@@ -211,6 +211,7 @@ export function sanitizeReturnTo(value: unknown): string {
     !value.startsWith("/") ||
     value.startsWith("//") ||
     value.includes("\\") ||
+    /%(?:2f|5c)/i.test(value) ||
     /[\u0000-\u001F\u007F]/.test(value)
   ) {
     return "/";
@@ -221,6 +222,8 @@ export function sanitizeReturnTo(value: unknown): string {
 
     if (
       url.origin !== SAFE_RETURN_ORIGIN ||
+      !url.pathname.startsWith("/") ||
+      url.pathname.startsWith("//") ||
       url.pathname === "/access" ||
       url.pathname.startsWith("/access/")
     ) {

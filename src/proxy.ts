@@ -16,6 +16,14 @@ function isAccessRoute(pathname: string): boolean {
   return pathname === "/access" || pathname.startsWith("/access/");
 }
 
+function isAppRouterRequest(request: NextRequest): boolean {
+  return (
+    request.headers.get("rsc") === "1" ||
+    request.headers.has("next-action") ||
+    request.headers.get("accept")?.includes("text/x-component") === true
+  );
+}
+
 function applyPrivateHeaders(response: NextResponse): NextResponse {
   for (const [name, value] of Object.entries(PRIVATE_RESPONSE_HEADERS)) {
     response.headers.set(name, value);
@@ -46,7 +54,7 @@ export function proxy(request: NextRequest) {
 
   if (!configuration) {
     accessUrl.searchParams.set("error", "configuration");
-  } else if (request.method === "GET" || request.method === "HEAD") {
+  } else if (request.method === "GET" || request.method === "HEAD" || isAppRouterRequest(request)) {
     accessUrl.searchParams.set(
       "returnTo",
       sanitizeReturnTo(`${request.nextUrl.pathname}${request.nextUrl.search}`),
@@ -55,7 +63,9 @@ export function proxy(request: NextRequest) {
     return applyPrivateHeaders(NextResponse.json({ error: "Unauthorized" }, { status: 401 }));
   }
 
-  return applyPrivateHeaders(NextResponse.redirect(accessUrl));
+  const redirectStatus = request.method === "GET" || request.method === "HEAD" ? 307 : 303;
+
+  return applyPrivateHeaders(NextResponse.redirect(accessUrl, redirectStatus));
 }
 
 export const config = {

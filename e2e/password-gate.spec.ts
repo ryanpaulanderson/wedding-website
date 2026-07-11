@@ -11,6 +11,9 @@ test("unlocks and relocks a hosted private preview", async ({ context, page, req
   await expect(page).toHaveURL(/\/access\?returnTo=%2F$/);
   await expect(page.getByRole("heading", { level: 1, name: "Wedding website" })).toBeVisible();
 
+  await page.goto("/access?error=configuration");
+  await expect(page.getByLabel("Password")).toBeVisible();
+
   const accessibilityScan = await new AxeBuilder({ page }).analyze();
   expect(accessibilityScan.violations).toEqual([]);
 

@@ -45,7 +45,7 @@ export default async function AccessPage({ searchParams }: AccessPageProps) {
       configuration.sessionSecret,
     ),
   );
-  const hasConfigurationError = !configuration || firstValue(parameters.error) === "configuration";
+  const hasConfigurationError = !configuration;
   const hasPasswordError = !hasConfigurationError && firstValue(parameters.error) === "invalid";
 
   return (

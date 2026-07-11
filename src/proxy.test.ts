@@ -84,6 +84,29 @@ describe("proxy", () => {
     expect(response.headers.get("cache-control")).toBe("private, no-store");
   });
 
+  it.each([
+    ["rsc", "1"],
+    ["next-action", "action-id"],
+    ["accept", "text/x-component"],
+  ])(
+    "redirects an unauthenticated App Router POST request with the %s header",
+    (headerName, headerValue) => {
+      enableConfiguredGate();
+
+      const response = proxy(
+        new NextRequest("https://www.carolineandryan.org/details?tab=travel", {
+          headers: { [headerName]: headerValue },
+          method: "POST",
+        }),
+      );
+
+      expect(response.status).toBe(303);
+      expect(response.headers.get("location")).toBe(
+        "https://www.carolineandryan.org/access?returnTo=%2Fdetails%3Ftab%3Dtravel",
+      );
+    },
+  );
+
   it("allows the access route without a session", () => {
     enableConfiguredGate();
 
