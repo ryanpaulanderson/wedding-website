@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://www.carolineandryan.org/schemas/image-config.schema.json",
+  "title": "Wedding website image configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "id", "alt", "variants"],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "alt": {
+      "type": "string"
+    },
+    "variants": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[a-z][A-Za-z0-9]*$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/variant"
+      }
+    }
+  },
+  "$defs": {
+    "variant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height", "focalPoint"],
+      "properties": {
+        "width": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8192
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8192
+        },
+        "quality": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 88
+        },
+        "focalPoint": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["x", "y"],
+          "properties": {
+            "x": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "y": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

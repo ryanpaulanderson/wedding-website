@@ -3,6 +3,7 @@ services:
     build:
       context: .
       target: development
+    init: true
     volumes:
       - .:/workspace
       - node_modules:/workspace/node_modules

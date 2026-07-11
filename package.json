@@ -4,6 +4,7 @@
   "private": true,
   "packageManager": "pnpm@11.7.0",
   "scripts": {
+    "predev": "pnpm images:prepare --allow-missing-sources",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -14,7 +15,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "images:prepare": "tsx scripts/images/cli.ts prepare",
+    "images:sync": "tsx scripts/images/cli.ts sync",
+    "images:prune": "tsx scripts/images/cli.ts prune",
+    "vercel:setup": "bash scripts/setup-vercel.sh"
   },
   "dependencies": {
     "@prisma/client": "^7.8.0",
@@ -33,6 +38,7 @@
     "@types/node": "^26",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vercel/blob": "^2.6.1",
     "@vitejs/plugin-react": "^6.0.3",
     "@vitest/coverage-v8": "^4.1.10",
     "dotenv": "^17.4.2",
@@ -42,6 +48,7 @@
     "jsdom": "^29.1.1",
     "prettier": "3.9.5",
     "prisma": "^7.8.0",
+    "sharp": "^0.35.3",
     "tsx": "^4.23.0",
     "typescript": "6.0.3",
     "vitest": "^4.1.10"

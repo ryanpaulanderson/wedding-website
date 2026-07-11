@@ -23,6 +23,7 @@
 - Keep runtime state outside the Vercel application filesystem. Serverless instances are disposable, so persistent RSVP data, uploads, and durable jobs must use an explicitly accepted external service.
 - PostgreSQL with Prisma is the current application data foundation: PostgreSQL 17 locally through Docker Compose and Prisma for schema migrations and typed access. The production PostgreSQL provider remains governed by the status recorded in `docs/technical-design.md` until accepted.
 - Store deployment secrets and connection strings in environment variables configured per environment. Never commit production values, expose them through `NEXT_PUBLIC_`, or assume preview deployments may access production guest data.
+- Keep source photographs out of Git and deployment bundles. Author them under `local-images/` with tracked `*.image.json` sidecars, generate controlled variants through the checked-in image scripts, and publish only immutable processed variants to the accepted public Vercel Blob store.
 - Use `www.carolineandryan.org` as the canonical production domain and redirect `carolineandryan.org` to it.
 - While the temporary hosted-site password gate is active, protect every Vercel deployment and bypass it for all local execution. Centralize enablement in `isSitePasswordGateEnabled()`; never read `SITE_PASSWORD_GATE` elsewhere or treat the shared password as RSVP authorization.
 - Keep the temporary gate removable: `SITE_PASSWORD_GATE=disabled` must make hosted deployments public and indexable without deleting code. Missing or invalid gate values on Vercel fail closed. Real password hashes and session secrets belong only in Vercel environment variables.
@@ -33,7 +34,7 @@
 - Start every change from an up-to-date `main` branch. Create a separate branch before editing; do not work directly on `main`.
 - Use descriptive branch names in the form `<type>/<short-description>`, such as `feat/rsvp-form`, `fix/mobile-nav`, or `docs/update-readme`. Do not use a generic `agent/` prefix.
 - Use Conventional Commits in the form `<type>: <imperative description>`. Valid types include `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `build`, `ci`, `perf`, and `revert`.
-- Open pull requests against `main` and keep each pull request focused on the branch's change.
+- Open pull requests against `main` as ready for review by default and keep each pull request focused on the branch's change. Do not create a draft pull request unless the user explicitly requests a draft.
 
 ## Working agreements
 

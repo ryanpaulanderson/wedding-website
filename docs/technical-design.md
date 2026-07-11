@@ -26,6 +26,7 @@ made and record enough context to revisit them later without reopening every dis
 | --------------------- | -------- | -------------------------------------------------------------------------------------- |
 | Application hosting   | Accepted | Vercel Hobby                                                                           |
 | CI/CD                 | Accepted | GitHub required checks + Vercel Git deployments                                        |
+| Public image storage  | Accepted | Gitignored local originals; processed immutable variants in public Vercel Blob         |
 | Temporary site access | Accepted | Shared password on all Vercel deployments; local execution bypasses it                 |
 | RSVP database         | Proposed | Neon Free PostgreSQL through Prisma                                                    |
 | Guest RSVP access     | Open     | Private per-household invitation token or shared lookup flow                           |
@@ -89,6 +90,33 @@ run a duplicate production deployment.
 
 Rollback strategy: revert the change in Git to create a new production deployment, with
 Vercel's deployment rollback available for an urgent recovery.
+
+### Public image storage and processing
+
+**Status:** Accepted
+
+Keep original couple photographs and temporary stock images outside Git under `local-images/`.
+Tracked JSON sidecars define stable image IDs, accessible alternative text, named output variants,
+dimensions, quality, and normalized crop focal points. Local tooling uses Sharp to auto-orient each
+source, remove embedded metadata, crop and resize without upscaling, and emit WebP derivatives.
+
+Publish only processed variants to a public Vercel Blob store. Each Blob pathname includes a hash
+of the processed bytes, so published images are immutable and can use long-lived caching safely.
+The generated catalog containing public URLs and presentation metadata is committed; pages resolve
+named catalog variants rather than filenames or hand-written URLs. Local development prefers
+generated local derivatives when present and otherwise falls back to the cataloged Blob URL.
+
+`BLOB_READ_WRITE_TOKEN` is needed only by the explicit local sync and prune commands. It stays in
+ignored `.env.local`, is never exposed through `NEXT_PUBLIC_`, and is not required by the deployed
+application. Normal synchronization never deletes remote data; pruning is a separate dry-run-first
+operation. Public website images remain publicly retrievable, so originals are never uploaded and
+the processing step strips EXIF and GPS metadata.
+
+References:
+
+- [Vercel Blob](https://vercel.com/docs/vercel-blob)
+- [Vercel Blob CLI](https://vercel.com/docs/cli/blob)
+- [Next.js image optimization](https://nextjs.org/docs/app/getting-started/images)
 
 ### Temporary hosted-site password gate
 
@@ -209,10 +237,11 @@ We should resolve these roughly in order:
 
 ## Decision log
 
-| Date       | Decision                                                  | Status   | Notes                                                                           |
-| ---------- | --------------------------------------------------------- | -------- | ------------------------------------------------------------------------------- |
-| 2026-07-11 | Begin with Vercel + Neon as the architecture candidate    | Proposed | Optimizes for low cost and low maintenance while fitting the existing stack.    |
-| 2026-07-11 | Host the application on Vercel Hobby                      | Accepted | One code maintainer removes the relevant Hobby Git collaboration concern.       |
-| 2026-07-11 | Use GitHub checks and Vercel Git deployments for CI/CD    | Accepted | Pull requests get checks and previews; merges to `main` deploy production.      |
-| 2026-07-11 | Use `www.carolineandryan.org` as the canonical domain     | Accepted | The apex domain permanently redirects to `www`; Squarespace retains DNS.        |
-| 2026-07-11 | Protect hosted development with a removable password gate | Accepted | All Vercel deployments are gated for 30 days per session; local runs bypass it. |
+| Date       | Decision                                                  | Status   | Notes                                                                            |
+| ---------- | --------------------------------------------------------- | -------- | -------------------------------------------------------------------------------- |
+| 2026-07-11 | Begin with Vercel + Neon as the architecture candidate    | Proposed | Optimizes for low cost and low maintenance while fitting the existing stack.     |
+| 2026-07-11 | Host the application on Vercel Hobby                      | Accepted | One code maintainer removes the relevant Hobby Git collaboration concern.        |
+| 2026-07-11 | Use GitHub checks and Vercel Git deployments for CI/CD    | Accepted | Pull requests get checks and previews; merges to `main` deploy production.       |
+| 2026-07-11 | Use `www.carolineandryan.org` as the canonical domain     | Accepted | The apex domain permanently redirects to `www`; Squarespace retains DNS.         |
+| 2026-07-11 | Protect hosted development with a removable password gate | Accepted | All Vercel deployments are gated for 30 days per session; local runs bypass it.  |
+| 2026-07-11 | Store processed public images in Vercel Blob              | Accepted | Originals stay ignored; named immutable variants are generated and synchronized. |

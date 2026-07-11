@@ -1,0 +1,4 @@
+# Source photographs and local derivatives must never be included in a deployment upload.
+local-images/
+public/_local-images/
+.image-cache/

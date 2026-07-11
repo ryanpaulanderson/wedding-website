@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "assets": {
+    "stock-wedding-outdoors": {
+      "alt": "A couple in wedding attire standing together outdoors",
+      "variants": {
+        "homeHero": {
+          "url": "https://3fhrghxyuq9hwhit.public.blob.vercel-storage.com/wedding-images/stock-wedding-outdoors/homeHero-7ae02ddf2a6f8c21.webp",
+          "pathname": "wedding-images/stock-wedding-outdoors/homeHero-7ae02ddf2a6f8c21.webp",
+          "localSrc": "/_local-images/stock-wedding-outdoors/homeHero-7ae02ddf2a6f8c21.webp",
+          "width": 2400,
+          "height": 1350,
+          "quality": 88,
+          "blurDataURL": "data:image/webp;base64,UklGRrQAAABXRUJQVlA4IKgAAACQAwCdASoYAA4APu1iqU2ppaQiMAgBMB2JQACiZBwH/Jr8IK5AAP4XJ3dtIXSvtxF1huJKPeL1ZtpevKwZx9L8IQSVnAU47kRg/xhtyfOzpHP91KltW3oR8mMJDHlpquszqm472dJOP7BerIvMvRD4IiCfzYQv/hFKi8XwtAhcmfVzoD8c1UkPLnoopiJh7cGm/eBmxP182OetsE23UXFkM2ixrYPwAAA=",
+          "contentHash": "7ae02ddf2a6f8c21"
+        },
+        "storyWide": {
+          "url": "https://3fhrghxyuq9hwhit.public.blob.vercel-storage.com/wedding-images/stock-wedding-outdoors/storyWide-b4823835df1fc92c.webp",
+          "pathname": "wedding-images/stock-wedding-outdoors/storyWide-b4823835df1fc92c.webp",
+          "localSrc": "/_local-images/stock-wedding-outdoors/storyWide-b4823835df1fc92c.webp",
+          "width": 1600,
+          "height": 1000,
+          "quality": 88,
+          "blurDataURL": "data:image/webp;base64,UklGRsIAAABXRUJQVlA4ILYAAADQAwCdASoYAA8APu1iqU2ppaOiMAgBMB2JQAAH9SbtqT3Q8S2c4FwA/hc0ZZkqbaEQOrkS1vEgvBDJLfNZSILNbXD1LXcV4yeiuwFVyEbqazSPdaylYv7PwWkZzJhUa9Es5jt4YwmDewAPhrDWTQ/N7MxW2qVXx9TPsgZtYUXfyPNXUQlq/H7s8RI8Lgx5GsEX2XvAOXN9JUKDqEcbuVKIuqSlU5rrt/7IGEf/HdfwQCNrJVwAAA==",
+          "contentHash": "b4823835df1fc92c"
+        }
+      }
+    },
+    "stock-wedding-path": {
+      "alt": "A couple in wedding attire looking at each other on an outdoor path",
+      "variants": {
+        "gallerySquare": {
+          "url": "https://3fhrghxyuq9hwhit.public.blob.vercel-storage.com/wedding-images/stock-wedding-path/gallerySquare-903dba723fa22e02.webp",
+          "pathname": "wedding-images/stock-wedding-path/gallerySquare-903dba723fa22e02.webp",
+          "localSrc": "/_local-images/stock-wedding-path/gallerySquare-903dba723fa22e02.webp",
+          "width": 1200,
+          "height": 1200,
+          "quality": 88,
+          "blurDataURL": "data:image/webp;base64,UklGRs4AAABXRUJQVlA4IMIAAACQBQCdASoYABgAPu1qrFEppaQiqAqpMB2JZQDA3BGMO4yttbV9aqj26qaMS8wuOfsIOnHgAAD+ojeGJp/TyNUajgitPr58wv6p3IUgw08bILN/WNWShoSL+BktnrdxZT7zvGyFYMWbt9G3sJJkS+HJ63XsNE42zIzB5YDQoavnge8qn6/nSUZF0e63b8EFm3Itev8iqmJuozvX9D/HFUwPJZOwghwQ04ON/MSHrWqPe7cgFn8ldxnOKZCymIOIccQAAA==",
+          "contentHash": "903dba723fa22e02"
+        },
+        "storyPortrait": {
+          "url": "https://3fhrghxyuq9hwhit.public.blob.vercel-storage.com/wedding-images/stock-wedding-path/storyPortrait-da86204664cf3a73.webp",
+          "pathname": "wedding-images/stock-wedding-path/storyPortrait-da86204664cf3a73.webp",
+          "localSrc": "/_local-images/stock-wedding-path/storyPortrait-da86204664cf3a73.webp",
+          "width": 1200,
+          "height": 1600,
+          "quality": 88,
+          "blurDataURL": "data:image/webp;base64,UklGRuQAAABXRUJQVlA4INgAAACwBQCdASoYACAAPu1oq08ppiOiMBgIATAdiWUAw3GMlE4zq7kd9zzDpXoAY1cok+HgKsVQ+VgA/rvx6kSh6SG9sE7ZtaXUPlnIEm5dOmPaM2qLpIu21xe8BQo5ausTZwBQbyct2uR3H+Adb/tvQcJ/fsNib4KIYWUQ0vz+kGbqyL6YKTY83M0k5YHPVJCVH/CAvfqK+jeXPubfGYp53LOnKp1QpM5isFea8MZc+yH5J1b5qBPyIxjaKdeOh903VZsub+wZ0kfcg3bVVpfxFDiop1EhMyMuwAA=",
+          "contentHash": "da86204664cf3a73"
+        }
+      }
+    }
+  }
+}

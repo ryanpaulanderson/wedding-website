@@ -1,0 +1,31 @@
+{
+  "name": "Wedding Website",
+  "dockerComposeFile": "../compose.yaml",
+  "service": "development",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+  "overrideCommand": false,
+  "remoteUser": "root",
+  "containerEnv": {
+    "WATCHPACK_POLLING": "true"
+  },
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "Wedding website",
+      "onAutoForward": "notify"
+    }
+  },
+  "postCreateCommand": "chmod +x scripts/setup-vercel.sh && pnpm install --frozen-lockfile",
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode", "Prisma.prisma"],
+      "settings": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "typescript.tsdk": "node_modules/typescript/lib"
+      }
+    }
+  }
+}

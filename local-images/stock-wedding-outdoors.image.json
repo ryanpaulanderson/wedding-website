@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/image-config.schema.json",
+  "id": "stock-wedding-outdoors",
+  "alt": "A couple in wedding attire standing together outdoors",
+  "variants": {
+    "homeHero": {
+      "width": 2400,
+      "height": 1350,
+      "quality": 88,
+      "focalPoint": {
+        "x": 0.5,
+        "y": 0.42
+      }
+    },
+    "storyWide": {
+      "width": 1600,
+      "height": 1000,
+      "quality": 88,
+      "focalPoint": {
+        "x": 0.5,
+        "y": 0.45
+      }
+    }
+  }
+}
