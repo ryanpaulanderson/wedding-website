@@ -229,7 +229,7 @@
 }
 
 .footer {
-  border-block: 1px solid rgb(23 23 22 / 18%) 0;
+  border-block-start: 1px solid rgb(23 23 22 / 18%);
   color: #69665f;
 }
 
