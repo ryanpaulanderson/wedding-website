@@ -492,8 +492,12 @@ async function listAllBlobs(client: BlobClient): Promise<BlobEntry[]> {
 function buildCatalog(
   preparedVariants: PreparedVariant[],
   remoteEntries: Map<string, BlobEntry>,
+  preservedAssets: ImageCatalog["assets"] = {},
 ): ImageCatalog {
-  const catalog: ImageCatalog = { version: 1, assets: {} };
+  const catalog: ImageCatalog = {
+    version: 1,
+    assets: structuredClone(preservedAssets),
+  };
 
   for (const prepared of preparedVariants) {
     const remote = remoteEntries.get(prepared.pathname);
@@ -518,6 +522,108 @@ function buildCatalog(
   }
 
   return catalog;
+}
+
+function parseCatalogVariant(
+  value: unknown,
+  assetId: string,
+  variantId: string,
+  remoteEntries: Map<string, BlobEntry>,
+): ImageCatalogVariant {
+  const context = `Existing image catalog fallback ${assetId}.${variantId}`;
+  if (!isRecord(value)) {
+    throw new Error(`${context} is invalid.`);
+  }
+
+  const pathname = value.pathname;
+  if (typeof pathname !== "string") {
+    throw new Error(`${context} is missing a valid pathname.`);
+  }
+
+  const remote = remoteEntries.get(pathname);
+  if (!remote) {
+    throw new Error(`${context} is not present in public Blob storage at ${pathname}.`);
+  }
+
+  if (
+    typeof value.localSrc !== "string" ||
+    typeof value.width !== "number" ||
+    !Number.isInteger(value.width) ||
+    value.width <= 0 ||
+    typeof value.height !== "number" ||
+    !Number.isInteger(value.height) ||
+    value.height <= 0 ||
+    typeof value.quality !== "number" ||
+    !Number.isInteger(value.quality) ||
+    value.quality < 1 ||
+    value.quality > 100 ||
+    typeof value.blurDataURL !== "string" ||
+    typeof value.contentHash !== "string"
+  ) {
+    throw new Error(`${context} is invalid.`);
+  }
+
+  return {
+    url: remote.url,
+    pathname,
+    localSrc: value.localSrc,
+    width: value.width,
+    height: value.height,
+    quality: value.quality,
+    blurDataURL: value.blurDataURL,
+    contentHash: value.contentHash,
+  };
+}
+
+async function loadCatalogFallbacks(
+  catalogFile: string,
+  skippedAssetIds: string[],
+  remoteEntries: Map<string, BlobEntry>,
+): Promise<ImageCatalog["assets"]> {
+  if (skippedAssetIds.length === 0) {
+    return {};
+  }
+
+  let value: unknown;
+  try {
+    value = JSON.parse(await readFile(catalogFile, "utf8"));
+  } catch (error) {
+    throw new Error(
+      `Could not read the existing image catalog needed for missing-source fallbacks: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+      { cause: error },
+    );
+  }
+
+  if (!isRecord(value) || value.version !== 1 || !isRecord(value.assets)) {
+    throw new Error(
+      "The existing image catalog is invalid and cannot provide missing-source fallbacks.",
+    );
+  }
+
+  const preservedAssets: ImageCatalog["assets"] = {};
+  for (const assetId of skippedAssetIds) {
+    const rawAsset = value.assets[assetId];
+    if (
+      !isRecord(rawAsset) ||
+      typeof rawAsset.alt !== "string" ||
+      !isRecord(rawAsset.variants) ||
+      Object.keys(rawAsset.variants).length === 0
+    ) {
+      throw new Error(
+        `Configured image asset "${assetId}" has no valid existing catalog fallback. Restore its source image or catalog entry before syncing.`,
+      );
+    }
+
+    const variants: Record<string, ImageCatalogVariant> = {};
+    for (const [variantId, rawVariant] of Object.entries(rawAsset.variants)) {
+      variants[variantId] = parseCatalogVariant(rawVariant, assetId, variantId, remoteEntries);
+    }
+    preservedAssets[assetId] = { alt: rawAsset.alt, variants };
+  }
+
+  return preservedAssets;
 }
 
 function normalizeError(reason: unknown): Error {
@@ -569,7 +675,7 @@ export async function syncImages(
   paths = getDefaultPipelinePaths(),
   client: BlobClient = defaultBlobClient,
 ): Promise<{ catalog: ImageCatalog; uploaded: string[]; skipped: string[] }> {
-  const prepared = await prepareImages(paths);
+  const prepared = await prepareImages(paths, { allowMissingSources: true });
   if (prepared.variants.length === 0) {
     throw new Error(
       "Image sync refused because no image variants were prepared; the existing catalog was not changed.",
@@ -577,6 +683,11 @@ export async function syncImages(
   }
   const existingBlobs = await listAllBlobs(client);
   const remoteEntries = new Map(existingBlobs.map((blob) => [blob.pathname, blob]));
+  const preservedAssets = await loadCatalogFallbacks(
+    paths.catalogFile,
+    prepared.skippedAssetIds,
+    remoteEntries,
+  );
   const toUpload = prepared.variants.filter((variant) => !remoteEntries.has(variant.pathname));
 
   const uploadedEntries = await uploadVariants(toUpload, client);
@@ -584,7 +695,7 @@ export async function syncImages(
     remoteEntries.set(entry.pathname, entry);
   }
 
-  const catalog = buildCatalog(prepared.variants, remoteEntries);
+  const catalog = buildCatalog(prepared.variants, remoteEntries, preservedAssets);
   await mkdir(path.dirname(paths.catalogFile), { recursive: true });
   await writeFile(paths.catalogFile, `${JSON.stringify(catalog, null, 2)}\n`, "utf8");
 

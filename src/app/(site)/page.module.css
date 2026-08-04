@@ -71,7 +71,7 @@
 
 .conceptGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: clamp(1rem, 2.5vw, 2.5rem);
   margin: 0;
   padding: 0;
@@ -193,6 +193,39 @@
   text-transform: uppercase;
 }
 
+.riverlight .preview::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(23 25 24 / 4%) 45%, rgb(23 25 24 / 72%));
+  content: "";
+}
+
+.riverlight .previewImage {
+  object-position: center;
+}
+
+.riverlightMark {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: 1rem;
+  inset-inline-end: 1rem;
+  inline-size: clamp(4.5rem, 7vw, 7rem);
+  block-size: auto;
+  filter: drop-shadow(0 0.25rem 0.6rem rgb(23 25 24 / 22%));
+}
+
+.riverlightDate {
+  position: absolute;
+  z-index: 1;
+  inset-block-end: 1.3rem;
+  inset-inline-start: 1.3rem;
+  color: #f4efe6;
+  font-family: var(--font-space-grotesk), sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
 .conceptCopy {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -233,15 +266,9 @@
   color: #69665f;
 }
 
-@media (max-width: 60rem) {
+@media (max-width: 75rem) {
   .conceptGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .afterDark {
-    grid-column: 1 / -1;
-    inline-size: calc(50% - 0.75rem);
-    margin-inline: auto;
   }
 }
 
@@ -261,11 +288,6 @@
   .conceptGrid {
     grid-template-columns: 1fr;
     gap: 3.5rem;
-  }
-
-  .afterDark {
-    grid-column: auto;
-    inline-size: 100%;
   }
 }
 

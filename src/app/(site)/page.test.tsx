@@ -7,7 +7,7 @@ vi.mock("@/components/ui/ManagedImage", () => ({
 }));
 
 describe("Page", () => {
-  it("presents all three wedding homepage concepts", () => {
+  it("presents all four wedding homepage concepts", () => {
     render(<Page />);
 
     expect(
@@ -24,6 +24,10 @@ describe("Page", () => {
     expect(screen.getByRole("link", { name: /After Dark/ })).toHaveAttribute(
       "href",
       "/concepts/after-dark",
+    );
+    expect(screen.getByRole("link", { name: /Riverlight/ })).toHaveAttribute(
+      "href",
+      "/concepts/riverlight",
     );
   });
 });

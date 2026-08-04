@@ -20,7 +20,7 @@ export default function NewClassicPage() {
 
       <aside className={styles.reviewBar} aria-label="Design review navigation">
         <Link href="/">← All concepts</Link>
-        <span>The New Classic · 01 / 03</span>
+        <span>The New Classic · 01 / 04</span>
       </aside>
 
       <header className={styles.header}>

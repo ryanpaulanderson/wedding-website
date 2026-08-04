@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../schemas/image-config.schema.json",
+  "id": "oceanfront-portrait",
+  "alt": "Caroline and Ryan smiling together above the ocean",
+  "variants": {
+    "storyWide": {
+      "width": 1800,
+      "height": 1200,
+      "quality": 88,
+      "focalPoint": {
+        "x": 0.5,
+        "y": 0.52
+      }
+    }
+  }
+}

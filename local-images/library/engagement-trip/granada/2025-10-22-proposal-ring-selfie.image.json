@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../../schemas/image-config.schema.json",
+  "id": "granada-proposal-ring",
+  "alt": "Caroline and Ryan smiling after their proposal with Caroline's engagement ring visible",
+  "variants": {
+    "storyPortrait": {
+      "width": 1200,
+      "height": 1600,
+      "quality": 88,
+      "focalPoint": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  }
+}

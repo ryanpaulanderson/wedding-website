@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ManagedImage } from "@/components/ui/ManagedImage";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: "Choose a direction",
-  description: "Compare three complete visual directions for the wedding homepage.",
+  description: "Compare four complete visual directions for the wedding homepage.",
 };
 
 export default function Page() {
@@ -18,11 +19,11 @@ export default function Page() {
 
       <main id="main-content" className={styles.main}>
         <section className={styles.intro} aria-labelledby="page-title">
-          <p className={styles.eyebrow}>Three ways to say “we’re getting married”</p>
+          <p className={styles.eyebrow}>Four ways to say “we’re getting married”</p>
           <h1 id="page-title">Choose a direction.</h1>
           <p className={styles.lede}>
-            One imaginary celebration, interpreted through three distinct modern design languages.
-            Open each concept to experience the complete page.
+            Four distinct modern design languages—now including one grounded in the real place,
+            photographs, and story. Open each concept to experience the complete page.
           </p>
         </section>
 
@@ -33,7 +34,7 @@ export default function Page() {
                 <ManagedImage
                   assetId="stock-wedding-path"
                   variantId="storyPortrait"
-                  sizes="(max-width: 48rem) 88vw, 29vw"
+                  sizes="(max-width: 42rem) 88vw, (max-width: 75rem) 44vw, 22vw"
                   className={styles.previewImage}
                 />
                 <span className={styles.classicMonogram} aria-hidden="true">
@@ -56,7 +57,7 @@ export default function Page() {
                 <ManagedImage
                   assetId="stock-wedding-outdoors"
                   variantId="storyWide"
-                  sizes="(max-width: 48rem) 88vw, 29vw"
+                  sizes="(max-width: 42rem) 88vw, (max-width: 75rem) 44vw, 22vw"
                   className={styles.previewImage}
                 />
                 <span className={styles.fieldDate} aria-hidden="true">
@@ -78,7 +79,7 @@ export default function Page() {
                 <ManagedImage
                   assetId="stock-wedding-outdoors"
                   variantId="homeHero"
-                  sizes="(max-width: 48rem) 88vw, 29vw"
+                  sizes="(max-width: 42rem) 88vw, (max-width: 75rem) 44vw, 22vw"
                   className={styles.previewImage}
                 />
                 <span className={styles.darkTitle} aria-hidden="true">
@@ -95,11 +96,41 @@ export default function Page() {
               </div>
             </Link>
           </li>
+
+          <li className={`${styles.concept} ${styles.riverlight}`}>
+            <Link href="/concepts/riverlight" className={styles.conceptLink}>
+              <div className={styles.preview}>
+                <ManagedImage
+                  assetId="dc-rooftop-sunset"
+                  variantId="conceptPreview"
+                  sizes="(max-width: 42rem) 88vw, (max-width: 75rem) 44vw, 22vw"
+                  className={styles.previewImage}
+                />
+                <Image
+                  src="/brand/wedding-tree-logo-riverlight.webp"
+                  alt=""
+                  width={900}
+                  height={900}
+                  sizes="(max-width: 42rem) 8rem, 6rem"
+                  className={styles.riverlightMark}
+                />
+                <span className={styles.riverlightDate} aria-hidden="true">
+                  03 · 13 · 27
+                </span>
+              </div>
+              <div className={styles.conceptCopy}>
+                <span className={styles.number}>04</span>
+                <h2>Riverlight</h2>
+                <p>Waterfront light, modern structure, and the warm tones of an urban winery.</p>
+                <span className={styles.openLabel}>Open concept</span>
+              </div>
+            </Link>
+          </li>
         </ol>
       </main>
 
       <footer className={styles.footer}>
-        <p>Front-page explorations · Fictional content for design review</p>
+        <p>Front-page explorations · Four visual directions</p>
       </footer>
     </div>
   );

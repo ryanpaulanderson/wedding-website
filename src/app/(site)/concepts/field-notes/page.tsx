@@ -18,7 +18,7 @@ export default function FieldNotesPage() {
 
       <aside className={styles.reviewBar} aria-label="Design review navigation">
         <Link href="/">← All concepts</Link>
-        <span>Field Notes · 02 / 03</span>
+        <span>Field Notes · 02 / 04</span>
       </aside>
 
       <header className={styles.header}>
