@@ -1,0 +1,25 @@
+{
+  "$schema": "../../../../schemas/image-config.schema.json",
+  "id": "dc-rooftop-sunset",
+  "alt": "Caroline and Ryan together on a Washington, DC rooftop at sunset",
+  "variants": {
+    "homeHero": {
+      "width": 1200,
+      "height": 1600,
+      "quality": 88,
+      "focalPoint": {
+        "x": 0.5,
+        "y": 0.52
+      }
+    },
+    "conceptPreview": {
+      "width": 960,
+      "height": 1200,
+      "quality": 88,
+      "focalPoint": {
+        "x": 0.5,
+        "y": 0.52
+      }
+    }
+  }
+}

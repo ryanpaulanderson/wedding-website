@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../../schemas/image-config.schema.json",
+  "id": "alhambra-garden-portrait",
+  "alt": "Caroline and Ryan together in the Alhambra gardens in Granada",
+  "variants": {
+    "storyWide": {
+      "width": 1800,
+      "height": 1200,
+      "quality": 88,
+      "focalPoint": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  }
+}

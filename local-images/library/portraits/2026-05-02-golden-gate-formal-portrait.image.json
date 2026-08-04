@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../schemas/image-config.schema.json",
+  "id": "golden-gate-formal",
+  "alt": "Caroline and Ryan dressed formally beside San Francisco Bay",
+  "variants": {
+    "storyPortrait": {
+      "width": 1200,
+      "height": 1600,
+      "quality": 88,
+      "focalPoint": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  }
+}

@@ -34,7 +34,7 @@ export function generateMetadata(): Metadata {
       default: "Wedding Design Concepts",
       template: "%s | Wedding Design Concepts",
     },
-    description: "Three modern front-page directions for a wedding website.",
+    description: "Four modern front-page directions for a wedding website.",
     robots: isPrivate
       ? {
           follow: false,

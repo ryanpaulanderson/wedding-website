@@ -89,6 +89,19 @@ function createBlobClient(overrides: Partial<BlobClient> = {}): BlobClient {
   };
 }
 
+function catalogFallback(pathname: string) {
+  return {
+    url: `https://test.public.blob.vercel-storage.com/${pathname}`,
+    pathname,
+    localSrc: `/_local-images/${pathname.replace("wedding-images/", "")}`,
+    width: 800,
+    height: 450,
+    quality: 88,
+    blurDataURL: "data:image/webp;base64,ZmFsbGJhY2s=",
+    contentHash: "fallback",
+  };
+}
+
 describe("image configuration", () => {
   it("applies the default quality and rejects invalid crop coordinates", () => {
     const parsed = parseImageConfig(imageConfig("couple-portrait"), "couple.image.json");
@@ -203,6 +216,165 @@ describe("Blob synchronization", () => {
     expect(catalog.assets.couple?.variants.homeHero?.url).toContain(
       ".public.blob.vercel-storage.com/",
     );
+  });
+
+  it("uploads the Riverlight edit while preserving both configured stock fallbacks", async () => {
+    const paths = await createTestPaths();
+    const riverlightConfigs = [
+      [
+        "rooftop",
+        imageConfig("dc-rooftop-sunset", {
+          homeHero: { width: 120, height: 160, focalPoint: { x: 0.5, y: 0.5 } },
+          conceptPreview: { width: 96, height: 120, focalPoint: { x: 0.5, y: 0.5 } },
+        }),
+      ],
+      [
+        "reception",
+        imageConfig("reception-formal-portrait", {
+          storyPortrait: { width: 120, height: 160, focalPoint: { x: 0.5, y: 0.5 } },
+        }),
+      ],
+      [
+        "golden-gate",
+        imageConfig("golden-gate-formal", {
+          storyPortrait: { width: 120, height: 160, focalPoint: { x: 0.5, y: 0.5 } },
+        }),
+      ],
+      [
+        "oceanfront",
+        imageConfig("oceanfront-portrait", {
+          storyWide: { width: 180, height: 120, focalPoint: { x: 0.5, y: 0.5 } },
+        }),
+      ],
+      [
+        "proposal",
+        imageConfig("granada-proposal-ring", {
+          storyPortrait: { width: 120, height: 160, focalPoint: { x: 0.5, y: 0.5 } },
+        }),
+      ],
+      [
+        "alhambra",
+        imageConfig("alhambra-garden-portrait", {
+          storyWide: { width: 180, height: 120, focalPoint: { x: 0.5, y: 0.5 } },
+        }),
+      ],
+    ] as const;
+    for (const [name, config] of riverlightConfigs) {
+      await writeConfiguredImage(paths, name, config);
+    }
+
+    const stockAssetIds = ["stock-wedding-outdoors", "stock-wedding-path"] as const;
+    for (const assetId of stockAssetIds) {
+      await writeFile(
+        path.join(paths.sourceDirectory, `${assetId}.image.json`),
+        `${JSON.stringify(imageConfig(assetId), null, 2)}\n`,
+        "utf8",
+      );
+    }
+
+    const outdoorPathname = "wedding-images/stock-wedding-outdoors/homeHero-fallback.webp";
+    const pathPathname = "wedding-images/stock-wedding-path/storyWide-fallback.webp";
+    const stalePathname = "wedding-images/stale-asset/homeHero-fallback.webp";
+    const stockAssets = {
+      "stock-wedding-outdoors": {
+        alt: "A stock couple outdoors",
+        variants: { homeHero: catalogFallback(outdoorPathname) },
+      },
+      "stock-wedding-path": {
+        alt: "A stock couple on a path",
+        variants: { storyWide: catalogFallback(pathPathname) },
+      },
+    };
+    await writeFile(
+      paths.catalogFile,
+      `${JSON.stringify({
+        version: 1,
+        assets: {
+          ...stockAssets,
+          "stale-asset": {
+            alt: "An unconfigured stale asset",
+            variants: { homeHero: catalogFallback(stalePathname) },
+          },
+        },
+      })}\n`,
+      "utf8",
+    );
+    const client = createBlobClient({
+      list: vi.fn(async () => ({
+        blobs: [
+          {
+            pathname: outdoorPathname,
+            url: `https://test.public.blob.vercel-storage.com/${outdoorPathname}`,
+          },
+          {
+            pathname: pathPathname,
+            url: `https://test.public.blob.vercel-storage.com/${pathPathname}`,
+          },
+          {
+            pathname: stalePathname,
+            url: `https://test.public.blob.vercel-storage.com/${stalePathname}`,
+          },
+        ],
+        hasMore: false,
+      })),
+    });
+
+    const result = await syncImages(paths, client);
+
+    expect(result.catalog.assets["stock-wedding-outdoors"]).toEqual(
+      stockAssets["stock-wedding-outdoors"],
+    );
+    expect(result.catalog.assets["stock-wedding-path"]).toEqual(stockAssets["stock-wedding-path"]);
+    expect(result.catalog.assets["stale-asset"]).toBeUndefined();
+    expect(Object.keys(result.catalog.assets)).toHaveLength(8);
+    expect(result.uploaded).toHaveLength(7);
+    expect(client.put).toHaveBeenCalledTimes(7);
+  });
+
+  it("refuses to upload when a missing source has no catalog fallback", async () => {
+    const paths = await createTestPaths();
+    await writeConfiguredImage(paths, "couple", imageConfig("couple"));
+    await writeFile(
+      path.join(paths.sourceDirectory, "missing.image.json"),
+      `${JSON.stringify(imageConfig("missing"), null, 2)}\n`,
+      "utf8",
+    );
+    const originalCatalog = await readFile(paths.catalogFile, "utf8");
+    const client = createBlobClient();
+
+    await expect(syncImages(paths, client)).rejects.toThrow(
+      'Configured image asset "missing" has no valid existing catalog fallback',
+    );
+    expect(client.put).not.toHaveBeenCalled();
+    await expect(readFile(paths.catalogFile, "utf8")).resolves.toBe(originalCatalog);
+  });
+
+  it("refuses to upload when a catalog fallback is absent from Blob storage", async () => {
+    const paths = await createTestPaths();
+    await writeConfiguredImage(paths, "couple", imageConfig("couple"));
+    await writeFile(
+      path.join(paths.sourceDirectory, "stock.image.json"),
+      `${JSON.stringify(imageConfig("stock-couple"), null, 2)}\n`,
+      "utf8",
+    );
+    const fallbackPathname = "wedding-images/stock-couple/homeHero-fallback.webp";
+    const originalCatalog = `${JSON.stringify({
+      version: 1,
+      assets: {
+        "stock-couple": {
+          alt: "A stock couple outdoors",
+          variants: { homeHero: catalogFallback(fallbackPathname) },
+        },
+      },
+    })}\n`;
+    await writeFile(paths.catalogFile, originalCatalog, "utf8");
+    const client = createBlobClient();
+
+    await expect(syncImages(paths, client)).rejects.toThrow(
+      "is not present in public Blob storage",
+    );
+    expect(client.put).not.toHaveBeenCalled();
+    await expect(readFile(paths.catalogFile, "utf8")).resolves.toBe(originalCatalog);
   });
 
   it("does not rewrite the tracked catalog when an upload fails", async () => {

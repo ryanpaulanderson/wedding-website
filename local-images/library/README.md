@@ -1,8 +1,12 @@
 # Private photo library
 
-These source photos are organized for selection but are not configured for publication. They stay
-ignored by Git and Vercel, and the image pipeline ignores them until a matching `*.image.json`
-sidecar is added.
+These source photos stay ignored by Git and Vercel. The image pipeline ignores each source until a
+matching `*.image.json` sidecar is added, so the library remains private by default while selected
+photos can be prepared and published deliberately.
+
+Riverlight currently selects the DC rooftop portrait, reception portrait, Golden Gate portrait,
+oceanfront portrait, proposal ring selfie, and Alhambra garden portrait. Their sidecars are tracked;
+the original files remain local-only.
 
 The descriptions below are working visual notes, not final alternative text. Write alt text for the
 photo's actual purpose and context when it is placed on a page.

@@ -18,7 +18,7 @@ export default function AfterDarkPage() {
 
       <aside className={styles.reviewBar} aria-label="Design review navigation">
         <Link href="/">← All concepts</Link>
-        <span>After Dark · 03 / 03</span>
+        <span>After Dark · 03 / 04</span>
       </aside>
 
       <header className={styles.header}>

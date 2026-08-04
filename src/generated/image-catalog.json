@@ -50,6 +50,106 @@
           "contentHash": "da86204664cf3a73"
         }
       }
+    },
+    "alhambra-garden-portrait": {
+      "alt": "Caroline and Ryan together in the Alhambra gardens in Granada",
+      "variants": {
+        "storyWide": {
+          "url": "https://3fhrghxyuq9hwhit.public.blob.vercel-storage.com/wedding-images/alhambra-garden-portrait/storyWide-e5394b49df52becd.webp",
+          "pathname": "wedding-images/alhambra-garden-portrait/storyWide-e5394b49df52becd.webp",
+          "localSrc": "/_local-images/alhambra-garden-portrait/storyWide-e5394b49df52becd.webp",
+          "width": 1800,
+          "height": 1200,
+          "quality": 88,
+          "blurDataURL": "data:image/webp;base64,UklGRr4AAABXRUJQVlA4ILIAAACQBACdASoYABAAPu1iqU2ppaOiMAgBMB2JbACsMoRwACsoPnFpTjhyaTuU5QAA32b+/bleyF+6I/Zii5txnGVx0qcoCdA2jorj3fqBt2G84tweStpx3CnlSaJi4AhOYtzdi+FncWs3dAvNp2RMropD9c7u868mbz0KztmSUJGoz51AwJgwWdEKlwflptWhwVVcJ/xcdmMoftdLNe5ve9vkAy0iSCBrp5Ion0AhgF0PXoAA",
+          "contentHash": "e5394b49df52becd"
+        }
+      }
+    },
+    "dc-rooftop-sunset": {
+      "alt": "Caroline and Ryan together on a Washington, DC rooftop at sunset",
+      "variants": {
+        "conceptPreview": {
+          "url": "https://3fhrghxyuq9hwhit.public.blob.vercel-storage.com/wedding-images/dc-rooftop-sunset/conceptPreview-e2e6e07eae0263a6.webp",
+          "pathname": "wedding-images/dc-rooftop-sunset/conceptPreview-e2e6e07eae0263a6.webp",
+          "localSrc": "/_local-images/dc-rooftop-sunset/conceptPreview-e2e6e07eae0263a6.webp",
+          "width": 960,
+          "height": 1200,
+          "quality": 88,
+          "blurDataURL": "data:image/webp;base64,UklGRigBAABXRUJQVlA4IBwBAACQBgCdASoYAB4APu1gp02ppSOiMAgBMB2JagC7Ef/qUFUpO3SMa39F/v6/zqnhI7C8pvChBkeKfmgzt4sAAP5V2R6TC2z82Xa9IW8WAa7YDSB1H8OdL8mT5tQTzEVSOL9xemXYve+XEfn47vL+dPK+EBRgBo7xDCVrdTstTFXjraOklxdoFuJ+EuJQyqstShdE+PZ1CWhg/Stq7bqf0utFfGd4aZr5jJbN3Cu84MDPisnAZ/5SVTkq+asrREJEOtVX5r1Sr+xz4kEwvaW/iellb8gNQlnpr8hH0OjIlmfKQ67MCuxYgNeoKik69EWevX1QlgWH3kZV9WvKKucaMRweZ4eLt1sVA4D+2wSuDIe3T5Jhj7nFFvrYDWQAAA==",
+          "contentHash": "e2e6e07eae0263a6"
+        },
+        "homeHero": {
+          "url": "https://3fhrghxyuq9hwhit.public.blob.vercel-storage.com/wedding-images/dc-rooftop-sunset/homeHero-90b41127805e7339.webp",
+          "pathname": "wedding-images/dc-rooftop-sunset/homeHero-90b41127805e7339.webp",
+          "localSrc": "/_local-images/dc-rooftop-sunset/homeHero-90b41127805e7339.webp",
+          "width": 1200,
+          "height": 1600,
+          "quality": 88,
+          "blurDataURL": "data:image/webp;base64,UklGRiQBAABXRUJQVlA4IBgBAABwBgCdASoYACAAPu1kqU2ppaOiMAgBMB2JbACzkf/sW7uRWHdwmT39mUMtM+b4GlO02zaJ62F+p+PeJgAA/IIAU0c18ZQ2dZ+9GFNViW46NCUQY8zUeeU2NXGpv9f8529zMeee0fiife/iwTK1+9Lp7Eqm84zl1Yxk0BU353tScfgXpn/cXU65/N0UUPbuNWTHIfAmi/2cwOCdZMsuKTtk2NBfMUCOmMYGa7wDHPA5udL3dgr1DPtxB+nfdlkdg4FEp5IRsjGJoLjx5nD2E4dhDVN44cbyAFk3SFQYCXDmomVUnUlZW2z6f7bU5MIZcxjTW/SGr7N9s2KntM0OgWterPG4Wcfq6t4cLX8icumwJ8/IGkaSQAAA",
+          "contentHash": "90b41127805e7339"
+        }
+      }
+    },
+    "golden-gate-formal": {
+      "alt": "Caroline and Ryan dressed formally beside San Francisco Bay",
+      "variants": {
+        "storyPortrait": {
+          "url": "https://3fhrghxyuq9hwhit.public.blob.vercel-storage.com/wedding-images/golden-gate-formal/storyPortrait-fde9e6615ba333d2.webp",
+          "pathname": "wedding-images/golden-gate-formal/storyPortrait-fde9e6615ba333d2.webp",
+          "localSrc": "/_local-images/golden-gate-formal/storyPortrait-fde9e6615ba333d2.webp",
+          "width": 1200,
+          "height": 1600,
+          "quality": 88,
+          "blurDataURL": "data:image/webp;base64,UklGRrYAAABXRUJQVlA4IKoAAACwBACdASoYACAAPu1qrFEppaQiqAqpMB2JQBS1sYZWZjS7rPRlhjqczGCvD7doAP7416o36FY8m6rlcv/rqgG5aHz0KOx7h2pnBNLdONIZEuCo01E8LXM7Qf0SwlZj7YS/tcvSjGT5uaewNCLssUH+oPWoaRnOkzgujQyrU0cvHwW0Uj2D0X1Gs67XhRCyIOBAV5aRA19E4IRaWH5FE+LBm83rhhCESN2gAA==",
+          "contentHash": "fde9e6615ba333d2"
+        }
+      }
+    },
+    "granada-proposal-ring": {
+      "alt": "Caroline and Ryan smiling after their proposal with Caroline's engagement ring visible",
+      "variants": {
+        "storyPortrait": {
+          "url": "https://3fhrghxyuq9hwhit.public.blob.vercel-storage.com/wedding-images/granada-proposal-ring/storyPortrait-134e3d57c05877cb.webp",
+          "pathname": "wedding-images/granada-proposal-ring/storyPortrait-134e3d57c05877cb.webp",
+          "localSrc": "/_local-images/granada-proposal-ring/storyPortrait-134e3d57c05877cb.webp",
+          "width": 1200,
+          "height": 1600,
+          "quality": 88,
+          "blurDataURL": "data:image/webp;base64,UklGRj4BAABXRUJQVlA4IDIBAADQBgCdASoYACAAPu1gqE2ppaOiMAgBMB2JbACdMoR6UEA+ga04Oyz2IF9lAimgcht3EwNki9v8lSqpZvmy78AAyVmmqZXxE+g06szV2GlaOfc9yzz0HXXBm2TjEovhfE0TgHF+2q7cp/6kGYLkxez4BdogJVICLCu4JKwjqqMasYYCCW4x3PL/924LS3I2+vfvETDJayplm2ybd2Vvh6QcepgOFcQ7j3YOQ11zexVSHd/iZfbAF9YYP/IeW520Bs/Bqw7kyQyldJI2HLY+TcnvnEb2uo1g3xnyLolOjkaJK7oGzJtCUtvDuvKAeFjBHDnWlhhYPHxVvniDkBYEz3XR2fg1pvhuKLJN8YMAtQ1gxbzWgYU623Aupb5qlnSL/P1SPXFQwmWB5nwbCsoBrnmgAAA=",
+          "contentHash": "134e3d57c05877cb"
+        }
+      }
+    },
+    "oceanfront-portrait": {
+      "alt": "Caroline and Ryan smiling together above the ocean",
+      "variants": {
+        "storyWide": {
+          "url": "https://3fhrghxyuq9hwhit.public.blob.vercel-storage.com/wedding-images/oceanfront-portrait/storyWide-db4e9b17e7ebac67.webp",
+          "pathname": "wedding-images/oceanfront-portrait/storyWide-db4e9b17e7ebac67.webp",
+          "localSrc": "/_local-images/oceanfront-portrait/storyWide-db4e9b17e7ebac67.webp",
+          "width": 1800,
+          "height": 1200,
+          "quality": 88,
+          "blurDataURL": "data:image/webp;base64,UklGRqgAAABXRUJQVlA4IJwAAABQBACdASoYABAAPu1iqU2ppaOiMAgBMB2JbACdMoMYAEk1Y+XjK1CUvY3oAP6u/I23Zgs3AkSCHgPVPU+fp1TP3SpaVaoMtvYKceGYzMncZEft7IKSTKI3ak5M3caenRqOnMONH/OghHEOHp9NKANO5R7yYAZKFiF62l5c9UvvPrpjUIbjyEcxTGaEFcuiMaoQVMQZ3RY7uijgAAA=",
+          "contentHash": "db4e9b17e7ebac67"
+        }
+      }
+    },
+    "reception-formal-portrait": {
+      "alt": "Caroline and Ryan dressed formally together at a wedding reception",
+      "variants": {
+        "storyPortrait": {
+          "url": "https://3fhrghxyuq9hwhit.public.blob.vercel-storage.com/wedding-images/reception-formal-portrait/storyPortrait-9ccf73947ff45099.webp",
+          "pathname": "wedding-images/reception-formal-portrait/storyPortrait-9ccf73947ff45099.webp",
+          "localSrc": "/_local-images/reception-formal-portrait/storyPortrait-9ccf73947ff45099.webp",
+          "width": 1200,
+          "height": 1600,
+          "quality": 88,
+          "blurDataURL": "data:image/webp;base64,UklGRggBAABXRUJQVlA4IPwAAACQBgCdASoYACAAPuFcp02opSOiMAwBEBwJaACdISBcAjzBqeh79b+nGWISzFjifADjghZ7Xyge4K9dzREAAP6bj+5nvY56GAb/Ngkl4S8dfaulcdyD3Jzru8UOrvcbtTED0z46lXfJW9fGBrbELA8boS159aujOTYrlBHlvRxJaq/1gtbQJdKG0Q6kfJaEFnw/jcHFaIMQ7HFmY+2BXASgMlc/0MUqotDjBeVXdoATuj9ElYBTuUmtrCoXoWAcX3w22cB03+oTqFNQJJ5k50kfv0aIimbK60CCkuyT27NbbArDKFFMgqPWlaOF5NagFFvC7yEhiAlzpEWpcgA=",
+          "contentHash": "9ccf73947ff45099"
+        }
+      }
     }
   }
 }
