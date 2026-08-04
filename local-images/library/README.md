@@ -4,7 +4,7 @@ These source photos stay ignored by Git and Vercel. The image pipeline ignores e
 matching `*.image.json` sidecar is added, so the library remains private by default while selected
 photos can be prepared and published deliberately.
 
-Riverlight currently selects the DC rooftop portrait, reception portrait, Golden Gate portrait,
+The site currently uses the DC rooftop portrait, reception portrait, Golden Gate portrait,
 oceanfront portrait, proposal ring selfie, and Alhambra garden portrait. Their sidecars are tracked;
 the original files remain local-only.
 

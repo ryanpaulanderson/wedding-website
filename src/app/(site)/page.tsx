@@ -1,136 +1,226 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ManagedImage } from "@/components/ui/ManagedImage";
 import styles from "./page.module.css";
 
-export const metadata: Metadata = {
-  title: "Choose a direction",
-  description: "Compare four complete visual directions for the wedding homepage.",
-};
+const detailCards = [
+  {
+    label: "When",
+    title: "Saturday, March 13, 2027",
+    description: "Save the date for an evening celebration in Washington, DC.",
+  },
+  {
+    label: "Where",
+    title: "District Winery",
+    description: "385 Water Street SE · Navy Yard · Washington, DC",
+  },
+  {
+    label: "The day",
+    title: "Details forthcoming",
+    description: "Schedule, travel, and dress code details will be shared with the invitation.",
+  },
+  {
+    label: "Your reply",
+    title: "RSVP opens soon",
+    description: "Formal invitations and reply instructions will follow.",
+  },
+] as const;
 
-export default function Page() {
+export default function HomePage() {
   return (
-    <div className={styles.page}>
+    <div className={styles.site}>
+      <a className={styles.skipLink} href="#main-content">
+        Skip to main content
+      </a>
+
       <header className={styles.header}>
-        <p className={styles.kicker}>Caroline & Ryan · Design study</p>
-        <p className={styles.issue}>Issue 01 / 2026</p>
+        <Link className={styles.wordmark} href="/" aria-label="Caroline and Ryan home">
+          C<span aria-hidden="true">/</span>R
+        </Link>
+        <nav aria-label="Wedding navigation">
+          <a href="#place">The place</a>
+          <a href="#story">Our story</a>
+          <a href="#details">Details</a>
+          <a href="#rsvp">RSVP</a>
+        </nav>
       </header>
 
-      <main id="main-content" className={styles.main}>
-        <section className={styles.intro} aria-labelledby="page-title">
-          <p className={styles.eyebrow}>Four ways to say “we’re getting married”</p>
-          <h1 id="page-title">Choose a direction.</h1>
-          <p className={styles.lede}>
-            Four distinct modern design languages—now including one grounded in the real place,
-            photographs, and story. Open each concept to experience the complete page.
-          </p>
+      <main id="main-content">
+        <section className={styles.hero} aria-labelledby="home-title">
+          <div className={styles.heroCopy}>
+            <p className={styles.eyebrow}>An invitation to the water’s edge</p>
+            <Image
+              src="/brand/wedding-tree-logo.webp"
+              alt=""
+              width={900}
+              height={900}
+              sizes="(max-width: 48rem) 9rem, 12rem"
+              className={styles.heroMark}
+            />
+            <h1 id="home-title">
+              <span>Caroline</span> <span>&amp; Ryan</span>
+            </h1>
+            <div className={styles.heroDetails}>
+              <p>Saturday, March 13, 2027</p>
+              <p>District Winery · Washington, DC</p>
+            </div>
+          </div>
+
+          <figure className={styles.heroFigure}>
+            <ManagedImage
+              assetId="dc-rooftop-sunset"
+              variantId="homeHero"
+              sizes="(max-width: 48rem) 100vw, 58vw"
+              className={styles.heroImage}
+              preload
+            />
+            <figcaption>Washington, DC · Sunset over the city</figcaption>
+          </figure>
         </section>
 
-        <ol className={styles.conceptGrid} aria-label="Wedding homepage concepts">
-          <li className={`${styles.concept} ${styles.classic}`}>
-            <Link href="/concepts/new-classic" className={styles.conceptLink}>
-              <div className={styles.preview}>
-                <ManagedImage
-                  assetId="stock-wedding-path"
-                  variantId="storyPortrait"
-                  sizes="(max-width: 42rem) 88vw, (max-width: 75rem) 44vw, 22vw"
-                  className={styles.previewImage}
-                />
-                <span className={styles.classicMonogram} aria-hidden="true">
-                  M/J
-                </span>
-              </div>
-              <div className={styles.conceptCopy}>
-                <span className={styles.number}>01</span>
-                <h2>The New Classic</h2>
-                <p>Editorial restraint, heirloom typography, and quietly confident romance.</p>
-                <span className={styles.openLabel}>Open concept</span>
-              </div>
-            </Link>
-          </li>
+        <section id="place" className={styles.place} aria-labelledby="place-title">
+          <div className={styles.sectionIntro}>
+            <p className={styles.sectionLabel}>01 · The place</p>
+            <h2 id="place-title">Meet us by the river.</h2>
+            <p>
+              An urban winery at the water’s edge, framed by city light, warm wood, and a view
+              across the Anacostia.
+            </p>
+          </div>
 
-          <li className={`${styles.concept} ${styles.fieldNotes}`}>
-            <Link href="/concepts/field-notes" className={styles.conceptLink}>
-              <div className={styles.preview}>
-                <span className={styles.sun} aria-hidden="true" />
-                <ManagedImage
-                  assetId="stock-wedding-outdoors"
-                  variantId="storyWide"
-                  sizes="(max-width: 42rem) 88vw, (max-width: 75rem) 44vw, 22vw"
-                  className={styles.previewImage}
-                />
-                <span className={styles.fieldDate} aria-hidden="true">
-                  09 · 20
-                </span>
-              </div>
-              <div className={styles.conceptCopy}>
-                <span className={styles.number}>02</span>
-                <h2>Field Notes</h2>
-                <p>Optimistic color, organic shapes, and the spirit of a garden weekend.</p>
-                <span className={styles.openLabel}>Open concept</span>
-              </div>
-            </Link>
-          </li>
+          <div className={styles.venueCard}>
+            <p className={styles.venueKicker}>Navy Yard · Washington, DC</p>
+            <h3>District Winery</h3>
+            <address>
+              385 Water Street SE
+              <br />
+              Washington, DC 20003
+            </address>
+            <a href="https://www.districtwinery.com/dc-wedding-venue/">
+              Visit the venue website <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </section>
 
-          <li className={`${styles.concept} ${styles.afterDark}`}>
-            <Link href="/concepts/after-dark" className={styles.conceptLink}>
-              <div className={styles.preview}>
-                <ManagedImage
-                  assetId="stock-wedding-outdoors"
-                  variantId="homeHero"
-                  sizes="(max-width: 42rem) 88vw, (max-width: 75rem) 44vw, 22vw"
-                  className={styles.previewImage}
-                />
-                <span className={styles.darkTitle} aria-hidden="true">
-                  After
-                  <br />
-                  Dark
-                </span>
-              </div>
-              <div className={styles.conceptCopy}>
-                <span className={styles.number}>03</span>
-                <h2>After Dark</h2>
-                <p>Cinematic imagery, luminous details, and an architectural evening mood.</p>
-                <span className={styles.openLabel}>Open concept</span>
-              </div>
-            </Link>
-          </li>
+        <section id="story" className={styles.story} aria-labelledby="story-title">
+          <div className={styles.storyHeader}>
+            <p className={styles.sectionLabel}>02 · A through line</p>
+            <h2 id="story-title">A garden, a question, a tree.</h2>
+            <p>
+              The tree in the proposal garden became the mark for everything that comes next—a small
+              piece of Granada carried into the celebration.
+            </p>
+          </div>
 
-          <li className={`${styles.concept} ${styles.riverlight}`}>
-            <Link href="/concepts/riverlight" className={styles.conceptLink}>
-              <div className={styles.preview}>
-                <ManagedImage
-                  assetId="dc-rooftop-sunset"
-                  variantId="conceptPreview"
-                  sizes="(max-width: 42rem) 88vw, (max-width: 75rem) 44vw, 22vw"
-                  className={styles.previewImage}
-                />
-                <Image
-                  src="/brand/wedding-tree-logo-riverlight.webp"
-                  alt=""
-                  width={900}
-                  height={900}
-                  sizes="(max-width: 42rem) 8rem, 6rem"
-                  className={styles.riverlightMark}
-                />
-                <span className={styles.riverlightDate} aria-hidden="true">
-                  03 · 13 · 27
-                </span>
-              </div>
-              <div className={styles.conceptCopy}>
-                <span className={styles.number}>04</span>
-                <h2>Riverlight</h2>
-                <p>Waterfront light, modern structure, and the warm tones of an urban winery.</p>
-                <span className={styles.openLabel}>Open concept</span>
-              </div>
-            </Link>
-          </li>
-        </ol>
+          <div className={styles.storyGrid}>
+            <figure className={styles.storyWideFigure}>
+              <ManagedImage
+                assetId="alhambra-garden-portrait"
+                variantId="storyWide"
+                sizes="(max-width: 52rem) 100vw, 62vw"
+                className={styles.storyImage}
+              />
+              <figcaption>The Alhambra gardens · Granada</figcaption>
+            </figure>
+
+            <figure className={styles.storyPortraitFigure}>
+              <ManagedImage
+                assetId="granada-proposal-ring"
+                variantId="storyPortrait"
+                sizes="(max-width: 52rem) 78vw, 26vw"
+                className={styles.storyImage}
+              />
+              <figcaption>The question, answered</figcaption>
+            </figure>
+
+            <p className={styles.storyNote}>
+              One tree.
+              <br />
+              One ring.
+              <br />
+              One very good day.
+            </p>
+          </div>
+        </section>
+
+        <section className={styles.gallery} aria-labelledby="gallery-title">
+          <div className={styles.galleryHeader}>
+            <p className={styles.sectionLabel}>03 · Along the way</p>
+            <h2 id="gallery-title">A life with a view.</h2>
+          </div>
+
+          <div className={styles.galleryGrid}>
+            <figure className={styles.receptionFigure}>
+              <ManagedImage
+                assetId="reception-formal-portrait"
+                variantId="storyPortrait"
+                sizes="(max-width: 48rem) 88vw, 28vw"
+                className={styles.galleryImage}
+              />
+              <figcaption>Dressed for the occasion</figcaption>
+            </figure>
+
+            <figure className={styles.oceanFigure}>
+              <ManagedImage
+                assetId="oceanfront-portrait"
+                variantId="storyWide"
+                sizes="(max-width: 48rem) 100vw, 58vw"
+                className={styles.galleryImage}
+              />
+              <figcaption>Always finding the water</figcaption>
+            </figure>
+
+            <figure className={styles.goldenGateFigure}>
+              <ManagedImage
+                assetId="golden-gate-formal"
+                variantId="storyPortrait"
+                sizes="(max-width: 48rem) 88vw, 29vw"
+                className={styles.galleryImage}
+              />
+              <figcaption>San Francisco Bay</figcaption>
+            </figure>
+          </div>
+        </section>
+
+        <section id="details" className={styles.details} aria-labelledby="details-title">
+          <div className={styles.detailsHeader}>
+            <p className={styles.sectionLabel}>04 · The essentials</p>
+            <h2 id="details-title">The shape of the day.</h2>
+            <p>Start with the date and the place. We’ll fill in the rest together.</p>
+          </div>
+
+          <div className={styles.detailGrid}>
+            {detailCards.map((detail) => (
+              <article key={detail.label}>
+                <p>{detail.label}</p>
+                <h3>{detail.title}</h3>
+                <p>{detail.description}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section id="rsvp" className={styles.rsvp} aria-labelledby="rsvp-title">
+          <Image
+            src="/brand/wedding-tree-logo.webp"
+            alt=""
+            width={900}
+            height={900}
+            sizes="(max-width: 48rem) 70vw, 34rem"
+            className={styles.rsvpMark}
+          />
+          <div className={styles.rsvpContent}>
+            <p>Formal invitation to follow</p>
+            <h2 id="rsvp-title">Save the date. We’ll meet you by the river.</h2>
+            <p className={styles.rsvpStatus}>RSVP opens soon</p>
+          </div>
+        </section>
       </main>
 
       <footer className={styles.footer}>
-        <p>Front-page explorations · Four visual directions</p>
+        <p>Caroline &amp; Ryan</p>
+        <p>March 13, 2027</p>
+        <p>Washington, DC</p>
       </footer>
     </div>
   );
