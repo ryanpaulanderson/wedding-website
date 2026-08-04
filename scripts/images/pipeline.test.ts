@@ -218,14 +218,14 @@ describe("Blob synchronization", () => {
     );
   });
 
-  it("uploads the Riverlight edit while preserving both configured stock fallbacks", async () => {
+  it("uploads prepared variants while preserving configured missing-source fallbacks", async () => {
     const paths = await createTestPaths();
-    const riverlightConfigs = [
+    const configuredImages = [
       [
         "rooftop",
         imageConfig("dc-rooftop-sunset", {
           homeHero: { width: 120, height: 160, focalPoint: { x: 0.5, y: 0.5 } },
-          conceptPreview: { width: 96, height: 120, focalPoint: { x: 0.5, y: 0.5 } },
+          storyPortrait: { width: 96, height: 120, focalPoint: { x: 0.5, y: 0.5 } },
         }),
       ],
       [
@@ -259,12 +259,12 @@ describe("Blob synchronization", () => {
         }),
       ],
     ] as const;
-    for (const [name, config] of riverlightConfigs) {
+    for (const [name, config] of configuredImages) {
       await writeConfiguredImage(paths, name, config);
     }
 
-    const stockAssetIds = ["stock-wedding-outdoors", "stock-wedding-path"] as const;
-    for (const assetId of stockAssetIds) {
+    const fallbackAssetIds = ["configured-fallback-one", "configured-fallback-two"] as const;
+    for (const assetId of fallbackAssetIds) {
       await writeFile(
         path.join(paths.sourceDirectory, `${assetId}.image.json`),
         `${JSON.stringify(imageConfig(assetId), null, 2)}\n`,
@@ -272,17 +272,17 @@ describe("Blob synchronization", () => {
       );
     }
 
-    const outdoorPathname = "wedding-images/stock-wedding-outdoors/homeHero-fallback.webp";
-    const pathPathname = "wedding-images/stock-wedding-path/storyWide-fallback.webp";
+    const firstFallbackPathname = "wedding-images/configured-fallback-one/homeHero-fallback.webp";
+    const secondFallbackPathname = "wedding-images/configured-fallback-two/storyWide-fallback.webp";
     const stalePathname = "wedding-images/stale-asset/homeHero-fallback.webp";
-    const stockAssets = {
-      "stock-wedding-outdoors": {
-        alt: "A stock couple outdoors",
-        variants: { homeHero: catalogFallback(outdoorPathname) },
+    const fallbackAssets = {
+      "configured-fallback-one": {
+        alt: "A configured image with a missing local source",
+        variants: { homeHero: catalogFallback(firstFallbackPathname) },
       },
-      "stock-wedding-path": {
-        alt: "A stock couple on a path",
-        variants: { storyWide: catalogFallback(pathPathname) },
+      "configured-fallback-two": {
+        alt: "Another configured image with a missing local source",
+        variants: { storyWide: catalogFallback(secondFallbackPathname) },
       },
     };
     await writeFile(
@@ -290,7 +290,7 @@ describe("Blob synchronization", () => {
       `${JSON.stringify({
         version: 1,
         assets: {
-          ...stockAssets,
+          ...fallbackAssets,
           "stale-asset": {
             alt: "An unconfigured stale asset",
             variants: { homeHero: catalogFallback(stalePathname) },
@@ -303,12 +303,12 @@ describe("Blob synchronization", () => {
       list: vi.fn(async () => ({
         blobs: [
           {
-            pathname: outdoorPathname,
-            url: `https://test.public.blob.vercel-storage.com/${outdoorPathname}`,
+            pathname: firstFallbackPathname,
+            url: `https://test.public.blob.vercel-storage.com/${firstFallbackPathname}`,
           },
           {
-            pathname: pathPathname,
-            url: `https://test.public.blob.vercel-storage.com/${pathPathname}`,
+            pathname: secondFallbackPathname,
+            url: `https://test.public.blob.vercel-storage.com/${secondFallbackPathname}`,
           },
           {
             pathname: stalePathname,
@@ -321,10 +321,12 @@ describe("Blob synchronization", () => {
 
     const result = await syncImages(paths, client);
 
-    expect(result.catalog.assets["stock-wedding-outdoors"]).toEqual(
-      stockAssets["stock-wedding-outdoors"],
+    expect(result.catalog.assets["configured-fallback-one"]).toEqual(
+      fallbackAssets["configured-fallback-one"],
     );
-    expect(result.catalog.assets["stock-wedding-path"]).toEqual(stockAssets["stock-wedding-path"]);
+    expect(result.catalog.assets["configured-fallback-two"]).toEqual(
+      fallbackAssets["configured-fallback-two"],
+    );
     expect(result.catalog.assets["stale-asset"]).toBeUndefined();
     expect(Object.keys(result.catalog.assets)).toHaveLength(8);
     expect(result.uploaded).toHaveLength(7);

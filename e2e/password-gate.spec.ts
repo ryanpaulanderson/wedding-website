@@ -29,7 +29,7 @@ test("unlocks and relocks a hosted private preview", async ({ context, page, req
   await page.getByRole("button", { name: "View site" }).click();
 
   await expect(page).toHaveURL("/");
-  await expect(page.getByRole("heading", { level: 1, name: "Project foundation" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Caroline & Ryan" })).toBeVisible();
 
   const accessCookie = (await context.cookies()).find((cookie) => cookie.name === "site_access");
   expect(accessCookie).toMatchObject({
