@@ -2,10 +2,14 @@
   --bone: #f4efe6;
   --ink: #171918;
   --wine: #6e2d36;
-  --walnut: #7a4d33;
+  --wine-dark: #4f2027;
   --river: #637d82;
+  --river-soft: #dfe7e5;
   --river-dark: #304a4f;
-  --gold: #d4a34f;
+  --marigold: #f4c91e;
+  --amber: #eba211;
+  --terracotta: #bc681c;
+  --sand: #dfd0ac;
   --line-dark: rgb(23 25 24 / 22%);
   --line-light: rgb(244 239 230 / 32%);
   min-block-size: 100svh;
@@ -59,13 +63,14 @@
   min-block-size: 5.2rem;
   padding-inline: var(--space-page);
   border-block-end: 1px solid var(--line-dark);
+  background: var(--bone);
 }
 
 .wordmark {
   font-family: var(--font-cormorant), Georgia, serif;
   font-size: 1.8rem;
   font-weight: 600;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
   line-height: 1;
   text-decoration: none;
 }
@@ -74,7 +79,7 @@
   margin-inline: 0.16em;
   color: var(--wine);
   font-style: italic;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .header nav {
@@ -99,7 +104,7 @@
 
 .hero {
   display: grid;
-  grid-template-columns: minmax(22rem, 0.78fr) minmax(0, 1.22fr);
+  grid-template-columns: minmax(25rem, 44fr) minmax(0, 56fr);
   min-block-size: calc(100svh - 5.2rem);
   border-block-end: 1px solid var(--line-dark);
 }
@@ -111,22 +116,23 @@
   align-items: flex-start;
   justify-content: center;
   min-inline-size: 0;
-  padding: clamp(3rem, 6vw, 7rem) var(--space-page);
-  background-color: var(--bone);
+  padding: clamp(3rem, 5.5vw, 6.5rem) var(--space-page);
+  background-color: var(--river-dark);
   background-image:
     linear-gradient(
       90deg,
       transparent calc(50% - 0.5px),
-      rgb(99 125 130 / 15%) 0 50.5%,
+      rgb(244 239 230 / 8%) 0 50.5%,
       transparent 0
     ),
     linear-gradient(
       0deg,
       transparent calc(50% - 0.5px),
-      rgb(99 125 130 / 12%) 0 50.5%,
+      rgb(244 239 230 / 7%) 0 50.5%,
       transparent 0
     );
   background-size: clamp(7rem, 11vw, 11rem) clamp(7rem, 11vw, 11rem);
+  color: var(--bone);
 }
 
 .eyebrow,
@@ -138,48 +144,42 @@
 }
 
 .eyebrow {
-  position: relative;
-  z-index: 1;
-  color: var(--wine);
+  color: var(--marigold);
 }
 
 .heroMark {
-  position: relative;
-  z-index: 1;
-  inline-size: clamp(7.5rem, 11vw, 11.5rem);
+  inline-size: clamp(17rem, 22vw, 22rem);
   block-size: auto;
-  margin-block: clamp(1.5rem, 4vh, 3.5rem) clamp(1rem, 2.5vh, 2rem);
+  margin-block: clamp(1.5rem, 3.5vh, 2.75rem) clamp(1rem, 2vh, 1.5rem);
   object-fit: contain;
 }
 
 .hero h1 {
-  position: relative;
-  z-index: 1;
+  min-inline-size: 0;
   font-family: var(--font-cormorant), Georgia, serif;
-  font-size: clamp(4.6rem, 8vw, 8.8rem);
+  font-size: clamp(3rem, 6.2vw, 6.8rem);
   font-weight: 500;
-  letter-spacing: -0.065em;
-  line-height: 0.72;
+  letter-spacing: -0.025em;
+  line-height: 0.95;
 }
 
-.hero h1 span {
+.hero h1 > span {
   display: block;
 }
 
-.hero h1 span:last-child {
-  margin-inline-start: 0.38em;
-  color: var(--wine);
+.heroAmpersand {
+  color: var(--marigold);
   font-style: italic;
 }
 
 .heroDetails {
-  position: relative;
-  z-index: 1;
   display: grid;
-  gap: 0.35rem;
-  margin-block-start: clamp(2rem, 5vh, 4rem);
+  gap: 0.45rem;
+  inline-size: min(100%, 30rem);
+  margin-block-start: clamp(2rem, 4vh, 3rem);
   padding-block-start: 1.2rem;
-  border-block-start: 1px solid var(--line-dark);
+  border-block-start: 2px solid var(--marigold);
+  color: var(--bone);
   font-size: clamp(0.82rem, 1.2vw, 1rem);
   font-weight: 600;
   letter-spacing: 0.025em;
@@ -189,18 +189,19 @@
   position: relative;
   min-block-size: 43rem;
   overflow: hidden;
-  background: var(--river-dark);
+  background: var(--wine-dark);
 }
 
 .heroFigure::after {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 66%, rgb(23 25 24 / 54%));
+  background: linear-gradient(180deg, transparent 68%, rgb(23 25 24 / 58%));
   pointer-events: none;
   content: "";
 }
 
 .heroImage {
+  display: block;
   inline-size: 100%;
   block-size: 100%;
   object-fit: cover;
@@ -221,15 +222,16 @@
 
 .place {
   display: grid;
-  grid-template-columns: minmax(0, 0.88fr) minmax(25rem, 1.12fr);
-  gap: clamp(3rem, 8vw, 9rem);
+  grid-template-columns: minmax(0, 0.9fr) minmax(25rem, 1.1fr);
+  gap: clamp(3rem, 8vw, 8rem);
   inline-size: min(100%, 92rem);
   margin-inline: auto;
-  padding: clamp(5rem, 10vw, 10rem) var(--space-page);
+  padding: clamp(5rem, 9vw, 9rem) var(--space-page);
 }
 
 .sectionIntro {
   align-self: center;
+  min-inline-size: 0;
 }
 
 .sectionLabel {
@@ -238,23 +240,23 @@
 }
 
 .sectionIntro h2,
-.storyHeader h2,
+.storyCopy h2,
 .galleryHeader h2,
 .detailsHeader h2,
 .rsvp h2 {
   font-family: var(--font-cormorant), Georgia, serif;
   font-weight: 500;
-  letter-spacing: -0.055em;
+  letter-spacing: -0.025em;
 }
 
 .sectionIntro h2 {
-  max-inline-size: 8ch;
-  font-size: clamp(4rem, 7vw, 7.5rem);
-  line-height: 0.84;
+  max-inline-size: 12ch;
+  font-size: clamp(3rem, 6vw, 6.5rem);
+  line-height: 0.98;
 }
 
 .sectionIntro > p:last-child {
-  max-inline-size: 34rem;
+  max-inline-size: 32rem;
   margin-block-start: 2rem;
   color: #4f514e;
   font-size: clamp(1rem, 1.4vw, 1.2rem);
@@ -266,23 +268,23 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  min-block-size: clamp(27rem, 44vw, 41rem);
+  min-block-size: clamp(28rem, 43vw, 40rem);
   overflow: hidden;
   padding: clamp(2rem, 5vw, 5rem);
   background:
     linear-gradient(
       90deg,
       transparent calc(50% - 0.5px),
-      rgb(244 239 230 / 28%) 0 50.5%,
+      rgb(244 239 230 / 20%) 0 50.5%,
       transparent 0
     ),
     linear-gradient(
       0deg,
       transparent calc(50% - 0.5px),
-      rgb(244 239 230 / 28%) 0 50.5%,
+      rgb(244 239 230 / 20%) 0 50.5%,
       transparent 0
     ),
-    linear-gradient(135deg, var(--river-dark), #172d31 58%, #101817);
+    linear-gradient(145deg, var(--wine), var(--wine-dark));
   background-size:
     50% 50%,
     50% 50%,
@@ -298,8 +300,18 @@
   content: "";
 }
 
+.venueCard::after {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inline-size: 42%;
+  block-size: 0.65rem;
+  background: var(--marigold);
+  content: "";
+}
+
 .venueKicker {
-  color: #f5c469;
+  color: var(--marigold);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -307,13 +319,13 @@
 }
 
 .venueCard h3 {
-  max-inline-size: 9ch;
+  max-inline-size: 10ch;
   margin-block: 0.8rem 1.5rem;
   font-family: var(--font-cormorant), Georgia, serif;
-  font-size: clamp(3.5rem, 6vw, 6.8rem);
+  font-size: clamp(3.25rem, 5.5vw, 6rem);
   font-weight: 500;
-  letter-spacing: -0.055em;
-  line-height: 0.8;
+  letter-spacing: -0.025em;
+  line-height: 0.96;
 }
 
 .venueCard address {
@@ -336,58 +348,68 @@
 }
 
 .story {
-  padding: clamp(5rem, 10vw, 10rem) 0;
-  background: #dfe7e5;
+  padding: clamp(5rem, 9vw, 9rem) 0;
+  background: var(--river-soft);
   color: var(--ink);
 }
 
 .storyHeader {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.8fr);
-  align-items: end;
-  gap: 2rem 5rem;
+  gap: clamp(2.5rem, 7vw, 7rem);
   inline-size: min(100%, 92rem);
   margin-inline: auto;
   padding-inline: var(--space-page);
 }
 
-.storyHeader .sectionLabel {
-  grid-column: 1 / -1;
+.storyCopy {
+  min-inline-size: 0;
 }
 
-.storyHeader h2 {
-  max-inline-size: 12ch;
-  font-size: clamp(4rem, 7vw, 7.5rem);
-  line-height: 0.84;
+.storyCopy h2 {
+  max-inline-size: 13ch;
+  font-size: clamp(3rem, 6vw, 6.5rem);
+  line-height: 0.98;
 }
 
-.storyHeader > p:last-child {
-  max-inline-size: 33rem;
-  padding-block-end: 0.5rem;
+.storyCopy > p:last-child {
+  max-inline-size: 38rem;
+  margin-block-start: 2rem;
   color: #3f5153;
   font-size: clamp(1rem, 1.4vw, 1.2rem);
   line-height: 1.7;
 }
 
+.storyBranch,
+.detailsBranch {
+  position: relative;
+  min-inline-size: 0;
+  overflow: hidden;
+}
+
+.storyBranch {
+  min-block-size: clamp(12rem, 18vw, 16rem);
+  border-inline-start: 1px solid rgb(48 74 79 / 28%);
+}
+
+.storyBranchImage {
+  position: absolute;
+  inset-block-start: -3%;
+  inset-inline-end: -26%;
+  inline-size: min(38rem, 165%);
+  max-inline-size: none;
+  block-size: auto;
+  opacity: 0.88;
+}
+
 .storyGrid {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(17rem, 0.62fr);
-  grid-template-rows: auto auto;
-  align-items: end;
-  gap: clamp(1.25rem, 3vw, 3rem);
+  grid-template-columns: minmax(0, 1.45fr) minmax(16rem, 0.55fr);
+  align-items: start;
+  gap: clamp(1.5rem, 4vw, 4rem);
   inline-size: min(100%, 100rem);
-  margin: clamp(4rem, 8vw, 8rem) auto 0;
+  margin: clamp(4rem, 7vw, 7rem) auto 0;
   padding-inline: var(--space-page);
-}
-
-.storyWideFigure {
-  grid-row: 1 / 3;
-}
-
-.storyPortraitFigure {
-  position: relative;
-  z-index: 1;
-  margin-inline-start: clamp(-5rem, -5vw, -2rem);
 }
 
 .storyImage,
@@ -402,13 +424,16 @@
   aspect-ratio: 3 / 2;
 }
 
+.storyPortraitFigure {
+  align-self: end;
+}
+
 .storyPortraitFigure .storyImage {
   aspect-ratio: 3 / 4;
   border: clamp(0.45rem, 1vw, 0.9rem) solid var(--bone);
 }
 
-.storyGrid figcaption,
-.galleryGrid figcaption {
+.storyGrid figcaption {
   margin-block-start: 0.8rem;
   font-size: 0.66rem;
   font-weight: 700;
@@ -416,19 +441,9 @@
   text-transform: uppercase;
 }
 
-.storyNote {
-  padding: 1.25rem 0 0 1.5rem;
-  border-inline-start: 1px solid rgb(48 74 79 / 45%);
-  color: var(--river-dark);
-  font-family: var(--font-cormorant), Georgia, serif;
-  font-size: clamp(1.8rem, 3vw, 3.2rem);
-  font-style: italic;
-  line-height: 0.95;
-}
-
 .gallery {
-  padding: clamp(5rem, 10vw, 11rem) 0 clamp(7rem, 13vw, 14rem);
-  background: var(--bone);
+  padding: clamp(5rem, 9vw, 9rem) 0 clamp(7rem, 12vw, 12rem);
+  background: var(--sand);
 }
 
 .galleryHeader {
@@ -438,23 +453,26 @@
 }
 
 .galleryHeader h2 {
-  font-size: clamp(4.5rem, 9vw, 9.5rem);
-  line-height: 0.78;
+  max-inline-size: 11ch;
+  font-size: clamp(3.5rem, 7.5vw, 8.2rem);
+  line-height: 0.96;
 }
 
 .galleryGrid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-template-rows: auto auto;
-  gap: clamp(1.25rem, 2.5vw, 2.75rem);
+  gap: clamp(1.5rem, 3vw, 3rem);
   inline-size: min(100%, 100rem);
-  margin: clamp(4rem, 8vw, 8rem) auto 0;
+  margin: clamp(4rem, 7vw, 7rem) auto 0;
   padding-inline: var(--space-page);
 }
 
 .receptionFigure {
   grid-area: 1 / 1 / 3 / 5;
-  align-self: center;
+  align-self: start;
+  padding-block-start: 0.8rem;
+  border-block-start: 0.8rem solid var(--terracotta);
 }
 
 .receptionFigure .galleryImage,
@@ -464,6 +482,8 @@
 
 .oceanFigure {
   grid-area: 1 / 5 / 2 / 13;
+  padding-inline-end: 0.8rem;
+  border-inline-end: 0.8rem solid var(--marigold);
 }
 
 .oceanFigure .galleryImage {
@@ -472,43 +492,65 @@
 
 .goldenGateFigure {
   grid-area: 2 / 7 / 3 / 11;
-  margin-block-start: clamp(-2rem, -3vw, -1rem);
+  align-self: end;
+  margin-block-start: 2.5rem;
+  padding-block-end: 0.8rem;
+  border-block-end: 0.8rem solid var(--wine);
 }
 
 .details {
-  padding: clamp(5rem, 10vw, 10rem) var(--space-page);
+  padding: clamp(5rem, 9vw, 9rem) var(--space-page);
   background: var(--wine);
   color: var(--bone);
 }
 
-.detailsHeader,
+.detailsTop,
 .detailGrid {
   inline-size: min(100%, 88rem);
   margin-inline: auto;
 }
 
-.detailsHeader {
+.detailsTop {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.8fr);
-  align-items: end;
-  gap: 2rem 5rem;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.4fr);
+  gap: clamp(3rem, 7vw, 7rem);
+}
+
+.detailsHeader {
+  min-inline-size: 0;
 }
 
 .detailsHeader .sectionLabel {
-  grid-column: 1 / -1;
-  color: #f5c469;
+  color: var(--marigold);
 }
 
 .detailsHeader h2 {
-  font-size: clamp(4rem, 7vw, 7.5rem);
-  line-height: 0.82;
+  max-inline-size: 11ch;
+  font-size: clamp(3rem, 6vw, 6.5rem);
+  line-height: 0.98;
 }
 
 .detailsHeader > p:last-child {
-  max-inline-size: 31rem;
+  max-inline-size: 42rem;
+  margin-block-start: 2rem;
   color: #f1ddd6;
   font-size: clamp(1rem, 1.4vw, 1.15rem);
   line-height: 1.7;
+}
+
+.detailsBranch {
+  min-block-size: clamp(11rem, 17vw, 15rem);
+  border-inline-start: 1px solid var(--line-light);
+}
+
+.detailsBranchImage {
+  position: absolute;
+  inset-block-start: -3%;
+  inset-inline-end: -38%;
+  inline-size: min(33rem, 165%);
+  max-inline-size: none;
+  block-size: auto;
+  opacity: 0.64;
 }
 
 .detailGrid {
@@ -520,14 +562,14 @@
 }
 
 .detailGrid article {
-  min-block-size: 17rem;
+  min-block-size: 15rem;
   padding: clamp(1.5rem, 3vw, 3rem);
   border-block-end: 1px solid var(--line-light);
   border-inline-end: 1px solid var(--line-light);
 }
 
 .detailGrid article > p:first-child {
-  color: #f5c469;
+  color: var(--marigold);
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -535,13 +577,13 @@
 }
 
 .detailGrid h3 {
-  max-inline-size: 13ch;
-  margin-block: 2.25rem 1rem;
+  max-inline-size: 15ch;
+  margin-block: 2rem 1rem;
   font-family: var(--font-cormorant), Georgia, serif;
-  font-size: clamp(2rem, 3.6vw, 4rem);
+  font-size: clamp(2rem, 3.4vw, 3.7rem);
   font-weight: 500;
-  letter-spacing: -0.045em;
-  line-height: 0.95;
+  letter-spacing: -0.02em;
+  line-height: 1;
 }
 
 .detailGrid article > p:last-child {
@@ -552,38 +594,40 @@
 }
 
 .rsvp {
-  position: relative;
   display: grid;
+  grid-template-columns: minmax(18rem, 0.8fr) minmax(0, 1.2fr);
+  align-items: center;
+  gap: clamp(3rem, 8vw, 8rem);
   min-block-size: min(48rem, 80svh);
-  place-items: center;
-  overflow: hidden;
-  padding: clamp(5rem, 10vw, 10rem) var(--space-page);
+  padding: clamp(5rem, 9vw, 9rem) max(var(--space-page), calc((100% - 88rem) / 2));
   background:
-    radial-gradient(circle at 50% 15%, rgb(212 163 79 / 16%), transparent 34rem), var(--ink);
+    radial-gradient(circle at 18% 30%, rgb(244 201 30 / 9%), transparent 28rem), var(--river-dark);
   color: var(--bone);
-  text-align: center;
+}
+
+.rsvpMarkPanel {
+  display: grid;
+  min-inline-size: 0;
+  min-block-size: 26rem;
+  place-items: center;
+  padding-inline-end: clamp(2rem, 5vw, 5rem);
+  border-inline-end: 1px solid var(--line-light);
 }
 
 .rsvpMark {
-  position: absolute;
-  inset-block-start: 50%;
-  inset-inline-start: 50%;
-  inline-size: min(70vw, 37rem);
+  inline-size: clamp(18rem, 27vw, 24rem);
   block-size: auto;
-  translate: -50% -50%;
-  filter: grayscale(1) sepia(0.5);
-  opacity: 0.12;
 }
 
 .rsvpContent {
-  position: relative;
-  z-index: 1;
   display: grid;
-  justify-items: center;
+  justify-items: start;
+  min-inline-size: 0;
+  text-align: start;
 }
 
 .rsvpContent > p:first-child {
-  color: #f5c469;
+  color: var(--marigold);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.15em;
@@ -591,19 +635,20 @@
 }
 
 .rsvp h2 {
-  max-inline-size: 12ch;
+  max-inline-size: 13ch;
   margin-block: 1.5rem 2.5rem;
-  font-size: clamp(4rem, 8vw, 8rem);
-  line-height: 0.8;
+  font-size: clamp(3.25rem, 6vw, 6.5rem);
+  line-height: 0.98;
 }
 
 .rsvpStatus {
-  min-inline-size: min(100%, 17rem);
+  max-inline-size: 24rem;
   padding: 1rem 1.5rem;
-  border: 1px solid rgb(244 239 230 / 54%);
+  border: 1px solid var(--marigold);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.12em;
+  line-height: 1.45;
   text-transform: uppercase;
 }
 
@@ -623,19 +668,19 @@
 
 @media (max-width: 75rem) {
   .hero {
-    grid-template-columns: minmax(20rem, 0.9fr) minmax(0, 1.1fr);
+    grid-template-columns: minmax(22rem, 46fr) minmax(0, 54fr);
+  }
+
+  .heroMark {
+    inline-size: clamp(16rem, 24vw, 19rem);
   }
 
   .hero h1 {
-    font-size: clamp(4.5rem, 8.5vw, 7rem);
+    font-size: clamp(3rem, 6.4vw, 5.5rem);
   }
 
   .place {
     gap: clamp(2.5rem, 5vw, 5rem);
-  }
-
-  .storyGrid {
-    grid-template-columns: minmax(0, 1.35fr) minmax(16rem, 0.65fr);
   }
 }
 
@@ -661,7 +706,15 @@
   }
 
   .heroCopy {
-    min-block-size: 38rem;
+    min-block-size: 46rem;
+  }
+
+  .heroMark {
+    inline-size: clamp(15rem, 38vw, 18rem);
+  }
+
+  .hero h1 {
+    font-size: clamp(4rem, 13vw, 6rem);
   }
 
   .heroFigure {
@@ -673,44 +726,24 @@
     grid-template-columns: 1fr;
   }
 
-  .sectionIntro h2 {
-    max-inline-size: 10ch;
-  }
-
   .venueCard {
-    min-block-size: 35rem;
+    min-block-size: 34rem;
   }
 
-  .storyHeader,
-  .detailsHeader {
-    grid-template-columns: 1fr;
+  .storyHeader {
+    grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.45fr);
+    gap: 2.5rem;
   }
 
-  .storyHeader > p:last-child,
-  .detailsHeader > p:last-child {
-    max-inline-size: 38rem;
+  .storyBranchImage {
+    inset-block-start: -3%;
+    inset-inline-end: -38%;
+    inline-size: 195%;
   }
 
   .storyGrid {
-    grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.55fr);
-  }
-
-  .storyWideFigure {
-    grid-column: 1 / -1;
-    grid-row: 1;
-  }
-
-  .storyPortraitFigure {
-    grid-column: 2;
-    grid-row: 2;
-    margin-block-start: clamp(-7rem, -13vw, -4rem);
-    margin-inline-start: 0;
-  }
-
-  .storyNote {
-    grid-column: 1;
-    grid-row: 2;
-    align-self: center;
+    grid-template-columns: minmax(0, 1.15fr) minmax(14rem, 0.65fr);
+    gap: 1.5rem;
   }
 
   .galleryGrid {
@@ -720,7 +753,6 @@
 
   .receptionFigure {
     grid-area: 1 / 1 / 2 / 2;
-    margin-block-start: 4rem;
   }
 
   .oceanFigure {
@@ -734,8 +766,33 @@
 
   .goldenGateFigure {
     grid-area: 2 / 1 / 3 / 2;
-    margin-block-start: 0;
-    margin-inline-start: 3rem;
+    margin-block-start: 1.5rem;
+    margin-inline-start: 2rem;
+  }
+
+  .detailsTop {
+    grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.35fr);
+    gap: 2.5rem;
+  }
+
+  .detailsBranchImage {
+    inset-block-start: -3%;
+    inset-inline-end: -58%;
+    inline-size: 220%;
+  }
+
+  .rsvp {
+    grid-template-columns: minmax(15rem, 0.75fr) minmax(0, 1.25fr);
+    gap: 3rem;
+  }
+
+  .rsvpMarkPanel {
+    min-block-size: 22rem;
+    padding-inline-end: 2.5rem;
+  }
+
+  .rsvpMark {
+    inline-size: clamp(15rem, 32vw, 19rem);
   }
 }
 
@@ -750,14 +807,21 @@
   }
 
   .heroCopy {
-    min-block-size: 35rem;
+    align-items: center;
+    min-block-size: 41rem;
+    text-align: center;
+  }
+
+  .heroMark {
+    inline-size: clamp(12rem, 60vw, 15rem);
   }
 
   .hero h1 {
-    font-size: clamp(4rem, 20vw, 6rem);
+    font-size: clamp(3.6rem, 18vw, 5rem);
   }
 
   .heroDetails {
+    justify-items: center;
     font-size: 0.8rem;
   }
 
@@ -777,19 +841,31 @@
     min-block-size: 30rem;
   }
 
+  .storyHeader {
+    grid-template-columns: 1fr;
+  }
+
+  .storyBranch {
+    min-block-size: 12rem;
+    border-block-start: 1px solid rgb(48 74 79 / 28%);
+    border-inline-start: 0;
+  }
+
+  .storyBranchImage {
+    inset-block-start: -3%;
+    inset-inline-end: -8%;
+    inline-size: 116%;
+  }
+
   .storyGrid {
     display: block;
     margin-block-start: 3.5rem;
   }
 
   .storyPortraitFigure {
-    inline-size: 76%;
-    margin-block-start: 1.25rem;
+    inline-size: 78%;
+    margin-block-start: 2rem;
     margin-inline-start: auto;
-  }
-
-  .storyNote {
-    margin-block-start: 2.5rem;
   }
 
   .galleryGrid {
@@ -807,7 +883,7 @@
 
   .receptionFigure,
   .goldenGateFigure {
-    inline-size: 82%;
+    inline-size: 84%;
   }
 
   .goldenGateFigure {
@@ -819,16 +895,52 @@
     object-position: center;
   }
 
+  .detailsTop {
+    grid-template-columns: 1fr;
+  }
+
+  .detailsBranch {
+    min-block-size: 10rem;
+    border-block-start: 1px solid var(--line-light);
+    border-inline-start: 0;
+  }
+
+  .detailsBranchImage {
+    inset-block-start: -3%;
+    inset-inline-end: -10%;
+    inline-size: 120%;
+  }
+
   .detailGrid {
     grid-template-columns: 1fr;
   }
 
   .detailGrid article {
-    min-block-size: 14rem;
+    min-block-size: 13rem;
   }
 
   .rsvp {
-    min-block-size: 42rem;
+    grid-template-columns: 1fr;
+    min-block-size: auto;
+    gap: 3.5rem;
+    text-align: center;
+  }
+
+  .rsvpMarkPanel {
+    min-block-size: auto;
+    padding-block-end: 3rem;
+    padding-inline-end: 0;
+    border-block-end: 1px solid var(--line-light);
+    border-inline-end: 0;
+  }
+
+  .rsvpMark {
+    inline-size: clamp(12rem, 60vw, 15rem);
+  }
+
+  .rsvpContent {
+    justify-items: center;
+    text-align: center;
   }
 
   .footer {
@@ -851,7 +963,8 @@
     border: 1px solid CanvasText;
   }
 
-  .rsvpMark {
+  .storyBranch,
+  .detailsBranch {
     display: none;
   }
 }

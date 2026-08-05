@@ -17,8 +17,11 @@ describe("HomePage", () => {
       "href",
       "https://www.districtwinery.com/dc-wedding-venue/",
     );
-    expect(screen.getByText(/Schedule, travel, and dress code details/)).toBeInTheDocument();
-    expect(screen.getAllByText("RSVP opens soon")).not.toHaveLength(0);
+    expect(
+      screen.getByText(/We’ll share the schedule, travel, dress code, and RSVP details/),
+    ).toBeInTheDocument();
+    expect(screen.getByText("RSVP opens with the invitation")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "The tree that became our mark." })).toBeVisible();
   });
 
   it("provides home and in-page navigation", () => {

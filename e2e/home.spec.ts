@@ -6,15 +6,15 @@ test("the landing page renders the real accessible wedding site", async ({ page 
 
   await expect(page.getByRole("heading", { level: 1, name: "Caroline & Ryan" })).toBeVisible();
   await expect(
-    page.getByRole("heading", { level: 2, name: "A garden, a question, a tree." }),
+    page.getByRole("heading", { level: 2, name: "The tree that became our mark." }),
   ).toBeVisible();
   await expect(
     page.getByRole("heading", {
       level: 2,
-      name: "Save the date. We’ll meet you by the river.",
+      name: "We can’t wait to celebrate with you.",
     }),
   ).toBeVisible();
-  await expect(page.getByText("RSVP opens soon").last()).toBeVisible();
+  await expect(page.getByText("RSVP opens with the invitation")).toBeVisible();
 
   const images = page.locator("img");
   for (let index = 0; index < (await images.count()); index += 1) {
@@ -62,12 +62,27 @@ test("the landing page supports accessible display and loading modes", async ({
   const proposalImage = page.getByAltText(
     "Caroline and Ryan together in the Alhambra gardens in Granada",
   );
+  const treeMarks = page.locator('img[src*="wedding-tree-logo"]');
 
   await expect(heroImage).not.toHaveAttribute("loading", "lazy");
   await expect(heroImage).toHaveAttribute("width", "1200");
   await expect(heroImage).toHaveAttribute("height", "1600");
   await expect(proposalImage).toHaveAttribute("loading", "lazy");
+  await expect(treeMarks).toHaveCount(4);
   await expect(page.locator('link[rel="preload"][as="image"]')).toHaveCount(1);
+
+  const displayHeadingLineHeights = await page.locator("h1, h2, h3").evaluateAll((headings) =>
+    headings
+      .map((heading) => {
+        const styles = getComputedStyle(heading);
+        const fontSize = Number.parseFloat(styles.fontSize);
+        const lineHeight = Number.parseFloat(styles.lineHeight);
+
+        return fontSize >= 32 ? lineHeight / fontSize : null;
+      })
+      .filter((ratio): ratio is number => ratio !== null),
+  );
+  expect(displayHeadingLineHeights.every((ratio) => ratio >= 0.94)).toBe(true);
 
   const textResizeStyle = await page.addStyleTag({
     content: "html { font-size: 200% !important; }",
