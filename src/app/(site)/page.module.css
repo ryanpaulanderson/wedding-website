@@ -375,7 +375,7 @@
 .branchDividerFrame::before {
   position: absolute;
   inset-block-start: 50%;
-  inset-inline: clamp(7.5rem, 14vw, 12rem);
+  inset-inline: clamp(10rem, 20vw, 18rem);
   block-size: 1px;
   background: var(--branch-divider-line);
   content: "";
@@ -384,20 +384,17 @@
 .branchDividerMark {
   position: absolute;
   inset-block-start: 50%;
-  inline-size: clamp(7.5rem, 11vw, 10rem);
+  inline-size: clamp(12rem, 18vw, 17rem);
   block-size: auto;
-  clip-path: inset(0 0 10% 0);
   translate: 0 -50%;
 }
 
 .branchDividerMarkStart {
-  inset-inline-start: clamp(-2.5rem, -2vw, -1.5rem);
-  rotate: 90deg;
+  inset-inline-start: 0;
 }
 
 .branchDividerMarkEnd {
-  inset-inline-end: clamp(-2.5rem, -2vw, -1.5rem);
-  rotate: -90deg;
+  inset-inline-end: 0;
 }
 
 .branchDividerCenter {
@@ -848,11 +845,11 @@
   }
 
   .branchDividerFrame::before {
-    inset-inline: 6rem;
+    inset-inline: 6.5rem;
   }
 
   .branchDividerMark {
-    inline-size: 6.5rem;
+    inline-size: 8.5rem;
   }
 
   .storyGrid {

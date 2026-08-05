@@ -40,20 +40,20 @@ function BranchDivider({ tone }: BranchDividerProps) {
     <div className={`${styles.branchDivider} ${branchDividerToneClasses[tone]}`} aria-hidden="true">
       <div className={styles.branchDividerFrame}>
         <Image
-          src="/brand/wedding-tree-logo.webp"
+          src="/brand/riverlight-branch-left.svg"
           alt=""
-          width={900}
-          height={900}
-          sizes="(max-width: 38rem) 6.5rem, 10rem"
+          width={465}
+          height={224}
+          sizes="(max-width: 38rem) 8.5rem, 17rem"
           className={`${styles.branchDividerMark} ${styles.branchDividerMarkStart}`}
         />
         <span className={styles.branchDividerCenter} />
         <Image
-          src="/brand/wedding-tree-logo.webp"
+          src="/brand/riverlight-branch-right.svg"
           alt=""
-          width={900}
-          height={900}
-          sizes="(max-width: 38rem) 6.5rem, 10rem"
+          width={465}
+          height={224}
+          sizes="(max-width: 38rem) 8.5rem, 17rem"
           className={`${styles.branchDividerMark} ${styles.branchDividerMarkEnd}`}
         />
       </div>

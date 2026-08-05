@@ -64,6 +64,7 @@ test("the landing page supports accessible display and loading modes", async ({
   );
   const treeMarks = page.locator('img[src*="wedding-tree-logo"]');
   const branchDividers = page.locator('main > [aria-hidden="true"]');
+  const botanicalBranches = branchDividers.locator('img[src*="riverlight-branch-"]');
   const inSectionTreeCrops = page.locator(
     '#story img[src*="wedding-tree-logo"], #details img[src*="wedding-tree-logo"]',
   );
@@ -72,9 +73,10 @@ test("the landing page supports accessible display and loading modes", async ({
   await expect(heroImage).toHaveAttribute("width", "1200");
   await expect(heroImage).toHaveAttribute("height", "1600");
   await expect(proposalImage).toHaveAttribute("loading", "lazy");
-  await expect(treeMarks).toHaveCount(6);
+  await expect(treeMarks).toHaveCount(2);
   await expect(branchDividers).toHaveCount(2);
-  await expect(branchDividers.locator('img[src*="wedding-tree-logo"]')).toHaveCount(4);
+  await expect(botanicalBranches).toHaveCount(4);
+  await expect(branchDividers.locator('img[src*="wedding-tree-logo"]')).toHaveCount(0);
   await expect(inSectionTreeCrops).toHaveCount(0);
   await expect(page.locator('link[rel="preload"][as="image"]')).toHaveCount(1);
 
