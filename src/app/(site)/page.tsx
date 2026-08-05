@@ -5,24 +5,24 @@ import styles from "./page.module.css";
 
 const detailCards = [
   {
-    label: "When",
+    label: "Date",
     title: "Saturday, March 13, 2027",
-    description: "Save the date for an evening celebration in Washington, DC.",
+    description: "An evening celebration in Washington, DC.",
   },
   {
-    label: "Where",
+    label: "Venue",
     title: "District Winery",
     description: "385 Water Street SE · Navy Yard · Washington, DC",
   },
   {
-    label: "The day",
-    title: "Details forthcoming",
-    description: "Schedule, travel, and dress code details will be shared with the invitation.",
+    label: "Schedule",
+    title: "Forthcoming",
+    description: "Timing and day-of details will be shared with the formal invitation.",
   },
   {
-    label: "Your reply",
-    title: "RSVP opens soon",
-    description: "Formal invitations and reply instructions will follow.",
+    label: "RSVP",
+    title: "Opens with the invitation",
+    description: "Reply instructions will be included with the formal invitation.",
   },
 ] as const;
 
@@ -48,17 +48,20 @@ export default function HomePage() {
       <main id="main-content">
         <section className={styles.hero} aria-labelledby="home-title">
           <div className={styles.heroCopy}>
-            <p className={styles.eyebrow}>An invitation to the water’s edge</p>
+            <p className={styles.eyebrow}>Save the date</p>
             <Image
               src="/brand/wedding-tree-logo.webp"
               alt=""
               width={900}
               height={900}
-              sizes="(max-width: 48rem) 9rem, 12rem"
+              sizes="(max-width: 38rem) 15rem, (max-width: 52rem) 18rem, 22rem"
               className={styles.heroMark}
             />
-            <h1 id="home-title">
-              <span>Caroline</span> <span>&amp; Ryan</span>
+            <h1 id="home-title" aria-label="Caroline & Ryan">
+              <span>Caroline</span>
+              <span>
+                <span className={styles.heroAmpersand}>&amp;</span> Ryan
+              </span>
             </h1>
             <div className={styles.heroDetails}>
               <p>Saturday, March 13, 2027</p>
@@ -80,12 +83,9 @@ export default function HomePage() {
 
         <section id="place" className={styles.place} aria-labelledby="place-title">
           <div className={styles.sectionIntro}>
-            <p className={styles.sectionLabel}>01 · The place</p>
-            <h2 id="place-title">Meet us by the river.</h2>
-            <p>
-              An urban winery at the water’s edge, framed by city light, warm wood, and a view
-              across the Anacostia.
-            </p>
+            <p className={styles.sectionLabel}>The venue</p>
+            <h2 id="place-title">Meet us at District Winery.</h2>
+            <p>We’ll celebrate on the Anacostia waterfront in Washington, DC.</p>
           </div>
 
           <div className={styles.venueCard}>
@@ -104,12 +104,25 @@ export default function HomePage() {
 
         <section id="story" className={styles.story} aria-labelledby="story-title">
           <div className={styles.storyHeader}>
-            <p className={styles.sectionLabel}>02 · A through line</p>
-            <h2 id="story-title">A garden, a question, a tree.</h2>
-            <p>
-              The tree in the proposal garden became the mark for everything that comes next—a small
-              piece of Granada carried into the celebration.
-            </p>
+            <div className={styles.storyCopy}>
+              <p className={styles.sectionLabel}>Our story</p>
+              <h2 id="story-title">The tree that became our mark.</h2>
+              <p>
+                We got engaged in the Alhambra gardens in Granada. The tree from that day inspired
+                the mark you’ll see throughout our wedding.
+              </p>
+            </div>
+
+            <div className={styles.storyBranch} aria-hidden="true">
+              <Image
+                src="/brand/wedding-tree-logo.webp"
+                alt=""
+                width={900}
+                height={900}
+                sizes="(max-width: 38rem) 18rem, 30rem"
+                className={styles.storyBranchImage}
+              />
+            </div>
           </div>
 
           <div className={styles.storyGrid}>
@@ -120,7 +133,7 @@ export default function HomePage() {
                 sizes="(max-width: 52rem) 100vw, 62vw"
                 className={styles.storyImage}
               />
-              <figcaption>The Alhambra gardens · Granada</figcaption>
+              <figcaption>Alhambra gardens · Granada</figcaption>
             </figure>
 
             <figure className={styles.storyPortraitFigure}>
@@ -130,23 +143,15 @@ export default function HomePage() {
                 sizes="(max-width: 52rem) 78vw, 26vw"
                 className={styles.storyImage}
               />
-              <figcaption>The question, answered</figcaption>
+              <figcaption>Engaged in Granada</figcaption>
             </figure>
-
-            <p className={styles.storyNote}>
-              One tree.
-              <br />
-              One ring.
-              <br />
-              One very good day.
-            </p>
           </div>
         </section>
 
         <section className={styles.gallery} aria-labelledby="gallery-title">
           <div className={styles.galleryHeader}>
-            <p className={styles.sectionLabel}>03 · Along the way</p>
-            <h2 id="gallery-title">A life with a view.</h2>
+            <p className={styles.sectionLabel}>A few favorites</p>
+            <h2 id="gallery-title">Together, near and far.</h2>
           </div>
 
           <div className={styles.galleryGrid}>
@@ -157,7 +162,6 @@ export default function HomePage() {
                 sizes="(max-width: 48rem) 88vw, 28vw"
                 className={styles.galleryImage}
               />
-              <figcaption>Dressed for the occasion</figcaption>
             </figure>
 
             <figure className={styles.oceanFigure}>
@@ -167,7 +171,6 @@ export default function HomePage() {
                 sizes="(max-width: 48rem) 100vw, 58vw"
                 className={styles.galleryImage}
               />
-              <figcaption>Always finding the water</figcaption>
             </figure>
 
             <figure className={styles.goldenGateFigure}>
@@ -177,16 +180,31 @@ export default function HomePage() {
                 sizes="(max-width: 48rem) 88vw, 29vw"
                 className={styles.galleryImage}
               />
-              <figcaption>San Francisco Bay</figcaption>
             </figure>
           </div>
         </section>
 
         <section id="details" className={styles.details} aria-labelledby="details-title">
-          <div className={styles.detailsHeader}>
-            <p className={styles.sectionLabel}>04 · The essentials</p>
-            <h2 id="details-title">The shape of the day.</h2>
-            <p>Start with the date and the place. We’ll fill in the rest together.</p>
+          <div className={styles.detailsTop}>
+            <div className={styles.detailsHeader}>
+              <p className={styles.sectionLabel}>What we know</p>
+              <h2 id="details-title">The details so far.</h2>
+              <p>
+                We’ll share the schedule, travel, dress code, and RSVP details with the formal
+                invitation.
+              </p>
+            </div>
+
+            <div className={styles.detailsBranch} aria-hidden="true">
+              <Image
+                src="/brand/wedding-tree-logo.webp"
+                alt=""
+                width={900}
+                height={900}
+                sizes="(max-width: 38rem) 16rem, 22rem"
+                className={styles.detailsBranchImage}
+              />
+            </div>
           </div>
 
           <div className={styles.detailGrid}>
@@ -201,18 +219,20 @@ export default function HomePage() {
         </section>
 
         <section id="rsvp" className={styles.rsvp} aria-labelledby="rsvp-title">
-          <Image
-            src="/brand/wedding-tree-logo.webp"
-            alt=""
-            width={900}
-            height={900}
-            sizes="(max-width: 48rem) 70vw, 34rem"
-            className={styles.rsvpMark}
-          />
+          <div className={styles.rsvpMarkPanel} aria-hidden="true">
+            <Image
+              src="/brand/wedding-tree-logo.webp"
+              alt=""
+              width={900}
+              height={900}
+              sizes="(max-width: 38rem) 15rem, (max-width: 52rem) 19rem, 24rem"
+              className={styles.rsvpMark}
+            />
+          </div>
           <div className={styles.rsvpContent}>
             <p>Formal invitation to follow</p>
-            <h2 id="rsvp-title">Save the date. We’ll meet you by the river.</h2>
-            <p className={styles.rsvpStatus}>RSVP opens soon</p>
+            <h2 id="rsvp-title">We can’t wait to celebrate with you.</h2>
+            <p className={styles.rsvpStatus}>RSVP opens with the invitation</p>
           </div>
         </section>
       </main>
