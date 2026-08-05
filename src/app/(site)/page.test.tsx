@@ -36,5 +36,6 @@ describe("HomePage", () => {
     expect(screen.getByRole("link", { name: "Our story" })).toHaveAttribute("href", "#story");
     expect(screen.getByRole("link", { name: "Details" })).toHaveAttribute("href", "#details");
     expect(screen.getByRole("link", { name: "RSVP" })).toHaveAttribute("href", "#rsvp");
+    expect(screen.queryByRole("link", { name: /admin/i })).not.toBeInTheDocument();
   });
 });

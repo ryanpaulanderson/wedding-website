@@ -15,6 +15,7 @@ test("the landing page renders the real accessible wedding site", async ({ page 
     }),
   ).toBeVisible();
   await expect(page.getByText("RSVP opens with the invitation")).toBeVisible();
+  await expect(page.getByRole("link", { name: /admin/i })).toHaveCount(0);
 
   const images = page.locator("img");
   for (let index = 0; index < (await images.count()); index += 1) {
