@@ -46,7 +46,13 @@ export async function getAdminDashboardSnapshot(): Promise<AdminDashboardSnapsho
         database.household.count({ where: { lastRespondedAt: { not: null } } }),
         database.guest.count({ where: { attendance: AttendanceResponse.ATTENDING } }),
         database.household.findMany({
-          where: { lastRespondedAt: { not: null } },
+          where: {
+            lastRespondedAt: { not: null },
+            guests: {
+              none: { attendance: null },
+              some: {},
+            },
+          },
           orderBy: { lastRespondedAt: "desc" },
           take: 8,
           select: {

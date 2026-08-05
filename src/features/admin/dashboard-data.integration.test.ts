@@ -132,7 +132,7 @@ describe("admin dashboard database integration", () => {
     });
   });
 
-  it("limits recent activity to the eight newest responses", async () => {
+  it("returns the eight newest complete responses when a newer response is incomplete", async () => {
     await Promise.all(
       Array.from({ length: 9 }, (_, index) =>
         database.household.create({
@@ -150,6 +150,14 @@ describe("admin dashboard database integration", () => {
         }),
       ),
     );
+    await database.household.create({
+      data: {
+        displayName: "Newer incomplete household",
+        firstRespondedAt: new Date(Date.UTC(2026, 7, 5, 10)),
+        lastRespondedAt: new Date(Date.UTC(2026, 7, 5, 10)),
+        guests: { create: { displayName: "Unanswered Guest" } },
+      },
+    });
 
     const snapshot = await getAdminDashboardSnapshot();
 
