@@ -6,6 +6,7 @@ updates:
       interval: daily
       time: "02:00"
       timezone: America/New_York
+    # Patch-level updates are merged automatically after all CI checks pass.
     ignore:
       - dependency-name: typescript
         versions: [">=7.0.0 <8.0.0"]
