@@ -26,32 +26,15 @@ const detailCards = [
   },
 ] as const;
 
-type StoryCanopyProps = {
-  placement: "top" | "bottom";
-};
-
-function StoryCanopy({ placement }: StoryCanopyProps) {
-  const isTop = placement === "top";
-
+function StoryCanopy() {
   return (
-    <div
-      className={`${styles.storyCanopyFrame} ${isTop ? styles.storyCanopyTopFrame : styles.storyCanopyBottomFrame}`}
-      aria-hidden="true"
-    >
+    <div className={`${styles.storyCanopyFrame} ${styles.storyCanopyTopFrame}`} aria-hidden="true">
       <Image
-        src={
-          isTop
-            ? "/brand/riverlight-canopy-top-left-v2.webp"
-            : "/brand/riverlight-canopy-bottom-right-v3.webp"
-        }
+        src="/brand/riverlight-canopy-top-left-v2.webp"
         alt=""
         width={1254}
         height={1254}
-        sizes={
-          isTop
-            ? "(max-width: 38rem) 15rem, (max-width: 72rem) 24rem, 30rem"
-            : "(max-width: 38rem) 17rem, (max-width: 72rem) 26rem, 32rem"
-        }
+        sizes="(max-width: 38rem) 15rem, (max-width: 72rem) 24rem, 30rem"
         className={styles.storyCanopyBranch}
       />
     </div>
@@ -136,7 +119,7 @@ export default function HomePage() {
 
         <section id="story" className={styles.story} aria-labelledby="story-title">
           <div className={styles.storyHeader}>
-            <StoryCanopy placement="top" />
+            <StoryCanopy />
             <div className={styles.storyCopy}>
               <p className={styles.sectionLabel}>Our story</p>
               <h2 id="story-title">The tree that became our mark.</h2>
@@ -158,18 +141,15 @@ export default function HomePage() {
               <figcaption>Alhambra gardens · Granada</figcaption>
             </figure>
 
-            <div className={styles.storyPortraitCluster}>
-              <StoryCanopy placement="bottom" />
-              <figure className={styles.storyPortraitFigure}>
-                <ManagedImage
-                  assetId="granada-proposal-ring"
-                  variantId="storyPortrait"
-                  sizes="(max-width: 52rem) 78vw, 26vw"
-                  className={styles.storyImage}
-                />
-                <figcaption>Engaged in Granada</figcaption>
-              </figure>
-            </div>
+            <figure className={styles.storyPortraitFigure}>
+              <ManagedImage
+                assetId="granada-proposal-ring"
+                variantId="storyPortrait"
+                sizes="(max-width: 52rem) 78vw, 26vw"
+                className={styles.storyImage}
+              />
+              <figcaption>Engaged in Granada</figcaption>
+            </figure>
           </div>
         </section>
 

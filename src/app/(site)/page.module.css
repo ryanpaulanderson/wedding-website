@@ -368,15 +368,6 @@
   block-size: clamp(22rem, 29vw, 30rem);
 }
 
-.storyCanopyBottomFrame {
-  position: absolute;
-  z-index: 0;
-  inset-inline-end: clamp(-10rem, -8vw, -4rem);
-  inset-block-end: clamp(-11rem, -8vw, -5rem);
-  inline-size: clamp(24rem, 31vw, 32rem);
-  block-size: clamp(24rem, 31vw, 32rem);
-}
-
 .storyCanopyBranch {
   display: block;
   inline-size: 100%;
@@ -430,6 +421,7 @@
 .storyPortraitFigure {
   position: relative;
   z-index: 1;
+  min-inline-size: 0;
 }
 
 .storyImage,
@@ -444,10 +436,8 @@
   aspect-ratio: 3 / 2;
 }
 
-.storyPortraitCluster {
-  position: relative;
+.storyPortraitFigure {
   align-self: end;
-  min-inline-size: 0;
 }
 
 .storyPortraitFigure .storyImage {
@@ -831,13 +821,6 @@
     block-size: 17rem;
   }
 
-  .storyCanopyBottomFrame {
-    inset-inline-end: -2rem;
-    inset-block-end: -5rem;
-    inline-size: 17rem;
-    block-size: 17rem;
-  }
-
   .storyHeader {
     min-block-size: auto;
     padding-inline: var(--space-page);
@@ -858,7 +841,7 @@
     margin-block-start: 3.5rem;
   }
 
-  .storyPortraitCluster {
+  .storyPortraitFigure {
     inline-size: 78%;
     margin-block-start: 2rem;
     margin-inline-start: auto;
