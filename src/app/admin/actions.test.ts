@@ -32,7 +32,7 @@ vi.mock("@/lib/admin-access", () => ({
   verifyAdminPassword: mocks.verifyAdminPassword,
 }));
 
-import { signInToAdmin } from "./actions";
+import { signInToAdmin, signOutOfAdmin } from "./actions";
 
 const SESSION_SECRET = "an-admin-session-secret-that-is-at-least-thirty-two-characters";
 
@@ -79,6 +79,25 @@ describe("admin sign-in", () => {
       expect.objectContaining({
         httpOnly: true,
         maxAge: 28_800,
+        path: "/admin",
+        sameSite: "strict",
+        secure: true,
+      }),
+    );
+  });
+
+  it("clears a stale admin cookie even when the session is no longer valid", async () => {
+    mocks.requireAdminSession.mockRejectedValue(new Error("Admin access required."));
+
+    await expect(signOutOfAdmin()).rejects.toThrow("redirect:/admin");
+
+    expect(mocks.requireAdminSession).not.toHaveBeenCalled();
+    expect(mocks.setCookie).toHaveBeenCalledWith(
+      "admin_session",
+      "",
+      expect.objectContaining({
+        httpOnly: true,
+        maxAge: 0,
         path: "/admin",
         sameSite: "strict",
         secure: true,

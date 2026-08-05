@@ -7,7 +7,6 @@ import {
   createAdminSession,
   getAdminAccessConfiguration,
   getAdminAccessCookieOptions,
-  requireAdminSession,
   verifyAdminPassword,
 } from "@/lib/admin-access";
 import { adminLoginRateLimiter, createAdminLoginRateLimitKey } from "@/lib/admin-login-rate-limit";
@@ -45,8 +44,6 @@ export async function signInToAdmin(formData: FormData) {
 }
 
 export async function signOutOfAdmin() {
-  await requireAdminSession();
-
   const cookieStore = await cookies();
   cookieStore.set(ADMIN_ACCESS_COOKIE_NAME, "", {
     ...getAdminAccessCookieOptions(),
