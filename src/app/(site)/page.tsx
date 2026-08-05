@@ -26,37 +26,25 @@ const detailCards = [
   },
 ] as const;
 
-const branchDividerToneClasses = {
-  river: styles.branchDividerRiver,
-  wine: styles.branchDividerWine,
-} as const;
-
-type BranchDividerProps = {
-  tone: keyof typeof branchDividerToneClasses;
-};
-
-function BranchDivider({ tone }: BranchDividerProps) {
+function StoryCanopy() {
   return (
-    <div className={`${styles.branchDivider} ${branchDividerToneClasses[tone]}`} aria-hidden="true">
-      <div className={styles.branchDividerFrame}>
-        <Image
-          src="/brand/riverlight-branch-left.svg"
-          alt=""
-          width={465}
-          height={224}
-          sizes="(max-width: 38rem) 8.5rem, 17rem"
-          className={`${styles.branchDividerMark} ${styles.branchDividerMarkStart}`}
-        />
-        <span className={styles.branchDividerCenter} />
-        <Image
-          src="/brand/riverlight-branch-right.svg"
-          alt=""
-          width={465}
-          height={224}
-          sizes="(max-width: 38rem) 8.5rem, 17rem"
-          className={`${styles.branchDividerMark} ${styles.branchDividerMarkEnd}`}
-        />
-      </div>
+    <div className={styles.storyCanopy} aria-hidden="true">
+      <Image
+        src="/brand/riverlight-canopy-top-left.svg"
+        alt=""
+        width={900}
+        height={430}
+        sizes="(max-width: 38rem) 23rem, (max-width: 72rem) 38rem, 48rem"
+        className={`${styles.storyCanopyBranch} ${styles.storyCanopyTop}`}
+      />
+      <Image
+        src="/brand/riverlight-canopy-bottom-right.svg"
+        alt=""
+        width={900}
+        height={520}
+        sizes="(max-width: 38rem) 24rem, (max-width: 72rem) 40rem, 52rem"
+        className={`${styles.storyCanopyBranch} ${styles.storyCanopyBottom}`}
+      />
     </div>
   );
 }
@@ -137,9 +125,8 @@ export default function HomePage() {
           </div>
         </section>
 
-        <BranchDivider tone="river" />
-
         <section id="story" className={styles.story} aria-labelledby="story-title">
+          <StoryCanopy />
           <div className={styles.storyHeader}>
             <div className={styles.storyCopy}>
               <p className={styles.sectionLabel}>Our story</p>
@@ -209,8 +196,6 @@ export default function HomePage() {
             </figure>
           </div>
         </section>
-
-        <BranchDivider tone="wine" />
 
         <section id="details" className={styles.details} aria-labelledby="details-title">
           <div className={styles.detailsTop}>

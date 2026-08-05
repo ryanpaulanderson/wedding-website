@@ -347,75 +347,45 @@
   text-transform: uppercase;
 }
 
-.branchDivider {
-  --branch-divider-line: rgb(110 45 54 / 46%);
-  --branch-divider-center: var(--wine);
-  display: grid;
-  min-block-size: clamp(8rem, 12vw, 11rem);
-  place-items: center;
-  overflow: hidden;
-}
-
-.branchDividerRiver {
-  background: linear-gradient(to bottom, var(--bone) 0 50%, var(--river-soft) 50% 100%);
-}
-
-.branchDividerWine {
-  --branch-divider-line: rgb(244 239 230 / 48%);
-  --branch-divider-center: var(--marigold);
-  background: linear-gradient(to bottom, var(--sand) 0 50%, var(--wine) 50% 100%);
-}
-
-.branchDividerFrame {
-  position: relative;
-  inline-size: min(calc(100% - (2 * var(--space-page))), 88rem);
-  block-size: clamp(8rem, 12vw, 11rem);
-}
-
-.branchDividerFrame::before {
-  position: absolute;
-  inset-block-start: 50%;
-  inset-inline: clamp(10rem, 20vw, 18rem);
-  block-size: 1px;
-  background: var(--branch-divider-line);
-  content: "";
-}
-
-.branchDividerMark {
-  position: absolute;
-  inset-block-start: 50%;
-  inline-size: clamp(12rem, 18vw, 17rem);
-  block-size: auto;
-  translate: 0 -50%;
-}
-
-.branchDividerMarkStart {
-  inset-inline-start: 0;
-}
-
-.branchDividerMarkEnd {
-  inset-inline-end: 0;
-}
-
-.branchDividerCenter {
-  position: absolute;
-  inset-block-start: 50%;
-  inset-inline-start: 50%;
-  inline-size: 0.72rem;
-  aspect-ratio: 1;
-  border: 2px solid var(--branch-divider-center);
-  background: color-mix(in srgb, var(--branch-divider-center) 18%, transparent);
-  translate: -50% -50%;
-  rotate: 45deg;
-}
-
 .story {
-  padding: clamp(5rem, 9vw, 9rem) 0;
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding: clamp(13rem, 19vw, 18rem) 0 clamp(12rem, 17vw, 16rem);
   background: var(--river-soft);
   color: var(--ink);
 }
 
+.storyCanopy {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.storyCanopyBranch {
+  position: absolute;
+  max-inline-size: none;
+  block-size: auto;
+  opacity: 0.9;
+}
+
+.storyCanopyTop {
+  inset-block-start: -1.5rem;
+  inset-inline-start: -4rem;
+  inline-size: clamp(34rem, 52vw, 48rem);
+}
+
+.storyCanopyBottom {
+  inset-block-end: -8rem;
+  inset-inline-end: -5rem;
+  inline-size: clamp(34rem, 48vw, 45rem);
+}
+
 .storyHeader {
+  position: relative;
+  z-index: 1;
   inline-size: min(100%, 92rem);
   margin-inline: auto;
   padding-inline: var(--space-page);
@@ -423,6 +393,7 @@
 
 .storyCopy {
   min-inline-size: 0;
+  margin-inline-start: clamp(0rem, 11vw, 11rem);
 }
 
 .storyCopy h2 {
@@ -440,6 +411,8 @@
 }
 
 .storyGrid {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(16rem, 0.55fr);
   align-items: start;
@@ -829,27 +802,33 @@
   }
 
   .place,
-  .story,
   .gallery,
   .details {
     padding-block: 5rem;
   }
 
+  .story {
+    padding-block: 13rem 11rem;
+  }
+
+  .storyCanopyTop {
+    inset-block-start: -0.5rem;
+    inset-inline-start: -7rem;
+    inline-size: 26rem;
+  }
+
+  .storyCanopyBottom {
+    inset-block-end: -6rem;
+    inset-inline-end: -10rem;
+    inline-size: 29rem;
+  }
+
+  .storyCopy {
+    margin-inline-start: 0;
+  }
+
   .venueCard {
     min-block-size: 30rem;
-  }
-
-  .branchDivider,
-  .branchDividerFrame {
-    min-block-size: 6.5rem;
-  }
-
-  .branchDividerFrame::before {
-    inset-inline: 6.5rem;
-  }
-
-  .branchDividerMark {
-    inline-size: 8.5rem;
   }
 
   .storyGrid {
@@ -942,7 +921,7 @@
     border: 1px solid CanvasText;
   }
 
-  .branchDivider {
+  .storyCanopy {
     display: none;
   }
 }
