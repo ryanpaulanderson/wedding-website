@@ -27,6 +27,7 @@
 - Use `www.carolineandryan.org` as the canonical production domain and redirect `carolineandryan.org` to it.
 - While the temporary hosted-site password gate is active, protect every Vercel deployment and bypass it for all local execution. Centralize enablement in `isSitePasswordGateEnabled()`; never read `SITE_PASSWORD_GATE` elsewhere or treat the shared password as RSVP authorization.
 - Keep the temporary gate removable: `SITE_PASSWORD_GATE=disabled` must make hosted deployments public and indexable without deleting code. Missing or invalid gate values on Vercel fail closed. Real password hashes and session secrets belong only in Vercel environment variables.
+- Keep `/admin` unlinked and independently protected in every environment with dedicated admin credentials. Reauthorize inside every admin data read and mutation, and keep password verification bounded by both application and edge rate limits; the temporary site password, page visibility, and `proxy.ts` are never sufficient admin authorization.
 
 ## Git workflow
 

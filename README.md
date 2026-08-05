@@ -25,22 +25,23 @@ On Linux, add `--with-deps` to install the required operating-system packages.
 
 ## Common commands
 
-| Command               | Purpose                                                             |
-| --------------------- | ------------------------------------------------------------------- |
-| `pnpm dev`            | Start the Next.js development server                                |
-| `pnpm format`         | Format supported files with Prettier                                |
-| `pnpm format:check`   | Check formatting without modifying files                            |
-| `pnpm lint`           | Run ESLint and Next.js rules                                        |
-| `pnpm typecheck`      | Run strict TypeScript checks                                        |
-| `pnpm test`           | Run Vitest unit/component tests once                                |
-| `pnpm test:watch`     | Run Vitest in watch mode                                            |
-| `pnpm test:coverage`  | Generate V8 text, HTML, and LCOV coverage                           |
-| `pnpm build`          | Create a production Next.js build                                   |
-| `pnpm test:e2e`       | Build/start the app through Playwright and run all browser projects |
-| `pnpm images:prepare` | Validate image sidecars and generate ignored local WebP previews    |
-| `pnpm images:sync`    | Process and upload changed immutable variants to Vercel Blob        |
-| `pnpm images:prune`   | Dry-run reporting for Blob variants absent from the current catalog |
-| `pnpm vercel:setup`   | Authenticate, link Vercel, and provision/pull public Blob storage   |
+| Command                  | Purpose                                                             |
+| ------------------------ | ------------------------------------------------------------------- |
+| `pnpm dev`               | Start the Next.js development server                                |
+| `pnpm format`            | Format supported files with Prettier                                |
+| `pnpm format:check`      | Check formatting without modifying files                            |
+| `pnpm lint`              | Run ESLint and Next.js rules                                        |
+| `pnpm typecheck`         | Run strict TypeScript checks                                        |
+| `pnpm test`              | Run Vitest unit/component tests once                                |
+| `pnpm test:watch`        | Run Vitest in watch mode                                            |
+| `pnpm test:coverage`     | Generate V8 text, HTML, and LCOV coverage                           |
+| `pnpm build`             | Create a production Next.js build                                   |
+| `pnpm test:e2e`          | Build/start the app through Playwright and run all browser projects |
+| `pnpm admin:credentials` | Generate a private admin password hash and session secret           |
+| `pnpm images:prepare`    | Validate image sidecars and generate ignored local WebP previews    |
+| `pnpm images:sync`       | Process and upload changed immutable variants to Vercel Blob        |
+| `pnpm images:prune`      | Dry-run reporting for Blob variants absent from the current catalog |
+| `pnpm vercel:setup`      | Authenticate, link Vercel, and provision/pull public Blob storage   |
 
 ## Image workflow
 
@@ -70,6 +71,44 @@ After setup, `pnpm images:sync` processes all configured sources, skips already-
 hashes, uploads new variants, and updates the tracked catalog. Normal sync never deletes blobs.
 `pnpm images:prune` lists obsolete variants; use `pnpm images:prune -- --apply` only after reviewing
 that list. Never commit `.env.local` or expose `BLOB_READ_WRITE_TOKEN` through `NEXT_PUBLIC_`.
+
+## Admin access
+
+The private admin shell is available only by opening `/admin` directly; it is not linked from the
+guest site or included in a sitemap. Admin authentication is required locally and on every Vercel
+deployment. While the temporary whole-site password gate is enabled, hosted visitors pass through
+that gate before reaching the separate admin sign-in.
+
+Generate credentials in an interactive terminal:
+
+```bash
+pnpm admin:credentials
+```
+
+The command masks and confirms a passphrase of at least 16 characters, then prints a salted scrypt
+hash and a random session secret. Copy the two generated assignments into ignored `.env.local` for
+local use. Configure `ADMIN_PASSWORD_HASH` and `ADMIN_SESSION_SECRET` separately for Vercel Preview
+and Production; do not reuse values between environments, commit them, log them, or prefix them with
+`NEXT_PUBLIC_`.
+
+Admin sessions expire after eight hours. Changing only the password protects new sign-ins but does
+not invalidate existing sessions; rotate `ADMIN_SESSION_SECRET` at the same time to revoke every
+active session.
+
+The sign-in action also enforces a bounded ten-attempt, ten-minute fixed window per client within
+each running application instance. This application control prevents an unbounded verification path,
+but serverless instances do not share memory, so the Vercel Firewall rule remains the distributed
+production limit.
+
+Before production use, configure one Vercel Firewall rate-limit rule for the login action:
+
+1. Match request path `/admin` and method `POST`.
+2. Use a fixed window of 10 minutes, a limit of 10 requests, and IP as the counting key.
+3. Return `429` after the limit, validate the behavior against the preview, and then publish the
+   rule for production.
+
+See [Vercel WAF rate limiting](https://vercel.com/docs/vercel-firewall/vercel-waf/rate-limiting)
+for the current dashboard workflow and Hobby allowance.
 
 ## Docker development
 

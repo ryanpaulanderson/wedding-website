@@ -40,6 +40,21 @@ describe("proxy", () => {
     expect(response.headers.get("x-robots-tag")).toBeNull();
   });
 
+  it("always applies private browser protections to admin routes", () => {
+    vi.stubEnv("VERCEL", "");
+    vi.stubEnv("SITE_PASSWORD_GATE", "disabled");
+
+    const response = proxy(new NextRequest("http://localhost:3000/admin"));
+
+    expect(response.headers.get("x-middleware-next")).toBe("1");
+    expect(response.headers.get("cache-control")).toBe("private, no-store");
+    expect(response.headers.get("x-robots-tag")).toBe("noindex, nofollow, noarchive");
+    expect(response.headers.get("content-security-policy")).toBe("frame-ancestors 'none'");
+    expect(response.headers.get("x-frame-options")).toBe("DENY");
+    expect(response.headers.get("x-content-type-options")).toBe("nosniff");
+    expect(response.headers.get("referrer-policy")).toBe("no-referrer");
+  });
+
   it("bypasses the gate when it is disabled on Vercel", () => {
     vi.stubEnv("VERCEL", "1");
     vi.stubEnv("SITE_PASSWORD_GATE", "disabled");
@@ -130,6 +145,18 @@ describe("proxy", () => {
 
     expect(response.headers.get("x-middleware-next")).toBe("1");
     expect(response.headers.get("cache-control")).toBe("private, no-store");
+  });
+
+  it("composes the hosted site gate with the independent admin route", () => {
+    enableConfiguredGate();
+
+    const response = proxy(new NextRequest("https://www.carolineandryan.org/admin"));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toBe(
+      "https://www.carolineandryan.org/access?returnTo=%2Fadmin",
+    );
+    expect(response.headers.get("content-security-policy")).toBe("frame-ancestors 'none'");
   });
 
   it("fails closed when hosted secrets are missing", () => {

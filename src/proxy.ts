@@ -12,8 +12,20 @@ const PRIVATE_RESPONSE_HEADERS = {
   "X-Robots-Tag": "noindex, nofollow, noarchive",
 } as const;
 
+const ADMIN_RESPONSE_HEADERS = {
+  ...PRIVATE_RESPONSE_HEADERS,
+  "Content-Security-Policy": "frame-ancestors 'none'",
+  "Referrer-Policy": "no-referrer",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+} as const;
+
 function isAccessRoute(pathname: string): boolean {
   return pathname === "/access" || pathname.startsWith("/access/");
+}
+
+function isAdminRoute(pathname: string): boolean {
+  return pathname === "/admin" || pathname.startsWith("/admin/");
 }
 
 function isAppRouterRequest(request: NextRequest): boolean {
@@ -24,8 +36,11 @@ function isAppRouterRequest(request: NextRequest): boolean {
   );
 }
 
-function applyPrivateHeaders(response: NextResponse): NextResponse {
-  for (const [name, value] of Object.entries(PRIVATE_RESPONSE_HEADERS)) {
+function applyHeaders(
+  response: NextResponse,
+  headers: Readonly<Record<string, string>>,
+): NextResponse {
+  for (const [name, value] of Object.entries(headers)) {
     response.headers.set(name, value);
   }
 
@@ -33,19 +48,27 @@ function applyPrivateHeaders(response: NextResponse): NextResponse {
 }
 
 export function proxy(request: NextRequest) {
+  const responseHeaders = isAdminRoute(request.nextUrl.pathname)
+    ? ADMIN_RESPONSE_HEADERS
+    : PRIVATE_RESPONSE_HEADERS;
+
   if (!isSitePasswordGateEnabled()) {
-    return NextResponse.next();
+    const response = NextResponse.next();
+
+    return isAdminRoute(request.nextUrl.pathname)
+      ? applyHeaders(response, ADMIN_RESPONSE_HEADERS)
+      : response;
   }
 
   if (isAccessRoute(request.nextUrl.pathname)) {
-    return applyPrivateHeaders(NextResponse.next());
+    return applyHeaders(NextResponse.next(), PRIVATE_RESPONSE_HEADERS);
   }
 
   const configuration = getSiteAccessConfiguration();
   const token = request.cookies.get(SITE_ACCESS_COOKIE_NAME)?.value;
 
   if (configuration && verifySiteAccessSession(token, configuration.sessionSecret)) {
-    return applyPrivateHeaders(NextResponse.next());
+    return applyHeaders(NextResponse.next(), responseHeaders);
   }
 
   const accessUrl = request.nextUrl.clone();
@@ -60,12 +83,15 @@ export function proxy(request: NextRequest) {
       sanitizeReturnTo(`${request.nextUrl.pathname}${request.nextUrl.search}`),
     );
   } else {
-    return applyPrivateHeaders(NextResponse.json({ error: "Unauthorized" }, { status: 401 }));
+    return applyHeaders(
+      NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
+      responseHeaders,
+    );
   }
 
   const redirectStatus = request.method === "GET" || request.method === "HEAD" ? 307 : 303;
 
-  return applyPrivateHeaders(NextResponse.redirect(accessUrl, redirectStatus));
+  return applyHeaders(NextResponse.redirect(accessUrl, redirectStatus), responseHeaders);
 }
 
 export const config = {

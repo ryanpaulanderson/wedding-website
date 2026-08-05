@@ -30,7 +30,7 @@ made and record enough context to revisit them later without reopening every dis
 | Temporary site access | Accepted | Shared password on all Vercel deployments; local execution bypasses it                 |
 | RSVP database         | Proposed | Neon Free PostgreSQL through Prisma                                                    |
 | Guest RSVP access     | Open     | Private per-household invitation token or shared lookup flow                           |
-| Admin access          | Open     | Minimal authenticated admin page or database-console-only workflow                     |
+| Admin access          | Accepted | Unlinked passphrase-protected `/admin` portal for the sole maintainer                  |
 | Email                 | Open     | No transactional email initially, or a low-volume provider if confirmations are wanted |
 | Domain                | Accepted | `www.carolineandryan.org`; apex redirects to `www`                                     |
 | Analytics             | Open     | Privacy-friendly, minimal analytics or none                                            |
@@ -147,6 +147,32 @@ Removal is deliberately two-stage:
 
 The first step launches the public site; the second carries no launch dependency.
 
+### Admin portal access
+
+**Status:** Accepted
+
+Provide an unlinked administration page at `/admin` for the project's sole maintainer. The first
+release is an application shell with an explicit disconnected-data state; it does not query Prisma,
+expose an admin API, or mutate RSVP records.
+
+Admin authentication is independent from the removable hosted-site password gate and is enforced
+in local, preview, and production environments. `ADMIN_PASSWORD_HASH` stores a salted scrypt hash,
+and `ADMIN_SESSION_SECRET` signs a purpose-bound session cookie with a fixed eight-hour lifetime.
+The cookie is HTTP-only, scoped to `/admin`, uses strict same-site handling, and is secure on Vercel.
+Preview and production use different credentials. Rotating the session secret revokes all active
+admin sessions.
+
+The page checks the session before rendering private content, and every admin data read or mutation
+must authorize again at its server boundary. The Next.js proxy provides private, non-cacheable,
+non-indexable responses and browser security headers, but it is not an authorization layer. The
+sign-in action enforces a bounded, per-instance fixed window of ten attempts per client per ten
+minutes. Because serverless instances do not share that memory, also apply a Vercel WAF fixed-window
+rule to `POST /admin`: ten requests per IP per ten minutes, followed by a `429` response.
+
+This passphrase model is intentionally limited to one maintainer. Move to provider-backed named-user
+authentication before adding another administrator, multi-factor authentication, role-based access,
+or audit-history requirements.
+
 ### RSVP storage: Neon PostgreSQL with Prisma
 
 **Status:** Proposed
@@ -230,18 +256,18 @@ We should resolve these roughly in order:
 
 1. Accept or replace the Vercel + Neon baseline.
 2. Choose how guests identify their invitation and update an RSVP.
-3. Decide whether an admin interface is worth building.
-4. Define the exact RSVP questions, household/plus-one rules, and meal-choice behavior.
-5. Decide whether guests receive confirmation or reminder emails.
-6. Choose domain/registrar, analytics, monitoring, backup, and post-wedding data-retention policy.
+3. Define the exact RSVP questions, household/plus-one rules, and meal-choice behavior.
+4. Decide whether guests receive confirmation or reminder emails.
+5. Choose domain/registrar, analytics, monitoring, backup, and post-wedding data-retention policy.
 
 ## Decision log
 
-| Date       | Decision                                                  | Status   | Notes                                                                            |
-| ---------- | --------------------------------------------------------- | -------- | -------------------------------------------------------------------------------- |
-| 2026-07-11 | Begin with Vercel + Neon as the architecture candidate    | Proposed | Optimizes for low cost and low maintenance while fitting the existing stack.     |
-| 2026-07-11 | Host the application on Vercel Hobby                      | Accepted | One code maintainer removes the relevant Hobby Git collaboration concern.        |
-| 2026-07-11 | Use GitHub checks and Vercel Git deployments for CI/CD    | Accepted | Pull requests get checks and previews; merges to `main` deploy production.       |
-| 2026-07-11 | Use `www.carolineandryan.org` as the canonical domain     | Accepted | The apex domain permanently redirects to `www`; Squarespace retains DNS.         |
-| 2026-07-11 | Protect hosted development with a removable password gate | Accepted | All Vercel deployments are gated for 30 days per session; local runs bypass it.  |
-| 2026-07-11 | Store processed public images in Vercel Blob              | Accepted | Originals stay ignored; named immutable variants are generated and synchronized. |
+| Date       | Decision                                                  | Status   | Notes                                                                                        |
+| ---------- | --------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
+| 2026-07-11 | Begin with Vercel + Neon as the architecture candidate    | Proposed | Optimizes for low cost and low maintenance while fitting the existing stack.                 |
+| 2026-07-11 | Host the application on Vercel Hobby                      | Accepted | One code maintainer removes the relevant Hobby Git collaboration concern.                    |
+| 2026-07-11 | Use GitHub checks and Vercel Git deployments for CI/CD    | Accepted | Pull requests get checks and previews; merges to `main` deploy production.                   |
+| 2026-07-11 | Use `www.carolineandryan.org` as the canonical domain     | Accepted | The apex domain permanently redirects to `www`; Squarespace retains DNS.                     |
+| 2026-07-11 | Protect hosted development with a removable password gate | Accepted | All Vercel deployments are gated for 30 days per session; local runs bypass it.              |
+| 2026-07-11 | Store processed public images in Vercel Blob              | Accepted | Originals stay ignored; named immutable variants are generated and synchronized.             |
+| 2026-08-05 | Add a dedicated single-maintainer admin portal            | Accepted | Separate passphrase auth protects an unlinked `/admin` shell and all server data boundaries. |

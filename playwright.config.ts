@@ -1,4 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
+import {
+  ADMIN_TEST_PASSWORD_HASH,
+  ADMIN_TEST_SESSION_SECRET,
+} from "./e2e/fixtures/admin-credentials";
 
 const baseURL = "http://127.0.0.1:3000";
 
@@ -35,6 +39,11 @@ export default defineConfig({
   ],
   webServer: {
     command: process.env.CI ? "pnpm start" : "pnpm build && pnpm start",
+    env: {
+      ...process.env,
+      ADMIN_PASSWORD_HASH: ADMIN_TEST_PASSWORD_HASH,
+      ADMIN_SESSION_SECRET: ADMIN_TEST_SESSION_SECRET,
+    },
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
