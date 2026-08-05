@@ -51,6 +51,7 @@ jobs:
           set -euo pipefail
 
           deadline=$((SECONDS + 3600))
+          previous_signature=""
           settled_polls=0
           while (( SECONDS < deadline )); do
             checks="$(gh pr checks "$PR_URL" --json name,workflow,bucket 2>/dev/null || true)"
@@ -68,27 +69,50 @@ jobs:
             fi
 
             non_auto_checks="$(jq '[.[] | select(.workflow != "Dependabot auto-merge")]' <<<"$checks")"
-            check_count="$(jq 'length' <<<"$non_auto_checks")"
-            pending_count="$(jq '[.[] | select(.bucket == "pending")] | length' <<<"$non_auto_checks")"
-            failed_count="$(jq '[.[] | select(.bucket == "fail" or .bucket == "cancel")] | length' <<<"$non_auto_checks")"
-            quality_count="$(jq '[.[] | select(.workflow == "Quality" and .name == "quality")] | length' <<<"$non_auto_checks")"
+            normalized_checks="$(jq '
+              group_by([.workflow, .name])
+              | map({
+                  workflow: .[0].workflow,
+                  name: .[0].name,
+                  bucket: (
+                    if any(.[]; .bucket == "pending") then "pending"
+                    elif any(.[]; .bucket == "pass") then "pass"
+                    elif any(.[]; .bucket == "skipping") then "skipping"
+                    elif any(.[]; .bucket == "fail") then "fail"
+                    else "cancel"
+                    end
+                  )
+                })
+            ' <<<"$non_auto_checks")"
+            check_count="$(jq 'length' <<<"$normalized_checks")"
+            incomplete_count="$(jq '[.[] | select(.bucket != "pass" and .bucket != "skipping")] | length' <<<"$normalized_checks")"
+            failed_count="$(jq '[.[] | select(.bucket == "fail")] | length' <<<"$normalized_checks")"
+            quality_count="$(jq '[.[] | select(.workflow == "Quality" and .name == "quality" and .bucket == "pass")] | length' <<<"$normalized_checks")"
 
             if (( failed_count > 0 )); then
-              echo "A CI check failed or was cancelled."
+              echo "A CI check failed."
               exit 1
             fi
 
-            if (( quality_count > 0 && check_count > 0 && pending_count == 0 )); then
-              settled_polls=$((settled_polls + 1))
-              if (( settled_polls >= 2 )); then
+            if (( quality_count > 0 && check_count > 0 && incomplete_count == 0 )); then
+              check_signature="$(jq -c 'sort_by([.workflow, .name, .bucket])' <<<"$normalized_checks")"
+              if [[ "$check_signature" == "$previous_signature" ]]; then
+                settled_polls=$((settled_polls + 1))
+              else
+                previous_signature="$check_signature"
+                settled_polls=1
+              fi
+
+              if (( settled_polls >= 3 )); then
                 echo "All reported CI checks passed."
                 break
               fi
-              echo "CI checks are green; waiting for late checks to register..."
+              echo "CI checks are green and stable; waiting for late checks to register..."
               sleep 30
               continue
             fi
 
+            previous_signature=""
             settled_polls=0
             echo "Waiting for CI checks to register and complete..."
             sleep 30
