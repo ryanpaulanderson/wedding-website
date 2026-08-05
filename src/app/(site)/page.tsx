@@ -26,6 +26,41 @@ const detailCards = [
   },
 ] as const;
 
+const branchDividerToneClasses = {
+  river: styles.branchDividerRiver,
+  wine: styles.branchDividerWine,
+} as const;
+
+type BranchDividerProps = {
+  tone: keyof typeof branchDividerToneClasses;
+};
+
+function BranchDivider({ tone }: BranchDividerProps) {
+  return (
+    <div className={`${styles.branchDivider} ${branchDividerToneClasses[tone]}`} aria-hidden="true">
+      <div className={styles.branchDividerFrame}>
+        <Image
+          src="/brand/wedding-tree-logo.webp"
+          alt=""
+          width={900}
+          height={900}
+          sizes="(max-width: 38rem) 6.5rem, 10rem"
+          className={`${styles.branchDividerMark} ${styles.branchDividerMarkStart}`}
+        />
+        <span className={styles.branchDividerCenter} />
+        <Image
+          src="/brand/wedding-tree-logo.webp"
+          alt=""
+          width={900}
+          height={900}
+          sizes="(max-width: 38rem) 6.5rem, 10rem"
+          className={`${styles.branchDividerMark} ${styles.branchDividerMarkEnd}`}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function HomePage() {
   return (
     <div className={styles.site}>
@@ -102,6 +137,8 @@ export default function HomePage() {
           </div>
         </section>
 
+        <BranchDivider tone="river" />
+
         <section id="story" className={styles.story} aria-labelledby="story-title">
           <div className={styles.storyHeader}>
             <div className={styles.storyCopy}>
@@ -111,17 +148,6 @@ export default function HomePage() {
                 We got engaged in the Alhambra gardens in Granada. The tree from that day inspired
                 the mark you’ll see throughout our wedding.
               </p>
-            </div>
-
-            <div className={styles.storyBranch} aria-hidden="true">
-              <Image
-                src="/brand/wedding-tree-logo.webp"
-                alt=""
-                width={900}
-                height={900}
-                sizes="(max-width: 38rem) 18rem, 30rem"
-                className={styles.storyBranchImage}
-              />
             </div>
           </div>
 
@@ -184,6 +210,8 @@ export default function HomePage() {
           </div>
         </section>
 
+        <BranchDivider tone="wine" />
+
         <section id="details" className={styles.details} aria-labelledby="details-title">
           <div className={styles.detailsTop}>
             <div className={styles.detailsHeader}>
@@ -193,17 +221,6 @@ export default function HomePage() {
                 We’ll share the schedule, travel, dress code, and RSVP details with the formal
                 invitation.
               </p>
-            </div>
-
-            <div className={styles.detailsBranch} aria-hidden="true">
-              <Image
-                src="/brand/wedding-tree-logo.webp"
-                alt=""
-                width={900}
-                height={900}
-                sizes="(max-width: 38rem) 16rem, 22rem"
-                className={styles.detailsBranchImage}
-              />
             </div>
           </div>
 
