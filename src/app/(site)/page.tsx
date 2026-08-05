@@ -52,7 +52,7 @@ function StoryCanopy({ placement }: StoryCanopyProps) {
             ? "(max-width: 38rem) 15rem, (max-width: 72rem) 24rem, 30rem"
             : "(max-width: 38rem) 17rem, (max-width: 72rem) 26rem, 32rem"
         }
-        className={`${styles.storyCanopyBranch} ${isTop ? styles.storyCanopyTop : styles.storyCanopyBottom}`}
+        className={styles.storyCanopyBranch}
       />
     </div>
   );
@@ -135,8 +135,8 @@ export default function HomePage() {
         </section>
 
         <section id="story" className={styles.story} aria-labelledby="story-title">
-          <StoryCanopy placement="top" />
           <div className={styles.storyHeader}>
+            <StoryCanopy placement="top" />
             <div className={styles.storyCopy}>
               <p className={styles.sectionLabel}>Our story</p>
               <h2 id="story-title">The tree that became our mark.</h2>
@@ -158,18 +158,19 @@ export default function HomePage() {
               <figcaption>Alhambra gardens · Granada</figcaption>
             </figure>
 
-            <figure className={styles.storyPortraitFigure}>
-              <ManagedImage
-                assetId="granada-proposal-ring"
-                variantId="storyPortrait"
-                sizes="(max-width: 52rem) 78vw, 26vw"
-                className={styles.storyImage}
-              />
-              <figcaption>Engaged in Granada</figcaption>
-            </figure>
+            <div className={styles.storyPortraitCluster}>
+              <StoryCanopy placement="bottom" />
+              <figure className={styles.storyPortraitFigure}>
+                <ManagedImage
+                  assetId="granada-proposal-ring"
+                  variantId="storyPortrait"
+                  sizes="(max-width: 52rem) 78vw, 26vw"
+                  className={styles.storyImage}
+                />
+                <figcaption>Engaged in Granada</figcaption>
+              </figure>
+            </div>
           </div>
-
-          <StoryCanopy placement="bottom" />
         </section>
 
         <section className={styles.gallery} aria-labelledby="gallery-title">

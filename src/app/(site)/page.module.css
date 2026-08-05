@@ -350,54 +350,54 @@
 .story {
   position: relative;
   overflow: clip;
+  padding-block-end: clamp(5rem, 8vw, 8rem);
   background: var(--river-soft);
   color: var(--ink);
 }
 
 .storyCanopyFrame {
-  position: relative;
   pointer-events: none;
 }
 
 .storyCanopyTopFrame {
+  position: absolute;
+  z-index: 0;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inline-size: clamp(22rem, 29vw, 30rem);
   block-size: clamp(22rem, 29vw, 30rem);
 }
 
 .storyCanopyBottomFrame {
+  position: absolute;
+  z-index: 0;
+  inset-inline-end: clamp(-10rem, -8vw, -4rem);
+  inset-block-end: clamp(-11rem, -8vw, -5rem);
+  inline-size: clamp(24rem, 31vw, 32rem);
   block-size: clamp(24rem, 31vw, 32rem);
-  margin-block-start: clamp(2rem, 5vw, 5rem);
 }
 
 .storyCanopyBranch {
-  position: absolute;
-  max-inline-size: none;
+  display: block;
+  inline-size: 100%;
   block-size: auto;
   opacity: 1;
-}
-
-.storyCanopyTop {
-  inset-block-start: 0;
-  inset-inline-start: 0;
-  inline-size: clamp(22rem, 29vw, 30rem);
-}
-
-.storyCanopyBottom {
-  inset-block-end: 0;
-  inset-inline-end: 0;
-  inline-size: clamp(24rem, 31vw, 32rem);
 }
 
 .storyHeader {
   position: relative;
   z-index: 1;
-  inline-size: min(100%, 92rem);
-  margin-inline: auto;
-  padding-inline: var(--space-page);
+  min-block-size: clamp(22rem, 29vw, 30rem);
+  padding-inline: max(var(--space-page), calc((100% - 92rem) / 2 + var(--space-page)));
 }
 
 .storyCopy {
+  position: relative;
+  z-index: 1;
   min-inline-size: 0;
-  margin-inline-start: clamp(0rem, 11vw, 11rem);
+  margin-inline-start: clamp(8rem, 18vw, 18rem);
+  padding-block-start: clamp(8rem, 12vw, 12rem);
+  padding-block-end: clamp(2rem, 4vw, 4rem);
 }
 
 .storyCopy h2 {
@@ -422,8 +422,14 @@
   align-items: start;
   gap: clamp(1.5rem, 4vw, 4rem);
   inline-size: min(100%, 100rem);
-  margin: clamp(4rem, 7vw, 7rem) auto 0;
+  margin: clamp(2.5rem, 4vw, 4rem) auto 0;
   padding-inline: var(--space-page);
+}
+
+.storyWideFigure,
+.storyPortraitFigure {
+  position: relative;
+  z-index: 1;
 }
 
 .storyImage,
@@ -438,8 +444,10 @@
   aspect-ratio: 3 / 2;
 }
 
-.storyPortraitFigure {
+.storyPortraitCluster {
+  position: relative;
   align-self: end;
+  min-inline-size: 0;
 }
 
 .storyPortraitFigure .storyImage {
@@ -448,7 +456,12 @@
 }
 
 .storyGrid figcaption {
+  position: relative;
+  z-index: 2;
+  inline-size: fit-content;
   margin-block-start: 0.8rem;
+  padding-inline-end: 0.5rem;
+  background: var(--river-soft);
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -812,28 +825,28 @@
   }
 
   .storyCanopyTopFrame {
-    block-size: 15rem;
+    inset-block-start: -1rem;
+    inset-inline-start: -2.5rem;
+    inline-size: 17rem;
+    block-size: 17rem;
   }
 
   .storyCanopyBottomFrame {
-    block-size: 17rem;
-    margin-block-start: 2.5rem;
-  }
-
-  .storyCanopyTop {
-    inset-block-start: 0;
-    inset-inline-start: 0;
-    inline-size: 15rem;
-  }
-
-  .storyCanopyBottom {
-    inset-block-end: 0;
-    inset-inline-end: 0;
+    inset-inline-end: -2rem;
+    inset-block-end: -5rem;
     inline-size: 17rem;
+    block-size: 17rem;
+  }
+
+  .storyHeader {
+    min-block-size: auto;
+    padding-inline: var(--space-page);
   }
 
   .storyCopy {
     margin-inline-start: 0;
+    padding-block-start: 10rem;
+    padding-block-end: 0;
   }
 
   .venueCard {
@@ -845,7 +858,7 @@
     margin-block-start: 3.5rem;
   }
 
-  .storyPortraitFigure {
+  .storyPortraitCluster {
     inline-size: 78%;
     margin-block-start: 2rem;
     margin-inline-start: auto;
