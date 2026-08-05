@@ -84,9 +84,7 @@ export function createAdminLoginRateLimiter({
     },
 
     reset(clientKey: string): void {
-      if (!clientWindows.delete(clientKey)) {
-        overflowWindow = undefined;
-      }
+      clientWindows.delete(clientKey);
     },
   };
 }

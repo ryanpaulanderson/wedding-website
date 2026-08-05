@@ -34,7 +34,17 @@ describe("admin login rate limiting", () => {
 
     expect(limiter.consume("tracked-client", 1_000)).toBe(true);
     expect(limiter.consume("overflow-one", 1_000)).toBe(true);
+    limiter.reset("overflow-one");
     expect(limiter.consume("overflow-two", 1_000)).toBe(false);
+  });
+
+  it("resets a normally tracked client after successful authentication", () => {
+    const limiter = createAdminLoginRateLimiter({ attemptLimit: 1 });
+
+    expect(limiter.consume("tracked-client", 1_000)).toBe(true);
+    expect(limiter.consume("tracked-client", 1_000)).toBe(false);
+    limiter.reset("tracked-client");
+    expect(limiter.consume("tracked-client", 1_000)).toBe(true);
   });
 
   it("derives private stable keys from Vercel client addresses", () => {
@@ -64,5 +74,18 @@ describe("admin login rate limiting", () => {
     );
 
     expect(secondKey).toBe(firstKey);
+  });
+
+  it("fails closed when Vercel forwarding metadata is missing or not a single IP", () => {
+    const fallbackKey = createAdminLoginRateLimitKey(new Headers(), SESSION_SECRET, {
+      VERCEL: "1",
+    });
+    const forwardedChainKey = createAdminLoginRateLimitKey(
+      new Headers({ "x-forwarded-for": "198.51.100.20, 203.0.113.10" }),
+      SESSION_SECRET,
+      { VERCEL: "1" },
+    );
+
+    expect(forwardedChainKey).toBe(fallbackKey);
   });
 });
