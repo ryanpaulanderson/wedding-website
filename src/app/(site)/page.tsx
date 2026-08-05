@@ -41,16 +41,16 @@ function StoryCanopy({ placement }: StoryCanopyProps) {
       <Image
         src={
           isTop
-            ? "/brand/riverlight-canopy-top-left.svg"
-            : "/brand/riverlight-canopy-bottom-right.svg"
+            ? "/brand/riverlight-canopy-top-left-v2.webp"
+            : "/brand/riverlight-canopy-bottom-right-v3.webp"
         }
         alt=""
-        width={900}
-        height={isTop ? 470 : 560}
+        width={1254}
+        height={1254}
         sizes={
           isTop
-            ? "(max-width: 38rem) 24rem, (max-width: 72rem) 28rem, 42rem"
-            : "(max-width: 38rem) 24rem, (max-width: 72rem) 30rem, 38rem"
+            ? "(max-width: 38rem) 15rem, (max-width: 72rem) 24rem, 30rem"
+            : "(max-width: 38rem) 17rem, (max-width: 72rem) 26rem, 32rem"
         }
         className={`${styles.storyCanopyBranch} ${isTop ? styles.storyCanopyTop : styles.storyCanopyBottom}`}
       />
