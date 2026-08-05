@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AttendanceResponse {
+  ATTENDING @map("attending")
+  DECLINED  @map("declined")
+
+  @@map("attendance_response")
+}
+
+model Household {
+  id               String   @id @default(uuid()) @db.Uuid
+  displayName      String   @map("display_name")
+  firstRespondedAt DateTime? @map("first_responded_at") @db.Timestamptz(3)
+  lastRespondedAt  DateTime? @map("last_responded_at") @db.Timestamptz(3)
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  guests           Guest[]
+
+  @@index([lastRespondedAt(sort: Desc)])
+  @@map("households")
+}
+
+model Guest {
+  id          String              @id @default(uuid()) @db.Uuid
+  householdId String              @map("household_id") @db.Uuid
+  displayName String              @map("display_name")
+  attendance  AttendanceResponse?
+  createdAt   DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime            @updatedAt @map("updated_at") @db.Timestamptz(3)
+  household   Household           @relation(fields: [householdId], references: [id], onDelete: Cascade)
+
+  @@index([householdId])
+  @@index([attendance])
+  @@map("guests")
+}

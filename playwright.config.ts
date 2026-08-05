@@ -5,6 +5,10 @@ import {
 } from "./e2e/fixtures/admin-credentials";
 
 const baseURL = "http://127.0.0.1:3000";
+const databaseUrl =
+  process.env.DATABASE_URL ?? "postgresql://wedding:wedding@127.0.0.1:5432/wedding?schema=public";
+
+process.env.DATABASE_URL = databaseUrl;
 
 export default defineConfig({
   testDir: "./e2e",
@@ -43,6 +47,7 @@ export default defineConfig({
       ...process.env,
       ADMIN_PASSWORD_HASH: ADMIN_TEST_PASSWORD_HASH,
       ADMIN_SESSION_SECRET: ADMIN_TEST_SESSION_SECRET,
+      DATABASE_URL: databaseUrl,
     },
     url: baseURL,
     reuseExistingServer: !process.env.CI,
