@@ -96,15 +96,16 @@ describe("admin data authorization", () => {
     await expect(getAdminDashboardSnapshot()).rejects.toThrow("Admin access required.");
   });
 
-  it("returns only the disconnected placeholder after authorizing again", async () => {
+  it("returns a safe unavailable snapshot after authorizing again without database config", async () => {
     configureEnvironment();
+    vi.stubEnv("DATABASE_URL", "");
     mocks.getCookie.mockImplementation((name: string) =>
       name === ADMIN_ACCESS_COOKIE_NAME
         ? { value: createAdminSession(SESSION_SECRET, Date.now()) }
         : undefined,
     );
 
-    await expect(getAdminDashboardSnapshot()).resolves.toEqual({ status: "not-connected" });
+    await expect(getAdminDashboardSnapshot()).resolves.toEqual({ status: "unavailable" });
     expect(mocks.cookies).toHaveBeenCalled();
   });
 });

@@ -21,6 +21,7 @@ type AdminDashboardProps = {
 export function AdminDashboard({ snapshot }: AdminDashboardProps) {
   const isConnected = snapshot.status === "ready";
   const recentResponses = isConnected ? snapshot.recentResponses : [];
+  const responseCountLabel = `${recentResponses.length} ${recentResponses.length === 1 ? "response" : "responses"}`;
 
   return (
     <div className={styles.page}>
@@ -53,7 +54,7 @@ export function AdminDashboard({ snapshot }: AdminDashboardProps) {
           </div>
           <p className={styles.connectionStatus}>
             <span className={styles.statusDot} aria-hidden="true" />
-            {isConnected ? "Database connected" : "Database not connected"}
+            {isConnected ? "Database connected" : "Database unavailable"}
           </p>
         </section>
 
@@ -66,7 +67,7 @@ export function AdminDashboard({ snapshot }: AdminDashboardProps) {
               <li key={metric.key}>
                 <p>{metric.label}</p>
                 <strong>{isConnected ? snapshot.totals[metric.key].toLocaleString() : "—"}</strong>
-                <span>{isConnected ? "Current total" : "Awaiting data source"}</span>
+                <span>{isConnected ? "Current total" : "Unavailable"}</span>
               </li>
             ))}
           </ul>
@@ -79,7 +80,7 @@ export function AdminDashboard({ snapshot }: AdminDashboardProps) {
                 <p className={styles.sectionKicker}>Latest activity</p>
                 <h2 id="activity-title">Recent RSVP responses</h2>
               </div>
-              <p>{isConnected ? `${recentResponses.length} responses` : "Awaiting data source"}</p>
+              <p>{isConnected ? responseCountLabel : "Unavailable"}</p>
             </div>
 
             {recentResponses.length === 0 ? (
@@ -88,8 +89,9 @@ export function AdminDashboard({ snapshot }: AdminDashboardProps) {
                 <div>
                   <h3>No responses to show</h3>
                   <p>
-                    Recent household submissions will appear here after the RSVP database is
-                    connected.
+                    {isConnected
+                      ? "Recent household submissions will appear here after guests respond."
+                      : "Recent household submissions are temporarily unavailable. Try again later."}
                   </p>
                 </div>
               </div>
@@ -115,12 +117,12 @@ export function AdminDashboard({ snapshot }: AdminDashboardProps) {
             <p>
               {isConnected
                 ? "The secure dashboard data source is connected for this request."
-                : "This portal is running with its secure application shell. PostgreSQL reads are intentionally inactive in this first release."}
+                : "The dashboard could not reach its secure data source. No RSVP data is available for this request."}
             </p>
             <dl>
               <div>
                 <dt>Provider</dt>
-                <dd>{isConnected ? "Connected" : "Not configured"}</dd>
+                <dd>{isConnected ? "PostgreSQL" : "Unavailable"}</dd>
               </div>
               <div>
                 <dt>Last refresh</dt>

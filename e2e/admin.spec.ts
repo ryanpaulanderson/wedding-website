@@ -1,9 +1,32 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import type { BrowserContext } from "@playwright/test";
 import { createSignedSession } from "../src/lib/credential-security";
 import { ADMIN_TEST_PASSWORD, ADMIN_TEST_SESSION_SECRET } from "./fixtures/admin-credentials";
+import { resetBrowserTestDatabase, seedBrowserTestDatabase } from "./fixtures/database";
 
 const ADMIN_COOKIE_NAME = "admin_session";
+
+async function addAuthenticatedAdminCookie(context: BrowserContext) {
+  const token = createSignedSession({
+    durationSeconds: 8 * 60 * 60,
+    now: Date.now(),
+    purpose: "admin-access",
+    secret: ADMIN_TEST_SESSION_SECRET,
+  });
+
+  await context.addCookies([
+    {
+      domain: "127.0.0.1",
+      httpOnly: true,
+      name: ADMIN_COOKIE_NAME,
+      path: "/admin",
+      sameSite: "Strict",
+      secure: false,
+      value: token,
+    },
+  ]);
+}
 
 test("signs in to and out of the private admin dashboard", async ({ context, page }) => {
   const response = await page.goto("/admin");
@@ -14,7 +37,7 @@ test("signs in to and out of the private admin dashboard", async ({ context, pag
   expect(response?.headers()["x-frame-options"]).toBe("DENY");
   await expect(page.getByRole("heading", { level: 1, name: "Admin portal" })).toBeVisible();
   await expect(page).toHaveTitle("Admin portal | Caroline & Ryan");
-  await expect(page.getByText("Database not connected")).not.toBeVisible();
+  await expect(page.getByText("Database connected")).not.toBeVisible();
 
   const loginAccessibilityScan = await new AxeBuilder({ page }).analyze();
   expect(loginAccessibilityScan.violations).toEqual([]);
@@ -33,9 +56,7 @@ test("signs in to and out of the private admin dashboard", async ({ context, pag
 
   await expect(page).toHaveURL("/admin");
   await expect(page.getByRole("heading", { level: 1, name: "Overview" })).toBeVisible();
-  await expect(page.getByText("Database not connected")).toBeVisible();
-  await expect(page.getByText("No responses to show")).toBeVisible();
-  await expect(page.getByText("—")).toHaveCount(4);
+  await expect(page.getByText("Database connected")).toBeVisible();
 
   const adminCookie = (await context.cookies()).find((cookie) => cookie.name === ADMIN_COOKIE_NAME);
   expect(adminCookie).toMatchObject({
@@ -54,7 +75,7 @@ test("signs in to and out of the private admin dashboard", async ({ context, pag
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page).toHaveURL("/admin");
   await expect(page.getByLabel("Admin passphrase")).toBeVisible();
-  await expect(page.getByText("Database not connected")).not.toBeVisible();
+  await expect(page.getByText("Database connected")).not.toBeVisible();
 });
 
 test("rejects tampered and expired admin sessions", async ({ context, page }) => {
@@ -93,7 +114,7 @@ test("rejects tampered and expired admin sessions", async ({ context, page }) =>
   ]);
   await page.reload();
   await expect(page.getByLabel("Admin passphrase")).toBeVisible();
-  await expect(page.getByText("Database not connected")).not.toBeVisible();
+  await expect(page.getByText("Database connected")).not.toBeVisible();
 });
 
 test("supports accessible display modes and narrow layouts", async ({ browserName, page }) => {
@@ -129,4 +150,54 @@ test("supports accessible display modes and narrow layouts", async ({ browserNam
 
   const dashboardAccessibilityScan = await new AxeBuilder({ page }).analyze();
   expect(dashboardAccessibilityScan.violations).toEqual([]);
+});
+
+test.describe.serial("database-backed admin states", () => {
+  test.afterEach(async ({ browserName, isMobile }) => {
+    if (browserName === "chromium" && !isMobile) {
+      await resetBrowserTestDatabase();
+    }
+  });
+
+  test("shows real zeroes for a connected empty database", async ({
+    browserName,
+    context,
+    isMobile,
+    page,
+  }) => {
+    test.skip(
+      browserName !== "chromium" || isMobile,
+      "Database state is verified once in desktop Chromium.",
+    );
+    await resetBrowserTestDatabase();
+    await addAuthenticatedAdminCookie(context);
+
+    await page.goto("/admin");
+
+    await expect(page.getByText("Database connected")).toBeVisible();
+    await expect(page.getByText("0", { exact: true })).toHaveCount(4);
+    await expect(page.getByRole("heading", { name: "No responses to show" })).toBeVisible();
+  });
+
+  test("renders populated totals and recent response DTOs", async ({
+    browserName,
+    context,
+    isMobile,
+    page,
+  }) => {
+    test.skip(
+      browserName !== "chromium" || isMobile,
+      "Database state is verified once in desktop Chromium.",
+    );
+    await resetBrowserTestDatabase();
+    await seedBrowserTestDatabase();
+    await addAuthenticatedAdminCookie(context);
+
+    await page.goto("/admin");
+
+    await expect(page.getByText("Database connected")).toBeVisible();
+    await expect(page.getByText("The Browser Test household")).toBeVisible();
+    await expect(page.getByText("mixed", { exact: true })).toBeVisible();
+    await expect(page.getByText("1 response", { exact: true })).toBeVisible();
+  });
 });

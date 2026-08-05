@@ -5,13 +5,13 @@ import { AdminDashboard } from "./AdminDashboard";
 vi.mock("../actions", () => ({ signOutOfAdmin: vi.fn() }));
 
 describe("AdminDashboard", () => {
-  it("presents an honest disconnected-data state without fake controls", () => {
-    render(<AdminDashboard snapshot={{ status: "not-connected" }} />);
+  it("presents an honest unavailable-data state without fake controls", () => {
+    render(<AdminDashboard snapshot={{ status: "unavailable" }} />);
 
     expect(screen.getByRole("heading", { level: 1, name: "Overview" })).toBeVisible();
-    expect(screen.getByText("Database not connected")).toBeVisible();
+    expect(screen.getByText("Database unavailable")).toBeVisible();
     expect(screen.getAllByText("—")).toHaveLength(4);
-    expect(screen.getAllByText("Awaiting data source")).toHaveLength(5);
+    expect(screen.getAllByText("Unavailable")).toHaveLength(7);
     expect(screen.getByRole("heading", { name: "No responses to show" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Sign out" })).toHaveAttribute("type", "submit");
     expect(screen.queryByRole("navigation")).not.toBeInTheDocument();

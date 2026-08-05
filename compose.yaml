@@ -4,6 +4,9 @@ services:
       context: .
       target: development
     init: true
+    environment:
+      DATABASE_URL: "postgresql://wedding:wedding@database:5432/wedding?schema=public"
+      DATABASE_URL_UNPOOLED: "postgresql://wedding:wedding@database:5432/wedding?schema=public"
     volumes:
       - .:/workspace
       - node_modules:/workspace/node_modules
@@ -29,19 +32,22 @@ services:
       retries: 10
 
   e2e:
-    image: mcr.microsoft.com/playwright:v1.61.0-noble
+    image: mcr.microsoft.com/playwright:v1.62.1-noble
     profiles: ["test"]
     init: true
     ipc: host
     working_dir: /workspace
     environment:
       CI: "true"
+      DATABASE_URL: "postgresql://wedding:wedding@database:5432/wedding?schema=public"
+      DATABASE_URL_UNPOOLED: "postgresql://wedding:wedding@database:5432/wedding?schema=public"
     entrypoint: ["/bin/bash", "-lc"]
     command:
       - >
         corepack enable &&
         pnpm config set store-dir /pnpm/store &&
         pnpm install --frozen-lockfile &&
+        pnpm db:migrate:deploy &&
         pnpm build &&
         pnpm test:e2e
     volumes:

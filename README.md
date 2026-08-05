@@ -12,6 +12,7 @@ Minimal Next.js App Router foundation with TypeScript, CSS Modules, PostgreSQL/P
 
 ```powershell
 corepack enable
+corepack prepare pnpm@11.7.0 --activate
 pnpm install --frozen-lockfile
 ```
 
@@ -35,9 +36,15 @@ On Linux, add `--with-deps` to install the required operating-system packages.
 | `pnpm test`              | Run Vitest unit/component tests once                                |
 | `pnpm test:watch`        | Run Vitest in watch mode                                            |
 | `pnpm test:coverage`     | Generate V8 text, HTML, and LCOV coverage                           |
+| `pnpm test:db`           | Run database integration tests against disposable PostgreSQL        |
 | `pnpm build`             | Create a production Next.js build                                   |
 | `pnpm test:e2e`          | Build/start the app through Playwright and run all browser projects |
 | `pnpm admin:credentials` | Generate a private admin password hash and session secret           |
+| `pnpm db:generate`       | Generate the ignored Prisma client                                  |
+| `pnpm db:migrate:dev`    | Create and apply a migration against local PostgreSQL               |
+| `pnpm db:migrate:deploy` | Apply committed migrations to the configured database               |
+| `pnpm db:migrate:status` | Report migration state for the configured database                  |
+| `pnpm db:studio`         | Open Prisma Studio for the configured local database                |
 | `pnpm images:prepare`    | Validate image sidecars and generate ignored local WebP previews    |
 | `pnpm images:sync`       | Process and upload changed immutable variants to Vercel Blob        |
 | `pnpm images:prune`      | Dry-run reporting for Blob variants absent from the current catalog |
@@ -118,6 +125,83 @@ Before production use, configure one Vercel Firewall rate-limit rule for the log
 See [Vercel WAF rate limiting](https://vercel.com/docs/vercel-firewall/vercel-waf/rate-limiting)
 for the current dashboard workflow and Hobby allowance.
 
+## Database setup
+
+The application uses PostgreSQL 17 and Prisma 7. `DATABASE_URL` is the pooled server-runtime
+connection and `DATABASE_URL_UNPOOLED` is the direct connection used by Prisma migrations. Both are
+server-only secrets and must never use a `NEXT_PUBLIC_` prefix.
+
+### Local PostgreSQL
+
+If `pnpm` is unavailable, select Node.js 24 and activate the repository's pinned package manager:
+
+```bash
+corepack enable
+corepack prepare pnpm@11.7.0 --activate
+pnpm --version
+```
+
+Preserve any existing admin credentials in ignored `.env.local`, and add:
+
+```dotenv
+DATABASE_URL="postgresql://wedding:wedding@localhost:5432/wedding?schema=public"
+DATABASE_URL_UNPOOLED="postgresql://wedding:wedding@localhost:5432/wedding?schema=public"
+```
+
+Start PostgreSQL and apply the committed schema:
+
+```bash
+docker compose up -d database
+pnpm install --frozen-lockfile
+pnpm db:migrate:deploy
+pnpm dev
+```
+
+Inside the development container, Compose supplies equivalent URLs using `database:5432`. Create a
+new migration only against disposable local PostgreSQL:
+
+```bash
+pnpm db:migrate:dev -- --name describe_the_change
+```
+
+Do not use `prisma migrate dev` or `prisma db push` against a hosted database.
+
+### Vercel and Neon
+
+Link the checkout to the existing Vercel project if needed:
+
+```bash
+pnpm dlx vercel link
+```
+
+In the Vercel project's **Storage / Marketplace** area, create two Neon PostgreSQL resources:
+
+1. `wedding-rsvp-preview`, connected only to the Preview environment.
+2. `wedding-rsvp-production`, connected only to the Production environment.
+
+Leave Development on local Docker and do not enable per-deployment Preview branches for this
+phase. In each Vercel environment, confirm the Neon integration created `DATABASE_URL` and
+`DATABASE_URL_UNPOOLED`. Preview and Production must never point to the same database.
+
+Apply the reviewed migration to Preview without writing its credentials to disk:
+
+```bash
+pnpm dlx vercel env run -e preview -- pnpm db:migrate:status
+pnpm dlx vercel env run -e preview -- pnpm db:migrate:deploy
+```
+
+Validate the Preview deployment and `/admin`. Immediately before merging, run the same committed
+migration against Production from the exact reviewed commit:
+
+```bash
+pnpm dlx vercel env run -e production -- pnpm db:migrate:status
+pnpm dlx vercel env run -e production -- pnpm db:migrate:deploy
+```
+
+Vercel builds generate the Prisma client but do not apply migrations. Hosted migration execution is
+always an explicit maintainer step. See the [Vercel Neon integration](https://vercel.com/marketplace/neon/neon),
+[`vercel env run`](https://vercel.com/docs/cli/env), and [Prisma production migration workflow](https://docs.prisma.io/docs/orm/prisma-migrate/workflows/development-and-production).
+
 ## Docker development
 
 Start the long-running development and PostgreSQL containers:
@@ -131,7 +215,7 @@ Stop the environment with `docker compose down`.
 
 The database is available to containers at `database:5432` and to host processes at
 `127.0.0.1:5432`; it is not published on other host interfaces. `.env.example` documents the
-equivalent host connection string.
+equivalent host connection strings.
 
 ### Cursor development container
 
@@ -162,4 +246,7 @@ The Playwright package and Docker image are intentionally pinned to the same ver
 
 ## Quality checks
 
-GitHub Actions runs formatting, linting, type checking, coverage, production build, and Playwright tests for pushes and pull requests targeting `main`. Coverage and Playwright diagnostics are uploaded with short retention when useful for review or failure diagnosis.
+GitHub Actions applies the migrations to disposable PostgreSQL, then runs formatting, linting, type
+checking, unit coverage, database integration tests, the production build, and Playwright for pushes
+and pull requests targeting `main`. Coverage and Playwright diagnostics are uploaded with short
+retention when useful for review or failure diagnosis.
