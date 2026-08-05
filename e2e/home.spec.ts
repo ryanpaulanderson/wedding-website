@@ -80,6 +80,10 @@ test("the landing page supports accessible display and loading modes", async ({
   await expect(storyCanopies).toHaveCount(1);
   await expect(botanicalBranches).toHaveCount(1);
   await expect(botanicalBranches.nth(0)).toHaveAttribute("loading", "lazy");
+  await expect(botanicalBranches.nth(0)).toHaveAttribute(
+    "sizes",
+    "(max-width: 38rem) 17rem, (max-width: 72rem) 24rem, 30rem",
+  );
   await expect(page.locator('img[src*="riverlight-canopy-bottom-right"]')).toHaveCount(0);
   await expect(storyCanopies.locator('img[src*="wedding-tree-logo"]')).toHaveCount(0);
   await expect(inSectionTreeCrops).toHaveCount(0);

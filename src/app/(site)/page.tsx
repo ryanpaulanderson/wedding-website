@@ -34,7 +34,7 @@ function StoryCanopy() {
         alt=""
         width={1254}
         height={1254}
-        sizes="(max-width: 38rem) 15rem, (max-width: 72rem) 24rem, 30rem"
+        sizes="(max-width: 38rem) 17rem, (max-width: 72rem) 24rem, 30rem"
         className={styles.storyCanopyBranch}
       />
     </div>
