@@ -98,6 +98,10 @@ Vercel's deployment rollback available for an urgent recovery.
 Use Vercel Web Analytics for page-view and referrer trends and Vercel Speed Insights for
 real-user Core Web Vitals. Both first-party components are mounted once in the root layout, so
 they follow the App Router during navigation without adding an application-specific tracking API.
+Their client-only boundary returns `null` from each integration's `beforeSend` hook when the
+browser exposes an enabled Do Not Track signal (`navigator.doNotTrack` is `"1"` or `"yes"`), so no
+telemetry event is sent. Browsers that do not expose that signal continue with Vercel's default,
+privacy-focused aggregated telemetry.
 
 Enable Web Analytics and Speed Insights for the Vercel project, then deploy the change. The
 Vercel dashboards are the only telemetry destination. Do not add custom events, visitor IDs, or
@@ -302,4 +306,4 @@ We should resolve these roughly in order:
 | 2026-08-05 | Add a dedicated single-maintainer admin portal             | Accepted | Separate passphrase auth protects an unlinked `/admin` shell and all server data boundaries.                     |
 | 2026-08-05 | Bound password verification and local database exposure    | Accepted | App and edge limits protect scrypt; local PostgreSQL binds only to host loopback.                                |
 | 2026-08-05 | Use isolated Neon databases through the Vercel Marketplace | Accepted | Local Docker remains disposable; Preview and Production use separate credentials and explicit Prisma migrations. |
-| 2026-08-05 | Use Vercel Web Analytics and Speed Insights                | Accepted | Minimal first-party traffic and Core Web Vitals telemetry; no custom guest-data events.                          |
+| 2026-08-05 | Use Vercel Web Analytics and Speed Insights                | Accepted | Minimal telemetry; honors Do Not Track and sends no custom guest data.                                           |
