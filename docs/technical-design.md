@@ -138,6 +138,11 @@ Vercel, missing or invalid switch values fail closed. Enabled deployments with m
 secrets show an unavailable state and never grant access. Protected responses are private,
 non-cacheable, and excluded from search indexing.
 
+The unlock action applies a bounded, per-instance fixed window of ten attempts per client per ten
+minutes before running scrypt password verification. Because serverless instances do not share that
+memory, also apply a Vercel Firewall fixed-window rule to `POST /access`: ten requests per IP per ten
+minutes, followed by a `429` response.
+
 Removal is deliberately two-stage:
 
 1. Set `SITE_PASSWORD_GATE=disabled` for Production and Preview, redeploy, and verify the site is
@@ -228,7 +233,8 @@ Security and privacy baseline:
 
 ## Environment strategy
 
-- **Local:** Docker PostgreSQL with disposable development data.
+- **Local:** Docker PostgreSQL with disposable development data, published to the host on loopback
+  only.
 - **Preview:** no production guest data. Initially use a shared non-production database with
   seeded fictional guests; consider per-branch databases only if migrations make that valuable.
 - **Production:** dedicated Neon database/branch with narrowly scoped credentials.
@@ -271,3 +277,4 @@ We should resolve these roughly in order:
 | 2026-07-11 | Protect hosted development with a removable password gate | Accepted | All Vercel deployments are gated for 30 days per session; local runs bypass it.              |
 | 2026-07-11 | Store processed public images in Vercel Blob              | Accepted | Originals stay ignored; named immutable variants are generated and synchronized.             |
 | 2026-08-05 | Add a dedicated single-maintainer admin portal            | Accepted | Separate passphrase auth protects an unlinked `/admin` shell and all server data boundaries. |
+| 2026-08-05 | Bound password verification and local database exposure   | Accepted | App and edge limits protect scrypt; local PostgreSQL binds only to host loopback.            |

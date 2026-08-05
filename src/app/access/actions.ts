@@ -1,6 +1,6 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   createSiteAccessSession,
@@ -11,6 +11,7 @@ import {
   SITE_ACCESS_COOKIE_NAME,
   verifySitePassword,
 } from "@/lib/site-access";
+import { createSiteLoginRateLimitKey, siteLoginRateLimiter } from "@/lib/site-login-rate-limit";
 
 function accessErrorUrl(error: "configuration" | "invalid", returnTo = "/"): string {
   const searchParams = new URLSearchParams({ error });
@@ -34,6 +35,13 @@ export async function unlockSite(formData: FormData) {
     redirect(accessErrorUrl("configuration", returnTo));
   }
 
+  const requestHeaders = await headers();
+  const rateLimitKey = createSiteLoginRateLimitKey(requestHeaders, configuration.sessionSecret);
+
+  if (!siteLoginRateLimiter.consume(rateLimitKey)) {
+    redirect(accessErrorUrl("invalid", returnTo));
+  }
+
   const isValidPassword = await verifySitePassword(
     formData.get("password"),
     configuration.passwordHash,
@@ -42,6 +50,8 @@ export async function unlockSite(formData: FormData) {
   if (!isValidPassword) {
     redirect(accessErrorUrl("invalid", returnTo));
   }
+
+  siteLoginRateLimiter.reset(rateLimitKey);
 
   const cookieStore = await cookies();
   cookieStore.set(

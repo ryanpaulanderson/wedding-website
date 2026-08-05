@@ -72,6 +72,14 @@ hashes, uploads new variants, and updates the tracked catalog. Normal sync never
 `pnpm images:prune` lists obsolete variants; use `pnpm images:prune -- --apply` only after reviewing
 that list. Never commit `.env.local` or expose `BLOB_READ_WRITE_TOKEN` through `NEXT_PUBLIC_`.
 
+## Hosted-site access
+
+The shared-password unlock action enforces a bounded ten-attempt, ten-minute fixed window per
+client within each running application instance before password verification. Serverless instances
+do not share memory, so configure a Vercel Firewall rate-limit rule for `POST /access` with a fixed
+10-minute window, a limit of 10 requests per IP, and a `429` response after the limit. Validate the
+rule against a preview before publishing it to production.
+
 ## Admin access
 
 The private admin shell is available only by opening `/admin` directly; it is not linked from the
@@ -121,7 +129,9 @@ docker compose exec development sh
 
 Stop the environment with `docker compose down`.
 
-The database is available to containers at `database:5432`. `.env.example` documents the equivalent host connection string.
+The database is available to containers at `database:5432` and to host processes at
+`127.0.0.1:5432`; it is not published on other host interfaces. `.env.example` documents the
+equivalent host connection string.
 
 ### Cursor development container
 
