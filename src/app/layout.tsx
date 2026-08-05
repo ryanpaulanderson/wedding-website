@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Space_Grotesk } from "next/font/google";
 import type { ReactNode } from "react";
+import { VercelObservability } from "./_components/VercelObservability";
 import { isSitePasswordGateEnabled } from "@/lib/site-access";
 import "./globals.css";
 
@@ -43,7 +44,10 @@ type RootLayoutProps = Readonly<{
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className={`${cormorant.variable} ${spaceGrotesk.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <VercelObservability />
+      </body>
     </html>
   );
 }
