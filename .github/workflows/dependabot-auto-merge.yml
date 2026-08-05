@@ -7,38 +7,99 @@ on:
       - reopened
       - synchronize
 
-permissions:
-  contents: write
-  pull-requests: write
-  checks: read
-  statuses: read
-
 concurrency:
   group: dependabot-auto-merge-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
-  auto-merge:
+  metadata:
     if: github.event.pull_request.user.login == 'dependabot[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    permissions:
+      contents: read
+      pull-requests: read
+
+    outputs:
+      is-patch: ${{ steps.dependabot-metadata.outputs.update-type == 'version-update:semver-patch' }}
 
     steps:
       - name: Fetch Dependabot metadata
-        id: metadata
-        uses: dependabot/fetch-metadata@v2
+        id: dependabot-metadata
+        uses: dependabot/fetch-metadata@21025c705c08248db411dc16f3619e6b5f9ea21a # v2.5.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+  auto-merge:
+    needs: metadata
+    if: >-
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      needs.metadata.outputs.is-patch == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: read
+      statuses: read
+
+    steps:
       - name: Wait for CI checks
-        if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
-        run: gh pr checks "$PR_URL" --watch --fail-fast --interval 30
+        run: |
+          set -euo pipefail
+
+          deadline=$((SECONDS + 3600))
+          settled_polls=0
+          while (( SECONDS < deadline )); do
+            checks="$(gh pr checks "$PR_URL" --json name,workflow,bucket 2>/dev/null || true)"
+
+            if [[ -z "$checks" ]]; then
+              echo "Waiting for CI checks to register..."
+              sleep 30
+              continue
+            fi
+
+            if ! jq -e . >/dev/null 2>&1 <<<"$checks"; then
+              echo "Waiting for CI checks to return structured status..."
+              sleep 30
+              continue
+            fi
+
+            non_auto_checks="$(jq '[.[] | select(.workflow != "Dependabot auto-merge")]' <<<"$checks")"
+            check_count="$(jq 'length' <<<"$non_auto_checks")"
+            pending_count="$(jq '[.[] | select(.bucket == "pending")] | length' <<<"$non_auto_checks")"
+            failed_count="$(jq '[.[] | select(.bucket == "fail" or .bucket == "cancel")] | length' <<<"$non_auto_checks")"
+            quality_count="$(jq '[.[] | select(.workflow == "Quality" and .name == "quality")] | length' <<<"$non_auto_checks")"
+
+            if (( failed_count > 0 )); then
+              echo "A CI check failed or was cancelled."
+              exit 1
+            fi
+
+            if (( quality_count > 0 && check_count > 0 && pending_count == 0 )); then
+              settled_polls=$((settled_polls + 1))
+              if (( settled_polls >= 2 )); then
+                echo "All reported CI checks passed."
+                break
+              fi
+              echo "CI checks are green; waiting for late checks to register..."
+              sleep 30
+              continue
+            fi
+
+            settled_polls=0
+            echo "Waiting for CI checks to register and complete..."
+            sleep 30
+          done
+
+          if (( SECONDS >= deadline )); then
+            echo "Timed out waiting for CI checks."
+            exit 1
+          fi
 
       - name: Merge patch update
-        if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
