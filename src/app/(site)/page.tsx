@@ -26,37 +26,17 @@ const detailCards = [
   },
 ] as const;
 
-const branchDividerToneClasses = {
-  river: styles.branchDividerRiver,
-  wine: styles.branchDividerWine,
-} as const;
-
-type BranchDividerProps = {
-  tone: keyof typeof branchDividerToneClasses;
-};
-
-function BranchDivider({ tone }: BranchDividerProps) {
+function StoryCanopy() {
   return (
-    <div className={`${styles.branchDivider} ${branchDividerToneClasses[tone]}`} aria-hidden="true">
-      <div className={styles.branchDividerFrame}>
-        <Image
-          src="/brand/wedding-tree-logo.webp"
-          alt=""
-          width={900}
-          height={900}
-          sizes="(max-width: 38rem) 6.5rem, 10rem"
-          className={`${styles.branchDividerMark} ${styles.branchDividerMarkStart}`}
-        />
-        <span className={styles.branchDividerCenter} />
-        <Image
-          src="/brand/wedding-tree-logo.webp"
-          alt=""
-          width={900}
-          height={900}
-          sizes="(max-width: 38rem) 6.5rem, 10rem"
-          className={`${styles.branchDividerMark} ${styles.branchDividerMarkEnd}`}
-        />
-      </div>
+    <div className={`${styles.storyCanopyFrame} ${styles.storyCanopyTopFrame}`} aria-hidden="true">
+      <Image
+        src="/brand/riverlight-canopy-top-left-v2.webp"
+        alt=""
+        width={1254}
+        height={1254}
+        sizes="(max-width: 38rem) 17rem, (max-width: 72rem) 24rem, 30rem"
+        className={styles.storyCanopyBranch}
+      />
     </div>
   );
 }
@@ -137,10 +117,9 @@ export default function HomePage() {
           </div>
         </section>
 
-        <BranchDivider tone="river" />
-
         <section id="story" className={styles.story} aria-labelledby="story-title">
           <div className={styles.storyHeader}>
+            <StoryCanopy />
             <div className={styles.storyCopy}>
               <p className={styles.sectionLabel}>Our story</p>
               <h2 id="story-title">The tree that became our mark.</h2>
@@ -209,8 +188,6 @@ export default function HomePage() {
             </figure>
           </div>
         </section>
-
-        <BranchDivider tone="wine" />
 
         <section id="details" className={styles.details} aria-labelledby="details-title">
           <div className={styles.detailsTop}>

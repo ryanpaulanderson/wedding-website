@@ -347,85 +347,48 @@
   text-transform: uppercase;
 }
 
-.branchDivider {
-  --branch-divider-line: rgb(110 45 54 / 46%);
-  --branch-divider-center: var(--wine);
-  display: grid;
-  min-block-size: clamp(8rem, 12vw, 11rem);
-  place-items: center;
-  overflow: hidden;
-}
-
-.branchDividerRiver {
-  background: linear-gradient(to bottom, var(--bone) 0 50%, var(--river-soft) 50% 100%);
-}
-
-.branchDividerWine {
-  --branch-divider-line: rgb(244 239 230 / 48%);
-  --branch-divider-center: var(--marigold);
-  background: linear-gradient(to bottom, var(--sand) 0 50%, var(--wine) 50% 100%);
-}
-
-.branchDividerFrame {
-  position: relative;
-  inline-size: min(calc(100% - (2 * var(--space-page))), 88rem);
-  block-size: clamp(8rem, 12vw, 11rem);
-}
-
-.branchDividerFrame::before {
-  position: absolute;
-  inset-block-start: 50%;
-  inset-inline: clamp(7.5rem, 14vw, 12rem);
-  block-size: 1px;
-  background: var(--branch-divider-line);
-  content: "";
-}
-
-.branchDividerMark {
-  position: absolute;
-  inset-block-start: 50%;
-  inline-size: clamp(7.5rem, 11vw, 10rem);
-  block-size: auto;
-  clip-path: inset(0 0 10% 0);
-  translate: 0 -50%;
-}
-
-.branchDividerMarkStart {
-  inset-inline-start: clamp(-2.5rem, -2vw, -1.5rem);
-  rotate: 90deg;
-}
-
-.branchDividerMarkEnd {
-  inset-inline-end: clamp(-2.5rem, -2vw, -1.5rem);
-  rotate: -90deg;
-}
-
-.branchDividerCenter {
-  position: absolute;
-  inset-block-start: 50%;
-  inset-inline-start: 50%;
-  inline-size: 0.72rem;
-  aspect-ratio: 1;
-  border: 2px solid var(--branch-divider-center);
-  background: color-mix(in srgb, var(--branch-divider-center) 18%, transparent);
-  translate: -50% -50%;
-  rotate: 45deg;
-}
-
 .story {
-  padding: clamp(5rem, 9vw, 9rem) 0;
+  position: relative;
+  overflow: clip;
+  padding-block-end: clamp(5rem, 8vw, 8rem);
   background: var(--river-soft);
   color: var(--ink);
 }
 
+.storyCanopyFrame {
+  pointer-events: none;
+}
+
+.storyCanopyTopFrame {
+  position: absolute;
+  z-index: 0;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inline-size: clamp(22rem, 29vw, 30rem);
+  block-size: clamp(22rem, 29vw, 30rem);
+}
+
+.storyCanopyBranch {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  opacity: 1;
+}
+
 .storyHeader {
-  inline-size: min(100%, 92rem);
-  margin-inline: auto;
-  padding-inline: var(--space-page);
+  position: relative;
+  z-index: 1;
+  min-block-size: clamp(22rem, 29vw, 30rem);
+  padding-inline: max(var(--space-page), calc((100% - 92rem) / 2 + var(--space-page)));
 }
 
 .storyCopy {
+  position: relative;
+  z-index: 1;
   min-inline-size: 0;
+  margin-inline-start: clamp(8rem, 18vw, 18rem);
+  padding-block-start: clamp(8rem, 12vw, 12rem);
+  padding-block-end: clamp(2rem, 4vw, 4rem);
 }
 
 .storyCopy h2 {
@@ -443,13 +406,22 @@
 }
 
 .storyGrid {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(16rem, 0.55fr);
   align-items: start;
   gap: clamp(1.5rem, 4vw, 4rem);
   inline-size: min(100%, 100rem);
-  margin: clamp(4rem, 7vw, 7rem) auto 0;
+  margin: clamp(2.5rem, 4vw, 4rem) auto 0;
   padding-inline: var(--space-page);
+}
+
+.storyWideFigure,
+.storyPortraitFigure {
+  position: relative;
+  z-index: 1;
+  min-inline-size: 0;
 }
 
 .storyImage,
@@ -474,7 +446,12 @@
 }
 
 .storyGrid figcaption {
+  position: relative;
+  z-index: 2;
+  inline-size: fit-content;
   margin-block-start: 0.8rem;
+  padding-inline-end: 0.5rem;
+  background: var(--river-soft);
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -832,27 +809,31 @@
   }
 
   .place,
-  .story,
   .gallery,
   .details {
     padding-block: 5rem;
   }
 
+  .storyCanopyTopFrame {
+    inset-block-start: -1rem;
+    inset-inline-start: -2.5rem;
+    inline-size: 17rem;
+    block-size: 17rem;
+  }
+
+  .storyHeader {
+    min-block-size: auto;
+    padding-inline: var(--space-page);
+  }
+
+  .storyCopy {
+    margin-inline-start: 0;
+    padding-block-start: 10rem;
+    padding-block-end: 0;
+  }
+
   .venueCard {
     min-block-size: 30rem;
-  }
-
-  .branchDivider,
-  .branchDividerFrame {
-    min-block-size: 6.5rem;
-  }
-
-  .branchDividerFrame::before {
-    inset-inline: 6rem;
-  }
-
-  .branchDividerMark {
-    inline-size: 6.5rem;
   }
 
   .storyGrid {
@@ -945,7 +926,7 @@
     border: 1px solid CanvasText;
   }
 
-  .branchDivider {
+  .storyCanopyFrame {
     display: none;
   }
 }

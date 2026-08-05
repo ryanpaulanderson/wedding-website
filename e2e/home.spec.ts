@@ -53,7 +53,6 @@ test("the landing page supports accessible display and loading modes", async ({
   browserName,
   page,
 }) => {
-  await page.emulateMedia({ forcedColors: "active", reducedMotion: "reduce" });
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/");
 
@@ -64,7 +63,10 @@ test("the landing page supports accessible display and loading modes", async ({
     "Caroline and Ryan together in the Alhambra gardens in Granada",
   );
   const treeMarks = page.locator('img[src*="wedding-tree-logo"]');
-  const branchDividers = page.locator('main > [aria-hidden="true"]');
+  const transitionOrnaments = page.locator('main > [aria-hidden="true"]');
+  const directStoryCanopies = page.locator('#story > [aria-hidden="true"]');
+  const storyCanopies = page.locator('#story [aria-hidden="true"]');
+  const botanicalBranches = storyCanopies.locator('img[src*="riverlight-canopy-"]');
   const inSectionTreeCrops = page.locator(
     '#story img[src*="wedding-tree-logo"], #details img[src*="wedding-tree-logo"]',
   );
@@ -73,11 +75,46 @@ test("the landing page supports accessible display and loading modes", async ({
   await expect(heroImage).toHaveAttribute("width", "1200");
   await expect(heroImage).toHaveAttribute("height", "1600");
   await expect(proposalImage).toHaveAttribute("loading", "lazy");
-  await expect(treeMarks).toHaveCount(6);
-  await expect(branchDividers).toHaveCount(2);
-  await expect(branchDividers.locator('img[src*="wedding-tree-logo"]')).toHaveCount(4);
+  await expect(treeMarks).toHaveCount(2);
+  await expect(transitionOrnaments).toHaveCount(0);
+  await expect(directStoryCanopies).toHaveCount(0);
+  await expect(storyCanopies).toHaveCount(1);
+  await expect(botanicalBranches).toHaveCount(1);
+  await expect(botanicalBranches.nth(0)).toHaveAttribute("loading", "lazy");
+  await expect(botanicalBranches.nth(0)).toHaveAttribute(
+    "sizes",
+    "(max-width: 38rem) 17rem, (max-width: 72rem) 24rem, 30rem",
+  );
+  await expect(page.locator('img[src*="riverlight-canopy-bottom-right"]')).toHaveCount(0);
+  await expect(storyCanopies.locator('img[src*="wedding-tree-logo"]')).toHaveCount(0);
   await expect(inSectionTreeCrops).toHaveCount(0);
   await expect(page.locator('link[rel="preload"][as="image"]')).toHaveCount(1);
+
+  expect(
+    await storyCanopies.evaluateAll((frames) =>
+      frames.every((frame) => getComputedStyle(frame).position === "absolute"),
+    ),
+  ).toBe(true);
+  expect(
+    await page.locator("#story").evaluate((story) => story.getBoundingClientRect().height),
+  ).toBeLessThan(1600);
+
+  const canopyImagesFitTheirFrames = await botanicalBranches.evaluateAll((images) =>
+    images.every((image) => {
+      const frame = image.parentElement;
+      if (!frame) {
+        return false;
+      }
+
+      const imageBounds = image.getBoundingClientRect();
+      const frameBounds = frame.getBoundingClientRect();
+
+      return imageBounds.top >= frameBounds.top - 1 && imageBounds.bottom <= frameBounds.bottom + 1;
+    }),
+  );
+  expect(canopyImagesFitTheirFrames).toBe(true);
+
+  await page.emulateMedia({ forcedColors: "active", reducedMotion: "reduce" });
 
   const displayHeadingLineHeights = await page.locator("h1, h2, h3").evaluateAll((headings) =>
     headings
