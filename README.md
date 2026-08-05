@@ -95,6 +95,11 @@ Admin sessions expire after eight hours. Changing only the password protects new
 not invalidate existing sessions; rotate `ADMIN_SESSION_SECRET` at the same time to revoke every
 active session.
 
+The sign-in action also enforces a bounded ten-attempt, ten-minute fixed window per client within
+each running application instance. This application control prevents an unbounded verification path,
+but serverless instances do not share memory, so the Vercel Firewall rule remains the distributed
+production limit.
+
 Before production use, configure one Vercel Firewall rate-limit rule for the login action:
 
 1. Match request path `/admin` and method `POST`.

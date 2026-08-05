@@ -1,6 +1,6 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   ADMIN_ACCESS_COOKIE_NAME,
@@ -10,6 +10,7 @@ import {
   requireAdminSession,
   verifyAdminPassword,
 } from "@/lib/admin-access";
+import { adminLoginRateLimiter, createAdminLoginRateLimitKey } from "@/lib/admin-login-rate-limit";
 
 export async function signInToAdmin(formData: FormData) {
   const configuration = getAdminAccessConfiguration();
@@ -18,11 +19,20 @@ export async function signInToAdmin(formData: FormData) {
     redirect("/admin?error=unavailable");
   }
 
+  const requestHeaders = await headers();
+  const rateLimitKey = createAdminLoginRateLimitKey(requestHeaders, configuration.sessionSecret);
+
+  if (!adminLoginRateLimiter.consume(rateLimitKey)) {
+    redirect("/admin?error=invalid");
+  }
+
   const isValidPassword = await verifyAdminPassword(formData.get("password"), configuration);
 
   if (!isValidPassword) {
     redirect("/admin?error=invalid");
   }
+
+  adminLoginRateLimiter.reset(rateLimitKey);
 
   const cookieStore = await cookies();
   cookieStore.set(

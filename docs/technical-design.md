@@ -164,9 +164,10 @@ admin sessions.
 
 The page checks the session before rendering private content, and every admin data read or mutation
 must authorize again at its server boundary. The Next.js proxy provides private, non-cacheable,
-non-indexable responses and browser security headers, but it is not an authorization layer. Apply a
-Vercel WAF fixed-window rule to `POST /admin`: ten requests per IP per ten minutes, followed by a
-`429` response.
+non-indexable responses and browser security headers, but it is not an authorization layer. The
+sign-in action enforces a bounded, per-instance fixed window of ten attempts per client per ten
+minutes. Because serverless instances do not share that memory, also apply a Vercel WAF fixed-window
+rule to `POST /admin`: ten requests per IP per ten minutes, followed by a `429` response.
 
 This passphrase model is intentionally limited to one maintainer. Move to provider-backed named-user
 authentication before adding another administrator, multi-factor authentication, role-based access,
