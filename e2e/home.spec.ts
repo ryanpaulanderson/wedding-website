@@ -52,7 +52,6 @@ test("the landing page supports accessible display and loading modes", async ({
   browserName,
   page,
 }) => {
-  await page.emulateMedia({ forcedColors: "active", reducedMotion: "reduce" });
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/");
 
@@ -64,8 +63,8 @@ test("the landing page supports accessible display and loading modes", async ({
   );
   const treeMarks = page.locator('img[src*="wedding-tree-logo"]');
   const transitionOrnaments = page.locator('main > [aria-hidden="true"]');
-  const storyCanopy = page.locator('#story > [aria-hidden="true"]');
-  const botanicalBranches = storyCanopy.locator('img[src*="riverlight-canopy-"]');
+  const storyCanopies = page.locator('#story > [aria-hidden="true"]');
+  const botanicalBranches = storyCanopies.locator('img[src*="riverlight-canopy-"]');
   const inSectionTreeCrops = page.locator(
     '#story img[src*="wedding-tree-logo"], #details img[src*="wedding-tree-logo"]',
   );
@@ -76,13 +75,30 @@ test("the landing page supports accessible display and loading modes", async ({
   await expect(proposalImage).toHaveAttribute("loading", "lazy");
   await expect(treeMarks).toHaveCount(2);
   await expect(transitionOrnaments).toHaveCount(0);
-  await expect(storyCanopy).toHaveCount(1);
+  await expect(storyCanopies).toHaveCount(2);
   await expect(botanicalBranches).toHaveCount(2);
   await expect(botanicalBranches.nth(0)).toHaveAttribute("loading", "lazy");
   await expect(botanicalBranches.nth(1)).toHaveAttribute("loading", "lazy");
-  await expect(storyCanopy.locator('img[src*="wedding-tree-logo"]')).toHaveCount(0);
+  await expect(storyCanopies.locator('img[src*="wedding-tree-logo"]')).toHaveCount(0);
   await expect(inSectionTreeCrops).toHaveCount(0);
   await expect(page.locator('link[rel="preload"][as="image"]')).toHaveCount(1);
+
+  const canopyImagesFitTheirFrames = await botanicalBranches.evaluateAll((images) =>
+    images.every((image) => {
+      const frame = image.parentElement;
+      if (!frame) {
+        return false;
+      }
+
+      const imageBounds = image.getBoundingClientRect();
+      const frameBounds = frame.getBoundingClientRect();
+
+      return imageBounds.top >= frameBounds.top - 1 && imageBounds.bottom <= frameBounds.bottom + 1;
+    }),
+  );
+  expect(canopyImagesFitTheirFrames).toBe(true);
+
+  await page.emulateMedia({ forcedColors: "active", reducedMotion: "reduce" });
 
   const displayHeadingLineHeights = await page.locator("h1, h2, h3").evaluateAll((headings) =>
     headings

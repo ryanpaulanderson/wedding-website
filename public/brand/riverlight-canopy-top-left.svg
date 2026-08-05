@@ -1,9 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 430" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 470" fill="none">
   <defs>
     <path id="gold-bud" d="M0 0C4-6.3 12-5.7 13.8 1C10 7 2.8 6.4 0 0Z" fill="#d4a34f" />
     <path id="light-bud" d="M0 0C3.3-5.2 10-4.8 11.7.7C8.5 6 2.4 5.5 0 0Z" fill="#f4c91e" />
   </defs>
 
+  <g transform="translate(50 40) scale(.9)">
   <g stroke="#afa598" stroke-linecap="round" stroke-linejoin="round">
     <path d="M-36 414C32 358 62 284 101 220C149 143 219 97 315 68" stroke-width="22" />
     <path d="M99 221C173 202 242 169 305 125C385 70 469 40 578 27" stroke-width="13" />
@@ -96,5 +97,6 @@
     <use href="#light-bud" transform="translate(772 207) rotate(-161) scale(.55)" />
     <use href="#gold-bud" transform="translate(864 119) rotate(8) scale(.6)" />
     <use href="#light-bud" transform="translate(823 119) rotate(179) scale(.54)" />
+  </g>
   </g>
 </svg>

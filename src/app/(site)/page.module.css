@@ -349,19 +349,23 @@
 
 .story {
   position: relative;
-  isolation: isolate;
   overflow: clip;
-  padding: clamp(13rem, 19vw, 18rem) 0 clamp(12rem, 17vw, 16rem);
   background: var(--river-soft);
   color: var(--ink);
 }
 
-.storyCanopy {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  overflow: hidden;
+.storyCanopyFrame {
+  position: relative;
   pointer-events: none;
+}
+
+.storyCanopyTopFrame {
+  block-size: clamp(17rem, 26vw, 24rem);
+}
+
+.storyCanopyBottomFrame {
+  block-size: clamp(20rem, 30vw, 26rem);
+  margin-block-start: clamp(3rem, 7vw, 7rem);
 }
 
 .storyCanopyBranch {
@@ -372,15 +376,15 @@
 }
 
 .storyCanopyTop {
-  inset-block-start: -1.5rem;
-  inset-inline-start: -4rem;
-  inline-size: clamp(34rem, 52vw, 48rem);
+  inset-block-start: 0.75rem;
+  inset-inline-start: -2rem;
+  inline-size: clamp(28rem, 47vw, 42rem);
 }
 
 .storyCanopyBottom {
-  inset-block-end: -8rem;
-  inset-inline-end: -5rem;
-  inline-size: clamp(34rem, 48vw, 45rem);
+  inset-block-end: 1rem;
+  inset-inline-end: -1.5rem;
+  inline-size: clamp(30rem, 43vw, 38rem);
 }
 
 .storyHeader {
@@ -807,20 +811,25 @@
     padding-block: 5rem;
   }
 
-  .story {
-    padding-block: 13rem 11rem;
+  .storyCanopyTopFrame {
+    block-size: 13.5rem;
+  }
+
+  .storyCanopyBottomFrame {
+    block-size: 16rem;
+    margin-block-start: 3rem;
   }
 
   .storyCanopyTop {
-    inset-block-start: -0.5rem;
-    inset-inline-start: -7rem;
-    inline-size: 26rem;
+    inset-block-start: 0.5rem;
+    inset-inline-start: -4rem;
+    inline-size: 24rem;
   }
 
   .storyCanopyBottom {
-    inset-block-end: -6rem;
-    inset-inline-end: -10rem;
-    inline-size: 29rem;
+    inset-block-end: 0.75rem;
+    inset-inline-end: -1.5rem;
+    inline-size: 24rem;
   }
 
   .storyCopy {
@@ -921,7 +930,7 @@
     border: 1px solid CanvasText;
   }
 
-  .storyCanopy {
+  .storyCanopyFrame {
     display: none;
   }
 }

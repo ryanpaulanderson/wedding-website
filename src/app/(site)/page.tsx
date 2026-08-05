@@ -26,24 +26,33 @@ const detailCards = [
   },
 ] as const;
 
-function StoryCanopy() {
+type StoryCanopyProps = {
+  placement: "top" | "bottom";
+};
+
+function StoryCanopy({ placement }: StoryCanopyProps) {
+  const isTop = placement === "top";
+
   return (
-    <div className={styles.storyCanopy} aria-hidden="true">
+    <div
+      className={`${styles.storyCanopyFrame} ${isTop ? styles.storyCanopyTopFrame : styles.storyCanopyBottomFrame}`}
+      aria-hidden="true"
+    >
       <Image
-        src="/brand/riverlight-canopy-top-left.svg"
+        src={
+          isTop
+            ? "/brand/riverlight-canopy-top-left.svg"
+            : "/brand/riverlight-canopy-bottom-right.svg"
+        }
         alt=""
         width={900}
-        height={430}
-        sizes="(max-width: 38rem) 23rem, (max-width: 72rem) 38rem, 48rem"
-        className={`${styles.storyCanopyBranch} ${styles.storyCanopyTop}`}
-      />
-      <Image
-        src="/brand/riverlight-canopy-bottom-right.svg"
-        alt=""
-        width={900}
-        height={520}
-        sizes="(max-width: 38rem) 24rem, (max-width: 72rem) 40rem, 52rem"
-        className={`${styles.storyCanopyBranch} ${styles.storyCanopyBottom}`}
+        height={isTop ? 470 : 560}
+        sizes={
+          isTop
+            ? "(max-width: 38rem) 24rem, (max-width: 72rem) 28rem, 42rem"
+            : "(max-width: 38rem) 24rem, (max-width: 72rem) 30rem, 38rem"
+        }
+        className={`${styles.storyCanopyBranch} ${isTop ? styles.storyCanopyTop : styles.storyCanopyBottom}`}
       />
     </div>
   );
@@ -126,7 +135,7 @@ export default function HomePage() {
         </section>
 
         <section id="story" className={styles.story} aria-labelledby="story-title">
-          <StoryCanopy />
+          <StoryCanopy placement="top" />
           <div className={styles.storyHeader}>
             <div className={styles.storyCopy}>
               <p className={styles.sectionLabel}>Our story</p>
@@ -159,6 +168,8 @@ export default function HomePage() {
               <figcaption>Engaged in Granada</figcaption>
             </figure>
           </div>
+
+          <StoryCanopy placement="bottom" />
         </section>
 
         <section className={styles.gallery} aria-labelledby="gallery-title">
