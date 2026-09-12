@@ -33,7 +33,8 @@
     "images:prepare": "tsx scripts/images/cli.ts prepare",
     "images:sync": "tsx scripts/images/cli.ts sync",
     "images:prune": "tsx scripts/images/cli.ts prune",
-    "vercel:setup": "bash scripts/setup-vercel.sh"
+    "vercel:setup": "bash scripts/setup-vercel.sh",
+    "test:e2e:admin:https": "playwright test --config playwright.admin-https.config.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",

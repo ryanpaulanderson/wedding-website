@@ -21,6 +21,12 @@ export type AdminAccessConfiguration = {
   sessionSecret: string;
 };
 
+export function isAdminAuthenticationRequired(
+  environment: AdminAccessEnvironment = process.env,
+): boolean {
+  return environment.VERCEL === "1";
+}
+
 export function getAdminAccessConfiguration(
   environment: AdminAccessEnvironment = process.env,
 ): AdminAccessConfiguration | null {
@@ -80,6 +86,8 @@ export async function hasAdminSession(configuration: AdminAccessConfiguration): 
 }
 
 export async function requireAdminSession(): Promise<void> {
+  if (!isAdminAuthenticationRequired()) return;
+
   const configuration = getAdminAccessConfiguration();
 
   if (!configuration || !(await hasAdminSession(configuration))) {

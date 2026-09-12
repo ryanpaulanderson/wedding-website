@@ -22,13 +22,14 @@ async function addAuthenticatedAdminCookie(context: BrowserContext) {
       name: ADMIN_COOKIE_NAME,
       path: "/admin",
       sameSite: "Strict",
-      secure: false,
+      secure: process.env.VERCEL === "1",
       value: token,
     },
   ]);
 }
 
 test("signs in to and out of the private admin dashboard", async ({ context, page }) => {
+  test.skip(process.env.VERCEL !== "1", "Hosted authentication is bypassed locally.");
   const response = await page.goto("/admin");
 
   expect(response?.headers()["cache-control"]).toBe("private, no-store");
@@ -63,7 +64,7 @@ test("signs in to and out of the private admin dashboard", async ({ context, pag
     httpOnly: true,
     path: "/admin",
     sameSite: "Strict",
-    secure: false,
+    secure: process.env.VERCEL === "1",
   });
 
   await page.reload();
@@ -79,6 +80,7 @@ test("signs in to and out of the private admin dashboard", async ({ context, pag
 });
 
 test("rejects tampered and expired admin sessions", async ({ context, page }) => {
+  test.skip(process.env.VERCEL !== "1", "Hosted authentication is bypassed locally.");
   const expiredToken = createSignedSession({
     durationSeconds: 60,
     now: Date.now() - 120_000,
@@ -93,7 +95,7 @@ test("rejects tampered and expired admin sessions", async ({ context, page }) =>
       name: ADMIN_COOKIE_NAME,
       path: "/admin",
       sameSite: "Strict",
-      secure: false,
+      secure: process.env.VERCEL === "1",
       value: expiredToken,
     },
   ]);
@@ -108,7 +110,7 @@ test("rejects tampered and expired admin sessions", async ({ context, page }) =>
       name: ADMIN_COOKIE_NAME,
       path: "/admin",
       sameSite: "Strict",
-      secure: false,
+      secure: process.env.VERCEL === "1",
       value: `${expiredToken}tampered`,
     },
   ]);
@@ -118,6 +120,7 @@ test("rejects tampered and expired admin sessions", async ({ context, page }) =>
 });
 
 test("supports accessible display modes and narrow layouts", async ({ browserName, page }) => {
+  test.skip(process.env.VERCEL !== "1", "Hosted authentication is bypassed locally.");
   await page.emulateMedia({ forcedColors: "active", reducedMotion: "reduce" });
   await page.setViewportSize({ width: 320, height: 800 });
   await page.goto("/admin");
@@ -200,4 +203,34 @@ test.describe.serial("database-backed admin states", () => {
     await expect(page.getByText("mixed", { exact: true })).toBeVisible();
     await expect(page.getByText("1 response", { exact: true })).toBeVisible();
   });
+});
+
+test("opens local admin without credentials or a session", async ({
+  page,
+  context,
+  browserName,
+}) => {
+  test.skip(process.env.VERCEL === "1", "Local-only bypass.");
+  await context.clearCookies();
+  const response = await page.goto("/admin");
+  expect(response?.headers()["cache-control"]).toBe("private, no-store");
+  expect(response?.headers()["x-robots-tag"]).toBe("noindex, nofollow, noarchive");
+  await expect(page.getByRole("heading", { name: "Overview" })).toBeVisible();
+  await expect(page.getByText("Database connected")).toBeVisible();
+  await expect(page.getByLabel("Admin passphrase")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Sign out" })).toHaveCount(0);
+  expect((await context.cookies()).some((cookie) => cookie.name === ADMIN_COOKIE_NAME)).toBe(false);
+  await page.keyboard.press(browserName === "webkit" ? "Alt+Tab" : "Tab");
+  await expect(page.getByRole("link", { name: "Skip to dashboard" })).toBeFocused();
+  await page.emulateMedia({ forcedColors: "active", reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.addStyleTag({ content: "html { font-size: 200% !important; }" });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1,
+    ),
+  ).toBe(true);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Overview" })).toBeVisible();
 });

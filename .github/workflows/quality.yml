@@ -97,6 +97,9 @@ jobs:
       - name: Run browser tests
         run: pnpm test:e2e
 
+      - name: Verify hosted admin authentication over HTTPS
+        run: pnpm test:e2e:admin:https
+
       - name: Upload coverage report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v5

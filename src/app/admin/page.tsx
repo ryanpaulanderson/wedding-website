@@ -3,7 +3,11 @@ import { connection } from "next/server";
 import { AdminDashboard } from "./_components/AdminDashboard";
 import { AdminLogin } from "./_components/AdminLogin";
 import { getAdminDashboardSnapshot } from "@/features/admin/dashboard-data";
-import { getAdminAccessConfiguration, hasAdminSession } from "@/lib/admin-access";
+import {
+  getAdminAccessConfiguration,
+  hasAdminSession,
+  isAdminAuthenticationRequired,
+} from "@/lib/admin-access";
 
 export const metadata: Metadata = {
   title: "Admin portal",
@@ -26,24 +30,28 @@ function firstValue(value: string | string[] | undefined): string | undefined {
 export default async function AdminPage({ searchParams }: AdminPageProps) {
   await connection();
 
-  const configuration = getAdminAccessConfiguration();
+  const authenticationRequired = isAdminAuthenticationRequired();
 
-  if (!configuration) {
-    return <AdminLogin hasPasswordError={false} isUnavailable />;
-  }
+  if (authenticationRequired) {
+    const configuration = getAdminAccessConfiguration();
 
-  if (!(await hasAdminSession(configuration))) {
-    const parameters = await searchParams;
+    if (!configuration) {
+      return <AdminLogin hasPasswordError={false} isUnavailable />;
+    }
 
-    return (
-      <AdminLogin
-        hasPasswordError={firstValue(parameters.error) === "invalid"}
-        isUnavailable={false}
-      />
-    );
+    if (!(await hasAdminSession(configuration))) {
+      const parameters = await searchParams;
+
+      return (
+        <AdminLogin
+          hasPasswordError={firstValue(parameters.error) === "invalid"}
+          isUnavailable={false}
+        />
+      );
+    }
   }
 
   const snapshot = await getAdminDashboardSnapshot();
 
-  return <AdminDashboard snapshot={snapshot} />;
+  return <AdminDashboard snapshot={snapshot} showSignOut={authenticationRequired} />;
 }

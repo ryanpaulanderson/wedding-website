@@ -16,9 +16,10 @@ const metricDefinitions: readonly MetricDefinition[] = [
 
 type AdminDashboardProps = {
   snapshot: AdminDashboardSnapshot;
+  showSignOut?: boolean;
 };
 
-export function AdminDashboard({ snapshot }: AdminDashboardProps) {
+export function AdminDashboard({ snapshot, showSignOut = true }: AdminDashboardProps) {
   const isConnected = snapshot.status === "ready";
   const recentResponses = isConnected ? snapshot.recentResponses : [];
   const responseCountLabel = `${recentResponses.length} ${recentResponses.length === 1 ? "response" : "responses"}`;
@@ -36,11 +37,13 @@ export function AdminDashboard({ snapshot }: AdminDashboardProps) {
           </span>
           <span className={styles.product}>Administration</span>
         </div>
-        <form action={signOutOfAdmin}>
-          <button className={styles.signOut} type="submit">
-            Sign out
-          </button>
-        </form>
+        {showSignOut && (
+          <form action={signOutOfAdmin}>
+            <button className={styles.signOut} type="submit">
+              Sign out
+            </button>
+          </form>
+        )}
       </header>
 
       <main className={styles.main} id="admin-content">
