@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../../schemas/image-config.schema.json",
+  "id": "granada-alhambra-overlook",
+  "alt": "Caroline and Ryan overlooking the Alhambra and mountains in Granada",
+  "variants": {
+    "storyPortrait": {
+      "width": 1000,
+      "height": 1600,
+      "quality": 88,
+      "focalPoint": { "x": 0.5, "y": 0.55 }
+    }
+  }
+}

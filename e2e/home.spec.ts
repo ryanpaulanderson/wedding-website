@@ -57,10 +57,10 @@ test("the landing page supports accessible display and loading modes", async ({
   await page.goto("/");
 
   const heroImage = page.getByAltText(
-    "Caroline and Ryan together on a Washington, DC rooftop at sunset",
+    "Caroline and Ryan holding hands beneath the arches at the National Gallery of Art",
   );
   const proposalImage = page.getByAltText(
-    "Caroline and Ryan together in the Alhambra gardens in Granada",
+    "Caroline and Ryan overlooking the Alhambra and mountains in Granada",
   );
   const treeMarks = page.locator('img[src*="wedding-tree-logo"]');
   const transitionOrnaments = page.locator('main > [aria-hidden="true"]');
@@ -73,7 +73,7 @@ test("the landing page supports accessible display and loading modes", async ({
 
   await expect(heroImage).not.toHaveAttribute("loading", "lazy");
   await expect(heroImage).toHaveAttribute("width", "1200");
-  await expect(heroImage).toHaveAttribute("height", "1600");
+  await expect(heroImage).toHaveAttribute("height", "1800");
   await expect(proposalImage).toHaveAttribute("loading", "lazy");
   await expect(treeMarks).toHaveCount(2);
   await expect(transitionOrnaments).toHaveCount(0);
