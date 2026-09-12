@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { AdminDashboardSnapshot, AdminDashboardTotals } from "@/features/admin/dashboard-data";
 import { signOutOfAdmin } from "../actions";
 import styles from "./AdminDashboard.module.css";
@@ -60,6 +61,10 @@ export function AdminDashboard({ snapshot, showSignOut = true }: AdminDashboardP
             {isConnected ? "Database connected" : "Database unavailable"}
           </p>
         </section>
+
+        <p>
+          <Link href="/admin/early-declines">Early notices: unable to attend</Link>
+        </p>
 
         <section className={styles.metricsSection} aria-labelledby="metrics-title">
           <h2 className={styles.sectionTitle} id="metrics-title">

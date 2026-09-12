@@ -46,3 +46,58 @@ model Guest {
   @@index([attendance])
   @@map("guests")
 }
+
+enum EarlyDeclineEmailKind {
+  GUEST_CONFIRMATION
+  ADMIN_NOTIFICATION
+}
+
+enum EarlyDeclineEmailStatus {
+  PENDING
+  ACCEPTED
+  FAILED
+  PAUSED
+  NEEDS_REVIEW
+}
+
+model EarlyDecline {
+  id         String              @id @default(uuid()) @db.Uuid
+  names      String              @db.VarChar(1000)
+  email      String              @unique @db.VarChar(254)
+  createdAt  DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
+  reviewedAt DateTime?           @map("reviewed_at") @db.Timestamptz(3)
+  emails     EarlyDeclineEmail[]
+
+  @@index([createdAt(sort: Desc)])
+  @@map("early_declines")
+}
+
+model EarlyDeclineEmail {
+  id             String                  @id @default(uuid()) @db.Uuid
+  declineId      String                  @map("decline_id") @db.Uuid
+  kind           EarlyDeclineEmailKind
+  status         EarlyDeclineEmailStatus @default(PENDING)
+  payload        String?
+  attempts       Int                     @default(0)
+  firstAttemptAt DateTime?               @map("first_attempt_at") @db.Timestamptz(3)
+  leaseToken     String?                 @map("lease_token") @db.Uuid
+  leaseExpiresAt DateTime?               @map("lease_expires_at") @db.Timestamptz(3)
+  providerId     String?                 @map("provider_id") @db.VarChar(36)
+  errorCode      String?                 @map("error_code") @db.VarChar(40)
+  createdAt      DateTime                @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime                @updatedAt @map("updated_at") @db.Timestamptz(3)
+  decline        EarlyDecline            @relation(fields: [declineId], references: [id], onDelete: Cascade)
+
+  @@unique([declineId, kind])
+  @@index([status])
+  @@map("early_decline_emails")
+}
+
+model EarlyDeclineRateLimit {
+  key       String   @id @db.VarChar(64)
+  attempts  Int      @default(1)
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(3)
+
+  @@index([expiresAt])
+  @@map("early_decline_rate_limits")
+}

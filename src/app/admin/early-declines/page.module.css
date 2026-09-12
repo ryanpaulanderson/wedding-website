@@ -1,0 +1,72 @@
+.page {
+  max-inline-size: 70rem;
+  margin-inline: auto;
+  padding: clamp(1rem, 4vw, 3rem);
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+.page h1 {
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  line-height: 1.15;
+  margin-block: 2rem 1rem;
+}
+.page a {
+  color: #6e2d36;
+  text-underline-offset: 0.2em;
+}
+.notices {
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 1.5rem;
+  margin-block: 2rem;
+}
+.notices article {
+  padding: clamp(1rem, 3vw, 2rem);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+.notices h2 {
+  white-space: pre-wrap;
+  font-size: 1.4rem;
+}
+.page button {
+  font: inherit;
+  border: 1px solid #6e2d36;
+  background: #fff;
+  color: #6e2d36;
+  border-radius: 0.3rem;
+  padding: 0.65rem 1rem;
+  min-block-size: 2.75rem;
+  cursor: pointer;
+}
+.page button:hover {
+  background: #f4efe6;
+}
+.page :focus-visible {
+  outline: 3px solid #304a4f;
+  outline-offset: 4px;
+}
+.emails {
+  list-style: none;
+  padding: 0;
+  margin-block-start: 1.5rem;
+  border-block-start: 1px solid var(--color-border);
+}
+.emails li {
+  margin-block: 1rem;
+}
+.provider {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+.pagination a {
+  padding-block: 0.65rem;
+}

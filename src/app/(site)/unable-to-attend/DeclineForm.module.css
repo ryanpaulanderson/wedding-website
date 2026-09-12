@@ -1,0 +1,86 @@
+.page {
+  max-inline-size: 44rem;
+  margin-inline: auto;
+  padding: clamp(1rem, 5vw, 3rem);
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+.page h1 {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  line-height: 1.1;
+  margin-block: 2rem 1rem;
+}
+.page p {
+  line-height: 1.65;
+}
+.page a {
+  color: #6e2d36;
+  text-underline-offset: 0.2em;
+}
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-block-start: 3rem;
+  font-size: 0.85rem;
+}
+.form {
+  margin-block-start: 2rem;
+  display: grid;
+  gap: 1.5rem;
+}
+.form label {
+  display: block;
+  font-weight: 650;
+}
+.form p {
+  margin-block: 0.5rem;
+}
+.form input,
+.form textarea {
+  display: block;
+  inline-size: 100%;
+  border: 1px solid #79746e;
+  border-radius: 0.35rem;
+  background: var(--color-surface);
+  padding: 0.8rem;
+  font: inherit;
+  color: inherit;
+}
+.form textarea {
+  resize: vertical;
+  min-block-size: 7rem;
+}
+.form button {
+  justify-self: start;
+  min-block-size: 2.75rem;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid #6e2d36;
+  border-radius: 0.35rem;
+  background: #6e2d36;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+.form button:hover {
+  background: #532129;
+}
+.form button:disabled {
+  background: #62605d;
+  cursor: wait;
+}
+.page :focus-visible {
+  outline: 3px solid #304a4f;
+  outline-offset: 4px;
+}
+.error {
+  color: #812333;
+}
+.success {
+  margin-block: 2rem;
+  border-block: 1px solid var(--color-border);
+  padding-block: 1.5rem;
+}
+.privacy {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}

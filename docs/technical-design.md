@@ -181,7 +181,7 @@ The first step launches the public site; the second carries no launch dependency
 
 Provide an unlinked administration page at `/admin` for the project's sole maintainer. The portal
 reads narrow RSVP summary DTOs directly through an authenticated server-only Prisma boundary. It
-does not expose an admin API or mutate RSVP records.
+does not expose an admin API or mutate formal RSVP records. The separate early-notice view allows authorized review tracking and retries for unsent notice emails.
 
 Admin authentication is independent from the removable hosted-site password gate and is enforced
 on every Vercel preview and production deployment. Local execution, including local production
@@ -298,12 +298,63 @@ Configuration or encryption failure never falls back to plaintext. Results disti
 acceptance from failures; acceptance alone does not prove inbox delivery or successful decryption.
 The explicit status command can check Resend's recorded delivery event when the API key permits it.
 
-The guest submission flow remains deferred. Before connecting it, save the RSVP and a durable
-notification/outbox record atomically, retain the exact encrypted request for retries across
-requests, and track pending/accepted/failed notifications. Do not re-encrypt an existing request
-under the same idempotency key: randomized encryption changes its body, and Resend's deduplication
-window is 24 hours. Current bounded retries run only within one invocation; there is no background
-worker or durable automatic resend yet. An email failure must never discard the saved RSVP.
+The formal household RSVP submission flow remains deferred. The separate early-decline flow below
+now uses an atomic database outbox. Reuse that delivery guarantee when connecting formal RSVPs;
+email failure must never discard a saved response.
+
+### Early notices: unable to attend
+
+**Status:** Accepted
+
+At the save-the-date stage, `/unable-to-attend` accepts an optional early notice from anyone who
+already knows they cannot attend. The homepage links to it while retaining the message that formal
+RSVPs open with invitations. No invitation lookup, account, or household token is required. The
+temporary site password gate still applies on hosted deployments while enabled.
+
+Store the original freeform names (up to 1,000 characters) and a normalized, lowercase email address
+(up to 254 characters) in `early_declines`, separate from households and guests. One notice per
+normalized email is enforced by a unique database constraint, including concurrent submissions.
+Duplicates receive the same acknowledgment without overwriting names or creating more email jobs.
+The form asks for everyone in one notice; corrections and changed plans go directly to Ryan.
+This does not verify ownership of an email address and does not automatically change the invitation
+list or formal RSVP totals.
+
+Save the notice and two `early_decline_emails` rows in one database transaction. One is a fixed,
+unpersonalized guest confirmation with Ryan's reply address: thank them for letting us know, say
+we are sorry they cannot attend, and ask them to email Ryan if plans change. No guest public key is
+available, so this confirmation is ordinary email. The other contains the names, email and submission
+time encrypted to Ryan's pinned public PGP key, using the existing generic subject. Guest-supplied
+text is never reflected in the guest email or email headers.
+
+Next.js `after()` attempts delivery after the saved response. Each job claims a two-minute database
+lease, persists its exact serialized request before calling Resend, and retains identical bytes and
+an outbox-ID idempotency key on every retry. Failed mail remains visible for an authorized manual
+retry in `/admin/early-declines`; there is no scheduler or automatic cross-request worker. A process
+interruption leaves a recoverable pending job. After 23 hours from an unresolved first send attempt,
+stop resending and require delivery reconciliation in Resend, ahead of its 24-hour deduplication
+expiry. Do not re-encrypt or reset a possibly accepted job to bypass that limit. Accepted indicates
+provider acceptance, not inbox delivery; provider references support bounce/delivery checks.
+
+Automatic sends run only in Production. Preview and local notices are saved with email jobs marked
+paused and never mail real recipients. Existing maintainer-only synthetic email commands remain
+available. The admin view shows both email states, submitted names and address, submission time and
+review status, paginated at 25 notices. Every admin read and mutation independently reauthorizes.
+Marking a notice reviewed is an acknowledgment that the maintainer has dealt with their guest list;
+it does not alter formal guest records.
+
+The public action validates input and consumes a PostgreSQL-backed limit of five attempts per client
+per clock hour, before inserting notices or sending mail. HMAC keys use the existing server-only
+`ADMIN_SESSION_SECRET` with an early-decline/hour namespace and the same trusted Vercel address
+selection as login limiting. No raw IP is retained; expired counters are removed on later submissions.
+Hosted submissions fail closed if this secret is unavailable. Local execution uses a development-only
+key. This limits routine repeat abuse but is not identity verification or a substitute for edge DDoS
+protection. No submission data is sent in analytics events, URLs, provider tags, or logs.
+
+Deployment: explicitly apply committed migrations with `pnpm db:migrate:deploy` using each target's
+unpooled database URL before enabling this feature there. Never apply migrations in a build or at
+startup. The migration only adds separate tables, enums and constraints; it preserves existing data.
+Preview needs its own migration for the form to work. Existing Production Resend variables and admin
+session secret are reused; no new credentials or paid service are required.
 
 References: [Resend send API](https://resend.com/docs/api-reference/emails/send-email),
 [OpenPGP.js](https://docs.openpgpjs.org/),
@@ -358,11 +409,22 @@ We should resolve these roughly in order:
 
 1. Design private invitation-link and name-lookup authorization and the RSVP update flow.
 2. Finalize RSVP questions, deadlines, and meal-choice behavior; dietary and plus-one fields are defined.
-3. Decide whether guests receive confirmation or reminder emails.
+3. Decide whether formal RSVP guests receive confirmation or reminder emails; early notices already receive confirmation.
 4. Choose analytics, monitoring, backup, and post-wedding data-retention policy.
 5. Connect encrypted notifications to the future submission flow with a durable outbox and retry policy.
 
 ## Decision log
+
+### 2026-09-12: Early unable-to-attend notices
+
+**Status:** Accepted
+
+Add a freeform early-notice page for save-the-date planning, separate from formal RSVPs. Collect
+names and email, prevent duplicate notices, send a fixed guest confirmation and an encrypted
+maintainer notification, and provide an independently authorized admin review view. Persist both
+email jobs with the notice to retain failures and prevent duplicate sends across retries. The
+formal invitation lookup and RSVP flow remain deferred. This extends the earlier model-only scope
+at the maintainer's request without changing the formal guest list automatically.
 
 ### 2026-09-12: Resend and public-key-encrypted notifications
 
