@@ -22,18 +22,18 @@ made and record enough context to revisit them later without reopening every dis
 
 ## Decision summary
 
-| Area                  | Status   | Current direction                                                                      |
-| --------------------- | -------- | -------------------------------------------------------------------------------------- |
-| Application hosting   | Accepted | Vercel Hobby                                                                           |
-| CI/CD                 | Accepted | GitHub required checks + Vercel Git deployments                                        |
-| Public image storage  | Accepted | Gitignored local originals; processed immutable variants in public Vercel Blob         |
-| Temporary site access | Accepted | Shared password on all Vercel deployments; local execution bypasses it                 |
-| RSVP database         | Accepted | Separate Neon PostgreSQL resources through Prisma for Preview and Production           |
-| Guest RSVP access     | Open     | Private per-household invitation token or shared lookup flow                           |
-| Admin access          | Accepted | Unlinked passphrase-protected `/admin` portal for the sole maintainer                  |
-| Email                 | Open     | No transactional email initially, or a low-volume provider if confirmations are wanted |
-| Domain                | Accepted | `www.carolineandryan.org`; apex redirects to `www`                                     |
-| Analytics             | Accepted | Vercel Web Analytics and Speed Insights, with no custom guest-data events              |
+| Area                  | Status   | Current direction                                                                   |
+| --------------------- | -------- | ----------------------------------------------------------------------------------- |
+| Application hosting   | Accepted | Vercel Hobby                                                                        |
+| CI/CD                 | Accepted | GitHub required checks + Vercel Git deployments                                     |
+| Public image storage  | Accepted | Gitignored local originals; processed immutable variants in public Vercel Blob      |
+| Temporary site access | Accepted | Shared password on all Vercel deployments; local execution bypasses it              |
+| RSVP database         | Accepted | Separate Neon PostgreSQL resources through Prisma for Preview and Production        |
+| Guest RSVP access     | Accepted | Private per-household invitation link plus name lookup; access flows deferred       |
+| Admin access          | Accepted | Unlinked passphrase-protected `/admin` portal for the sole maintainer               |
+| Email                 | Open     | Maintainer notification on RSVP submission requested; external sending provider TBD |
+| Domain                | Accepted | `www.carolineandryan.org`; apex redirects to `www`                                  |
+| Analytics             | Accepted | Vercel Web Analytics and Speed Insights, with no custom guest-data events           |
 
 ## Proposed architecture
 
@@ -237,15 +237,50 @@ References:
 
 ## Initial RSVP domain model
 
-This model is intentionally conceptual until the guest access flow is chosen.
+The implemented foundation stores households and their named invited guests. The September 12
+extension adds the following fields without enabling uploads or RSVP submission:
 
-- **Household / invitation:** mailing name, invitation token or lookup key, RSVP deadline, notes.
-- **Guest:** name, attendance response, meal choice if applicable, dietary notes, and plus-one
-  relationship.
-- **Submission metadata:** first-submitted and last-updated timestamps; optionally an event log
-  for troubleshooting changes.
+- **Household:** existing display name and response timestamps, plus an optional unique
+  `invitationTokenHash`. Future private links use a high-entropy token and store only its lowercase
+  SHA-256 hash (64 hexadecimal characters). Existing households may have no token; this migration
+  does not generate or distribute invitations.
+- **Named invited guest:** existing display name and attendance, plus optional
+  `dietaryRestrictions` (up to 1,000 characters) and `plusOneAllowed` (false by default).
+  The maintainer's future upload is authoritative for plus-one permission, per named guest.
+- **Optional plus-one:** `plusOneName` (up to 200 characters), `plusOneAttendance`, and
+  `plusOneDietaryRestrictions` (up to 1,000 characters) live on the inviting guest's record.
+  This gives each named guest zero or one additional place without creating an unnamed Guest row
+  or permitting chains of plus-ones. The plus-one uses the same attending/declined enum as guests;
+  null attendance means unanswered. Dietary restrictions are independent for each person.
+- **Database invariants:** an unpermitted plus-one has no name, attendance, or dietary data.
+  An attending plus-one requires a nonblank name and an attending named guest. Future writes must
+  update the related fields atomically; revoking permission must clear all plus-one fields.
 
-Security and privacy baseline:
+Future invitation capacity is the count of named guests plus guests with `plusOneAllowed = true`.
+Future attendance totals must count attending named guests and attending plus-ones separately.
+The current read-only dashboard still counts named Guest rows only; its queries must be extended
+when plus-one upload/submission is implemented, before plus-one responses are collected.
+
+Guests will eventually be able to open a private link directly to their household's RSVP or look
+up the invitation by name. This change adds only the supporting token hash field; it adds no guest
+access endpoint. Name lookup must resolve ambiguous names and define an authorization mechanism
+and abuse controls before exposing private household data. Display names are not unique IDs or
+access secrets. RSVP deadlines, meal choices, and submission history remain future work.
+
+### RSVP submission notifications
+
+The requested behavior is an email to the maintainer when an RSVP is submitted. Provider selection
+and implementation are deferred alongside the submission flow. Use an external transactional
+email service with SMTP or an HTTPS API; do not run an SMTP server in the Vercel application.
+Keep the recipient, sender identity, and provider credentials in server-side environment variables,
+with production and preview delivery configured independently. Save the RSVP before attempting
+delivery; a mail failure must not discard the response. Decide retry and delivery-status handling
+when implementing submission notifications. No email credentials or sending dependency are added
+by this data-model change.
+
+Reference: [Vercel SMTP guidance](https://vercel.com/kb/guide/serverless-functions-and-smtp).
+
+### Security and privacy baseline
 
 - Generate high-entropy invitation tokens; never use sequential database IDs as access secrets.
 - Store a hash of each token when practical, so a database read does not expose usable links.
@@ -292,12 +327,24 @@ Free-tier allowances and terms can change, so re-check them before the public la
 
 We should resolve these roughly in order:
 
-1. Choose how guests identify their invitation and update an RSVP.
-2. Define the exact RSVP questions, household/plus-one rules, and meal-choice behavior.
+1. Design private invitation-link and name-lookup authorization and the RSVP update flow.
+2. Finalize RSVP questions, deadlines, and meal-choice behavior; dietary and plus-one fields are defined.
 3. Decide whether guests receive confirmation or reminder emails.
 4. Choose analytics, monitoring, backup, and post-wedding data-retention policy.
+5. Select an external email provider and configure maintainer submission notifications.
 
 ## Decision log
+
+### 2026-09-12: Dietary restrictions and conditional plus-ones
+
+**Status:** Accepted
+
+Add bounded optional dietary notes separately for named guests and their plus-ones. Plus-one
+permission belongs to the maintainer's upload and defaults to false. A guest record holds at most
+one plus-one's response, enforced with database checks for permission and attending companions.
+Add an optional hashed household invitation token to support private links; guests will also be
+able to use name lookup once its authorization flow is designed. Scope is the data model and
+committed migration only; upload, guest forms, dashboard changes, and email delivery are deferred.
 
 | Date       | Decision                                                   | Status   | Notes                                                                                                            |
 | ---------- | ---------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------- |
