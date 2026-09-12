@@ -12,12 +12,13 @@
 }
 .tree {
   position: absolute;
-  inset-block-start: clamp(5rem, 18vh, 12rem);
-  inset-inline-end: -7rem;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  translate: -50% -50%;
   inline-size: clamp(28rem, 60vw, 56rem);
   max-inline-size: none;
   block-size: auto;
-  opacity: 0.24;
+  opacity: 0.16;
 }
 .page {
   max-inline-size: 44rem;
@@ -108,7 +109,7 @@
 
 @media (max-width: 38rem) {
   .tree {
-    opacity: 0.16;
+    opacity: 0.12;
   }
 }
 @media (forced-colors: active) {
