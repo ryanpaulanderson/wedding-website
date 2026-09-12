@@ -1,3 +1,24 @@
+.backdrop {
+  position: relative;
+  isolation: isolate;
+  min-block-size: 100svh;
+}
+.decoration {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  overflow: clip;
+  pointer-events: none;
+}
+.tree {
+  position: absolute;
+  inset-block-start: clamp(5rem, 18vh, 12rem);
+  inset-inline-end: -7rem;
+  inline-size: clamp(28rem, 60vw, 56rem);
+  max-inline-size: none;
+  block-size: auto;
+  opacity: 0.24;
+}
 .page {
   max-inline-size: 44rem;
   margin-inline: auto;
@@ -83,4 +104,15 @@
 .privacy {
   color: var(--color-text-muted);
   font-size: 0.9rem;
+}
+
+@media (max-width: 38rem) {
+  .tree {
+    opacity: 0.16;
+  }
+}
+@media (forced-colors: active) {
+  .decoration {
+    display: none;
+  }
 }
