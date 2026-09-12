@@ -16,6 +16,7 @@ import {
   getAdminAccessConfiguration,
   getAdminAccessCookieOptions,
   requireAdminSession,
+  isAdminAuthenticationRequired,
   verifyAdminSession,
 } from "./admin-access";
 
@@ -83,7 +84,32 @@ describe("admin sessions", () => {
 });
 
 describe("admin data authorization", () => {
+  it.each(["development", "production", "test"])(
+    "allows local %s execution without credentials or cookies",
+    async (mode) => {
+      vi.stubEnv("VERCEL", undefined);
+      vi.stubEnv("NODE_ENV", mode);
+      vi.stubEnv("ADMIN_PASSWORD_HASH", "");
+      vi.stubEnv("ADMIN_SESSION_SECRET", "");
+      await expect(requireAdminSession()).resolves.toBeUndefined();
+      expect(mocks.cookies).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each(["preview", "production"])(
+    "requires authentication on Vercel %s even without credentials",
+    async (deployment) => {
+      vi.stubEnv("VERCEL", "1");
+      vi.stubEnv("VERCEL_ENV", deployment);
+      vi.stubEnv("ADMIN_PASSWORD_HASH", "");
+      vi.stubEnv("ADMIN_SESSION_SECRET", "");
+      expect(isAdminAuthenticationRequired()).toBe(true);
+      await expect(requireAdminSession()).rejects.toThrow("Admin access required.");
+    },
+  );
+
   function configureEnvironment() {
+    vi.stubEnv("VERCEL", "1");
     vi.stubEnv("ADMIN_PASSWORD_HASH", passwordHash);
     vi.stubEnv("ADMIN_SESSION_SECRET", SESSION_SECRET);
   }

@@ -90,8 +90,8 @@ rule against a preview before publishing it to production.
 ## Admin access
 
 The private admin shell is available only by opening `/admin` directly; it is not linked from the
-guest site or included in a sitemap. Admin authentication is required locally and on every Vercel
-deployment. While the temporary whole-site password gate is enabled, hosted visitors pass through
+guest site or included in a sitemap. Local execution opens the dashboard without credentials or a session, including local production
+builds. Admin authentication is required on every Vercel deployment. While the temporary whole-site password gate is enabled, hosted visitors pass through
 that gate before reaching the separate admin sign-in.
 
 Generate credentials in an interactive terminal:
@@ -101,8 +101,7 @@ pnpm admin:credentials
 ```
 
 The command masks and confirms a passphrase of at least 16 characters, then prints a salted scrypt
-hash and a random session secret. Copy the two generated assignments into ignored `.env.local` for
-local use. Configure `ADMIN_PASSWORD_HASH` and `ADMIN_SESSION_SECRET` separately for Vercel Preview
+hash and a random session secret. Local development does not need these credentials. Configure `ADMIN_PASSWORD_HASH` and `ADMIN_SESSION_SECRET` separately for Vercel Preview
 and Production; do not reuse values between environments, commit them, log them, or prefix them with
 `NEXT_PUBLIC_`.
 
@@ -250,3 +249,12 @@ GitHub Actions applies the migrations to disposable PostgreSQL, then runs format
 checking, unit coverage, database integration tests, the production build, and Playwright for pushes
 and pull requests targeting `main`. Coverage and Playwright diagnostics are uploaded with short
 retention when useful for review or failure diagnosis.
+
+### Hosted admin browser tests
+
+Run `pnpm test:e2e:admin:https` to verify hosted admin authentication in Chromium, Firefox,
+WebKit, and mobile Chromium. This test-only harness runs the production build behind a loopback
+HTTPS proxy on port 3443 (Next.js uses port 3001). It requires OpenSSL and the local test database.
+It generates a temporary one-day certificate, accepts it only in the isolated test browser context,
+and removes it on shutdown. It does not change system certificate trust or deployment configuration.
+The regular browser suite verifies credential-free local admin access; CI runs both suites.

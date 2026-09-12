@@ -184,13 +184,17 @@ reads narrow RSVP summary DTOs directly through an authenticated server-only Pri
 does not expose an admin API or mutate RSVP records.
 
 Admin authentication is independent from the removable hosted-site password gate and is enforced
-in local, preview, and production environments. `ADMIN_PASSWORD_HASH` stores a salted scrypt hash,
+on every Vercel preview and production deployment. Local execution, including local production
+builds, bypasses authentication so development needs no admin credentials or session. The central
+`isAdminAuthenticationRequired()` check uses the server environment (`VERCEL === "1"`), never
+request headers or the hostname. The page and data boundary share this policy; local dashboards
+omit the sign-out control because there is no session to end. `ADMIN_PASSWORD_HASH` stores a salted scrypt hash,
 and `ADMIN_SESSION_SECRET` signs a purpose-bound session cookie with a fixed eight-hour lifetime.
 The cookie is HTTP-only, scoped to `/admin`, uses strict same-site handling, and is secure on Vercel.
 Preview and production use different credentials. Rotating the session secret revokes all active
 admin sessions.
 
-The page checks the session before rendering private content, and every admin data read or mutation
+On Vercel, the page checks the session before rendering private content, and every admin data read or mutation
 must authorize again at its server boundary. The Next.js proxy provides private, non-cacheable,
 non-indexable responses and browser security headers, but it is not an authorization layer. The
 sign-in action enforces a bounded, per-instance fixed window of ten attempts per client per ten
@@ -307,3 +311,12 @@ We should resolve these roughly in order:
 | 2026-08-05 | Bound password verification and local database exposure    | Accepted | App and edge limits protect scrypt; local PostgreSQL binds only to host loopback.                                |
 | 2026-08-05 | Use isolated Neon databases through the Vercel Marketplace | Accepted | Local Docker remains disposable; Preview and Production use separate credentials and explicit Prisma migrations. |
 | 2026-08-05 | Use Vercel Web Analytics and Speed Insights                | Accepted | Minimal telemetry; honors Do Not Track and sends no custom guest data.                                           |
+
+### 2026-09-12: Credential-free local admin access
+
+**Status:** Accepted
+
+Local development and local production builds bypass admin authentication to avoid unnecessary
+credential setup. Hosted Vercel deployments still fail closed without valid dedicated credentials
+and an authenticated session. Every admin data boundary continues to call the central authorization
+helper, which applies this environment policy.
