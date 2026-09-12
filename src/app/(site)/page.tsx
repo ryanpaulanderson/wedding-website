@@ -88,13 +88,13 @@ export default function HomePage() {
 
           <figure className={styles.heroFigure}>
             <ManagedImage
-              assetId="dc-rooftop-sunset"
+              assetId="engagement-gallery-walk"
               variantId="homeHero"
-              sizes="(max-width: 48rem) 100vw, 58vw"
+              sizes="(max-width: 52rem) 100vw, 56vw"
               className={styles.heroImage}
               preload
             />
-            <figcaption>Washington, DC · Sunset over the city</figcaption>
+            <figcaption>National Gallery of Art · Washington, DC</figcaption>
           </figure>
         </section>
 
@@ -133,21 +133,21 @@ export default function HomePage() {
           </div>
 
           <div className={styles.storyGrid}>
-            <figure className={styles.storyWideFigure}>
+            <figure className={styles.storyOverlookFigure}>
               <ManagedImage
-                assetId="alhambra-garden-portrait"
-                variantId="storyWide"
-                sizes="(max-width: 52rem) 100vw, 62vw"
+                assetId="granada-alhambra-overlook"
+                variantId="storyPortrait"
+                sizes="(max-width: 38rem) 100vw, (max-width: 72rem) 53vw, 36rem"
                 className={styles.storyImage}
               />
-              <figcaption>Alhambra gardens · Granada</figcaption>
+              <figcaption>Overlooking the Alhambra · Granada</figcaption>
             </figure>
 
             <figure className={styles.storyPortraitFigure}>
               <ManagedImage
                 assetId="granada-proposal-ring"
                 variantId="storyPortrait"
-                sizes="(max-width: 52rem) 78vw, 26vw"
+                sizes="(max-width: 38rem) 78vw, (max-width: 72rem) 38vw, 26rem"
                 className={styles.storyImage}
               />
               <figcaption>Engaged in Granada</figcaption>
@@ -166,7 +166,7 @@ export default function HomePage() {
               <ManagedImage
                 assetId="reception-formal-portrait"
                 variantId="storyPortrait"
-                sizes="(max-width: 48rem) 88vw, 28vw"
+                sizes="(max-width: 38rem) 84vw, (max-width: 52rem) 50vw, 28vw"
                 className={styles.galleryImage}
               />
             </figure>
@@ -175,7 +175,7 @@ export default function HomePage() {
               <ManagedImage
                 assetId="oceanfront-portrait"
                 variantId="storyWide"
-                sizes="(max-width: 48rem) 100vw, 58vw"
+                sizes="(max-width: 38rem) 100vw, (max-width: 52rem) 50vw, 58vw"
                 className={styles.galleryImage}
               />
             </figure>
@@ -184,7 +184,15 @@ export default function HomePage() {
               <ManagedImage
                 assetId="golden-gate-formal"
                 variantId="storyPortrait"
-                sizes="(max-width: 48rem) 88vw, 29vw"
+                sizes="(max-width: 38rem) 84vw, (max-width: 52rem) 50vw, 29vw"
+                className={styles.galleryImage}
+              />
+            </figure>
+            <figure className={styles.virginiaFigure}>
+              <ManagedImage
+                assetId="virginia-wedding"
+                variantId="storyPortrait"
+                sizes="(max-width: 38rem) 84vw, (max-width: 52rem) 50vw, 29vw"
                 className={styles.galleryImage}
               />
             </figure>

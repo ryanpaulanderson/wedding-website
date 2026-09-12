@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../schemas/image-config.schema.json",
+  "id": "virginia-wedding",
+  "alt": "Caroline and Ryan dressed up for a wedding beneath string lights in Virginia",
+  "variants": {
+    "storyPortrait": {
+      "width": 1200,
+      "height": 1600,
+      "quality": 88,
+      "focalPoint": { "x": 0.5, "y": 0.5 }
+    }
+  }
+}

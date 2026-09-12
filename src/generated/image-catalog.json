@@ -31,6 +31,21 @@
         }
       }
     },
+    "engagement-gallery-walk": {
+      "alt": "Caroline and Ryan holding hands beneath the arches at the National Gallery of Art",
+      "variants": {
+        "homeHero": {
+          "url": "https://3fhrghxyuq9hwhit.public.blob.vercel-storage.com/wedding-images/engagement-gallery-walk/homeHero-ee935c873011dcb3.webp",
+          "pathname": "wedding-images/engagement-gallery-walk/homeHero-ee935c873011dcb3.webp",
+          "localSrc": "/_local-images/engagement-gallery-walk/homeHero-ee935c873011dcb3.webp",
+          "width": 1200,
+          "height": 1800,
+          "quality": 88,
+          "blurDataURL": "data:image/webp;base64,UklGRu4AAABXRUJQVlA4IOIAAADQBgCdASoYACQAPu1mqlCppSOiqrgMATAdiWUAyGG2wZnvf3ntH8mINX8I6tdZQ+sgRQ2c7Ai41ecCITVsmwAA/LM80sZ7T1RcuD8ZG3Cpb0g7xceIV/ioQURlFQnIJT2+7UU4j6aAMwcUZQc2cxV/aZ0sSyrnzkiHOATkzQjeh62baCKirHDwm9FHpKkhIaYzXKRCNWroCSRchLUiXPpHn67IFVCxmajPSY7SSmdvAeB1vvOddVcwp0yzPE6k21zs9CUgySXfz3KqyXhaHzyCT1yhASgEenIJgskO3A7P1+AA",
+          "contentHash": "ee935c873011dcb3"
+        }
+      }
+    },
     "golden-gate-formal": {
       "alt": "Caroline and Ryan dressed formally beside San Francisco Bay",
       "variants": {
@@ -43,6 +58,21 @@
           "quality": 88,
           "blurDataURL": "data:image/webp;base64,UklGRrYAAABXRUJQVlA4IKoAAACwBACdASoYACAAPu1qrFEppaQiqAqpMB2JQBS1sYZWZjS7rPRlhjqczGCvD7doAP7416o36FY8m6rlcv/rqgG5aHz0KOx7h2pnBNLdONIZEuCo01E8LXM7Qf0SwlZj7YS/tcvSjGT5uaewNCLssUH+oPWoaRnOkzgujQyrU0cvHwW0Uj2D0X1Gs67XhRCyIOBAV5aRA19E4IRaWH5FE+LBm83rhhCESN2gAA==",
           "contentHash": "fde9e6615ba333d2"
+        }
+      }
+    },
+    "granada-alhambra-overlook": {
+      "alt": "Caroline and Ryan overlooking the Alhambra and mountains in Granada",
+      "variants": {
+        "storyPortrait": {
+          "url": "https://3fhrghxyuq9hwhit.public.blob.vercel-storage.com/wedding-images/granada-alhambra-overlook/storyPortrait-2cb0e8e51ec51d37.webp",
+          "pathname": "wedding-images/granada-alhambra-overlook/storyPortrait-2cb0e8e51ec51d37.webp",
+          "localSrc": "/_local-images/granada-alhambra-overlook/storyPortrait-2cb0e8e51ec51d37.webp",
+          "width": 1000,
+          "height": 1600,
+          "quality": 88,
+          "blurDataURL": "data:image/webp;base64,UklGRiwBAABXRUJQVlA4ICABAADQBgCdASoYACYAPu1orE+ppiQiKqoBMB2JQBlAgXA/a4Fl1pcjSJAVBeurbrgCMPIfA4b5I2X/5xJ5uTJ4GUAA/d2YHWHor6UoEUI9o7iS9o2ZVJGw9byoXlZbbyr+wCOD/O4YKYIfltCKfM6lgPOj4uHzN1pgRihRyJQgGkRItrzS05F+YMSy38ECnVBSOfhX2nIJbFFaabUMGZGsHmozNDU3+e5sVryxjqfPUZg63OnNVV67htwEZvX3TZWu8nk/MHjQb+SWkTfEhFN8HNVAFLmCNsNhlL9+2tMJIOYVIwsZPvNZp4C6scySdjuBeB3Unlhj8/NKgRiI6FbbkCZrqrC4zZ0te8y5yX1RLEqlb36ZjVOxwN61WNDNdAihQAA=",
+          "contentHash": "2cb0e8e51ec51d37"
         }
       }
     },
@@ -88,6 +118,21 @@
           "quality": 88,
           "blurDataURL": "data:image/webp;base64,UklGRggBAABXRUJQVlA4IPwAAACQBgCdASoYACAAPuFcp02opSOiMAwBEBwJaACdISBcAjzBqeh79b+nGWISzFjifADjghZ7Xyge4K9dzREAAP6bj+5nvY56GAb/Ngkl4S8dfaulcdyD3Jzru8UOrvcbtTED0z46lXfJW9fGBrbELA8boS159aujOTYrlBHlvRxJaq/1gtbQJdKG0Q6kfJaEFnw/jcHFaIMQ7HFmY+2BXASgMlc/0MUqotDjBeVXdoATuj9ElYBTuUmtrCoXoWAcX3w22cB03+oTqFNQJJ5k50kfv0aIimbK60CCkuyT27NbbArDKFFMgqPWlaOF5NagFFvC7yEhiAlzpEWpcgA=",
           "contentHash": "9ccf73947ff45099"
+        }
+      }
+    },
+    "virginia-wedding": {
+      "alt": "Caroline and Ryan dressed up for a wedding beneath string lights in Virginia",
+      "variants": {
+        "storyPortrait": {
+          "url": "https://3fhrghxyuq9hwhit.public.blob.vercel-storage.com/wedding-images/virginia-wedding/storyPortrait-600f2ee54b1124bc.webp",
+          "pathname": "wedding-images/virginia-wedding/storyPortrait-600f2ee54b1124bc.webp",
+          "localSrc": "/_local-images/virginia-wedding/storyPortrait-600f2ee54b1124bc.webp",
+          "width": 1200,
+          "height": 1600,
+          "quality": 88,
+          "blurDataURL": "data:image/webp;base64,UklGRv4AAABXRUJQVlA4IPIAAADwBQCdASoYACAAPu1grFAppSQisBgIATAdiUAYHDYEpdETBzqgpdrUb4d9Q6G0qmIGchkYC7FPwADicqpNQ+Mkdp8DbKwFj35OAjIAhfkO0oPGEB1dfXFiLJpqkepztL3Cu6fXVPAjSmn+KgeMHYitnhDcEVWKfPJh9zq7f6Bo2SBbdnf6Gh9bf4qsdi+bsUwXDIJCe5d0uLxHx8GbwJRO+AdLH0epuHZfrnETbx9Pnoh/NOsWTmdavVFcqjtTNT14kYxqAnNqt1VSKyihAobQZOlcfoSjkpBEes4fiBGMg5Zx923+9gEcoaz7OIhW3KAAAA==",
+          "contentHash": "600f2ee54b1124bc"
         }
       }
     }

@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../schemas/image-config.schema.json",
+  "id": "engagement-gallery-walk",
+  "alt": "Caroline and Ryan holding hands beneath the arches at the National Gallery of Art",
+  "variants": {
+    "homeHero": {
+      "width": 1200,
+      "height": 1800,
+      "quality": 88,
+      "focalPoint": { "x": 0.5, "y": 0.5 }
+    }
+  }
+}
