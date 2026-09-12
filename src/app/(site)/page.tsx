@@ -16,9 +16,9 @@ const detailCards = [
     description: "385 Water Street SE · Navy Yard · Washington, DC",
   },
   {
-    label: "Schedule",
-    title: "Forthcoming",
-    description: "Timing and day-of details will be shared with the formal invitation.",
+    label: "Welcome party",
+    title: "Solace Outpost",
+    description: "Friday evening, March 12, 2027 · Time TBD. All are welcome!",
   },
   {
     label: "RSVP",
