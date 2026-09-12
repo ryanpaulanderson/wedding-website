@@ -1,17 +1,31 @@
 .page {
+  position: relative;
+  isolation: isolate;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   min-block-size: 100svh;
   place-items: center;
   padding: var(--space-page);
+  font-family: var(--font-space-grotesk), var(--font-sans);
+}
+
+.tree {
+  z-index: -1;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.16;
+  pointer-events: none;
 }
 
 .card {
+  min-inline-size: 0;
   inline-size: min(100%, 30rem);
   padding: var(--space-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
   background: var(--color-surface);
   box-shadow: var(--shadow-card);
+  overflow-wrap: anywhere;
 }
 
 .eyebrow {
@@ -25,7 +39,8 @@
 
 .card h1 {
   margin-block: 0 0.75rem;
-  font-size: clamp(2rem, 10vw, 3.25rem);
+  font-family: var(--font-cormorant), Georgia, serif;
+  font-size: clamp(2.5rem, 10vw, 3.25rem);
   line-height: 1;
 }
 
@@ -33,6 +48,13 @@
 .status {
   margin-block: 0 1.5rem;
   color: var(--color-text-muted);
+}
+
+.help {
+  margin-block: 1.5rem 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
 }
 
 .form {
@@ -45,10 +67,11 @@
 }
 
 .input {
+  min-inline-size: 0;
   min-block-size: 3rem;
   inline-size: 100%;
   padding-inline: 0.875rem;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-text-muted);
   border-radius: 0.625rem;
   background: var(--color-surface);
   color: var(--color-text);

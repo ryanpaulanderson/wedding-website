@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -11,9 +12,10 @@ import {
 } from "@/lib/site-access";
 import { lockSite, unlockSite } from "./actions";
 import styles from "./page.module.css";
+import weddingTree from "../../../public/brand/wedding-tree-logo.webp";
 
 export const metadata: Metadata = {
-  title: "Private preview",
+  title: "Welcome to our wedding",
   robots: {
     follow: false,
     index: false,
@@ -50,13 +52,22 @@ export default async function AccessPage({ searchParams }: AccessPageProps) {
 
   return (
     <main className={styles.page}>
+      <Image
+        alt=""
+        aria-hidden="true"
+        className={styles.tree}
+        fill
+        preload
+        src={weddingTree}
+        unoptimized
+      />
       <section className={styles.card} aria-labelledby="access-title">
-        <p className={styles.eyebrow}>Private preview</p>
-        <h1 id="access-title">Wedding website</h1>
+        <p className={styles.eyebrow}>Caroline &amp; Ryan</p>
+        <h1 id="access-title">Welcome to our wedding</h1>
 
         {hasConfigurationError ? (
           <p className={styles.error} role="alert">
-            Site access is unavailable. Check the Vercel environment variables and redeploy.
+            Our website is temporarily unavailable. Please try again later or email Ryan for help.
           </p>
         ) : hasAccess ? (
           <>
@@ -74,7 +85,10 @@ export default async function AccessPage({ searchParams }: AccessPageProps) {
           </>
         ) : (
           <>
-            <p className={styles.intro}>Enter the password for this private development preview.</p>
+            <p className={styles.intro}>
+              We’re so glad you’re here! Our site is password protected to help reduce web scraping.
+              Enter the password included on your Save the Date to join us.
+            </p>
             <form className={styles.form} action={unlockSite}>
               <input name="returnTo" type="hidden" value={returnTo} />
               <label className={styles.label} htmlFor="site-password">
@@ -103,6 +117,13 @@ export default async function AccessPage({ searchParams }: AccessPageProps) {
             </form>
           </>
         )}
+        <p className={styles.help}>
+          Lost your Save the Date or don’t know the password? Email Ryan at{" "}
+          <a className={styles.link} href="mailto:ryan@ryanpaulanderson.com">
+            ryan@ryanpaulanderson.com
+          </a>
+          .
+        </p>
       </section>
     </main>
   );
