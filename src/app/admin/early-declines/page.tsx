@@ -7,6 +7,7 @@ import {
   hasAdminSession,
   isAdminAuthenticationRequired,
 } from "@/lib/admin-access";
+import { parseEarlyDeclinePage } from "@/features/early-declines/pagination";
 import { getEarlyDeclines } from "@/features/early-declines/admin";
 import { reviewDecline, retryDeclineEmail } from "./actions";
 import styles from "./page.module.css";
@@ -19,11 +20,12 @@ const statuses = {
   PENDING: "Waiting to send",
   ACCEPTED: "Accepted by email provider",
   FAILED: "Sending failed",
-  PAUSED: "Paused outside production",
+  PAUSED: "Not sent",
   NEEDS_REVIEW: "Check delivery in Resend before retrying",
 };
 const reasons: Record<string, string> = {
   configuration: "Email configuration needs attention.",
+  "non-production": "Sending was paused. Retry to send this email.",
   encryption: "Encryption key needs attention.",
   provider: "Email provider rejected the attempt.",
   network: "Email service could not be reached.",
@@ -41,10 +43,7 @@ export default async function EarlyDeclinesPage({
     if (!configuration || !(await hasAdminSession(configuration))) redirect("/admin");
   }
   const params = await searchParams;
-  const pageValue =
-    typeof params.page === "string" && /^[1-9][0-9]{0,5}$/.test(params.page)
-      ? Number(params.page)
-      : 1;
+  const pageValue = parseEarlyDeclinePage(params.page);
   const snapshot = await getEarlyDeclines(pageValue);
   return (
     <main className={styles.page}>
@@ -93,6 +92,7 @@ export default async function EarlyDeclinesPage({
                   </p>
                   <p>{notice.reviewedAt ? "Reviewed" : "Awaiting review"}</p>
                   <form action={reviewDecline}>
+                    <input type="hidden" name="page" value={pageValue} />
                     <input type="hidden" name="id" value={notice.id} />
                     <input type="hidden" name="reviewed" value={notice.reviewedAt ? "no" : "yes"} />
                     <button type="submit">
@@ -116,8 +116,11 @@ export default async function EarlyDeclinesPage({
                         {email.providerId && (
                           <p className={styles.provider}>Provider reference: {email.providerId}</p>
                         )}
-                        {(email.status === "PENDING" || email.status === "FAILED") && (
+                        {(email.status === "PENDING" ||
+                          email.status === "FAILED" ||
+                          email.status === "PAUSED") && (
                           <form action={retryDeclineEmail}>
+                            <input type="hidden" name="page" value={pageValue} />
                             <input type="hidden" name="id" value={email.id} />
                             <button type="submit">
                               Retry{" "}
@@ -143,7 +146,7 @@ export default async function EarlyDeclinesPage({
           </nav>
           <p>
             “Accepted” means the provider received the email. Check Resend for delivery or bounce
-            details. Preview and local submissions never send emails.
+            details. Emails are sent in any environment with Resend configured.
           </p>
         </>
       )}

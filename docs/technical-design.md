@@ -274,8 +274,8 @@ access secrets. RSVP deadlines, meal choices, and submission history remain futu
 Use the Resend Vercel integration's `RESEND_API_KEY` and `RESEND_EMAIL_DOMAIN`. Native server-side
 `fetch` sends through Resend's HTTPS API, avoiding another mail transport dependency. The sender
 is `rsvp@` the configured, verified domain. Production and Preview credentials remain independently
-scoped, and automatic delivery is disabled unless `VERCEL_ENV=production`. Explicit maintainer
-test commands may send a synthetic message from another environment.
+scoped. Delivery is enabled wherever valid Resend credentials are configured, including Preview
+and local development, so the maintainer can verify the complete flow before Production.
 
 OpenPGP.js encrypts the whole message body before it leaves the application's server. The sole
 recipient is `ryan@ryanpaulanderson.com`, using the supplied public key with fingerprint
@@ -335,9 +335,12 @@ stop resending and require delivery reconciliation in Resend, ahead of its 24-ho
 expiry. Do not re-encrypt or reset a possibly accepted job to bypass that limit. Accepted indicates
 provider acceptance, not inbox delivery; provider references support bounce/delivery checks.
 
-Automatic sends run only in Production. Preview and local notices are saved with email jobs marked
-paused and never mail real recipients. Existing maintainer-only synthetic email commands remain
-available. The admin view shows both email states, submitted names and address, submission time and
+Configured Preview and local environments send the same guest confirmations and encrypted admin
+notifications as Production. Missing configuration leaves a failed job available for retry. Legacy
+`PAUSED` jobs from the former environment guard are also retryable without changing the database
+schema or resending accepted jobs. Automated tests mock delivery or explicitly clear mail credentials.
+Existing maintainer-only synthetic email commands remain available. The admin view shows both email
+states, submitted names and address, submission time and
 review status, paginated at 25 notices. Every admin read and mutation independently reauthorizes.
 Marking a notice reviewed is an acknowledgment that the maintainer has dealt with their guest list;
 it does not alter formal guest records.
@@ -415,6 +418,16 @@ We should resolve these roughly in order:
 
 ## Decision log
 
+### 2026-09-12: Email testing in Preview
+
+**Status:** Accepted
+
+Remove the Production-only mail guard at the maintainer's request. Any environment with valid
+Resend configuration can send both guest confirmations and encrypted maintainer notifications.
+Make legacy paused jobs retryable in admin. Preserve idempotency, encryption and authorization;
+automated tests isolate delivery through provider mocks or empty credentials rather than an
+application environment restriction. This supersedes the original Production-only email policy.
+
 ### 2026-09-12: Early unable-to-attend notices
 
 **Status:** Accepted
@@ -433,8 +446,8 @@ at the maintainer's request without changing the formal guest list automatically
 Use the maintainer-connected Resend Vercel integration and supplied public PGP key. Add an
 encrypted server-side sender and explicit connection, test-delivery, and delivery-status commands.
 The body is encrypted before Resend receives it; the public key is pinned alongside the intended
-recipient. Automatic sends require Production, and no plaintext fallback is permitted. Guest forms,
-submission handling, and durable cross-request retries remain deferred.
+recipient. No plaintext fallback is permitted. The initial Production-only delivery restriction was
+superseded by the Preview-testing decision above; early notices now use the durable outbox.
 
 ### 2026-09-12: Dietary restrictions and conditional plus-ones
 

@@ -17,7 +17,7 @@ export async function deliverEarlyDeclineEmail(id: string): Promise<void> {
   const claim = await database.earlyDeclineEmail.updateMany({
     where: {
       id,
-      status: { in: ["PENDING", "FAILED"] },
+      status: { in: ["PENDING", "FAILED", "PAUSED"] },
       OR: [{ leaseExpiresAt: null }, { leaseExpiresAt: { lt: now } }],
     },
     data: { leaseToken, leaseExpiresAt: new Date(now.getTime() + 120_000) },
@@ -34,10 +34,6 @@ export async function deliverEarlyDeclineEmail(id: string): Promise<void> {
       where: { id },
       include: { decline: true },
     });
-    if (process.env.VERCEL_ENV !== "production") {
-      await finish({ status: "PAUSED", errorCode: "non-production" });
-      return;
-    }
     // Resend retains idempotency keys for 24 hours. Leave uncertain older deliveries for human reconciliation.
     if (job.firstAttemptAt && now.getTime() - job.firstAttemptAt.getTime() >= 23 * 3_600_000) {
       await finish({ status: "NEEDS_REVIEW", errorCode: "delivery-window-expired" });
@@ -94,7 +90,7 @@ export async function deliverEarlyDeclineEmail(id: string): Promise<void> {
 }
 
 type PrismaEmailUpdate = {
-  status: "ACCEPTED" | "FAILED" | "PAUSED" | "NEEDS_REVIEW";
+  status: "ACCEPTED" | "FAILED" | "NEEDS_REVIEW";
   providerId?: string;
   errorCode: string | null;
 };

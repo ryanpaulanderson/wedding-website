@@ -158,11 +158,28 @@ describe("early notice storage and delivery", () => {
     });
     expect(String(fetchMock.mock.calls[0][1]?.body)).not.toContain(values.names);
   });
-  it("pauses local and Preview delivery without contacting the provider", async () => {
+  it.each(["preview", "development", ""])(
+    "sends both configured emails in environment %s",
+    async (environment) => {
+      vi.stubEnv("VERCEL_ENV", environment);
+      await deliverEarlyDecline(await save());
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(await database.earlyDeclineEmail.count({ where: { status: "ACCEPTED" } })).toBe(2);
+    },
+  );
+  it("retries previously paused Preview emails without resending accepted messages", async () => {
     vi.stubEnv("VERCEL_ENV", "preview");
-    await deliverEarlyDecline(await save());
-    expect(fetchMock).not.toHaveBeenCalled();
-    expect(await database.earlyDeclineEmail.count({ where: { status: "PAUSED" } })).toBe(2);
+    const id = await save();
+    await database.earlyDeclineEmail.updateMany({
+      where: { declineId: id },
+      data: { status: "PAUSED", errorCode: "non-production" },
+    });
+    await deliverEarlyDecline(id);
+    await deliverEarlyDecline(id);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(
+      await database.earlyDeclineEmail.count({ where: { status: "ACCEPTED", errorCode: null } }),
+    ).toBe(2);
   });
   it("records configuration failure without discarding the notice or starting the retry clock", async () => {
     vi.stubEnv("RESEND_API_KEY", "");

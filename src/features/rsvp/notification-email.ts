@@ -13,13 +13,10 @@ export type NotificationEmailResult =
       reason: "configuration" | "encryption" | "invalid-input";
       retryable: boolean;
       httpStatus?: number;
-    }
-  | { status: "disabled" };
+    };
 
 type SendNotificationOptions = {
   environment?: EmailEnvironment;
-  // Only explicit maintainer-run delivery tests should enable this outside Production.
-  allowNonProduction?: boolean;
 };
 
 type NotificationEmailConfiguration = {
@@ -54,10 +51,6 @@ export async function sendEncryptedRsvpNotification(
   options: SendNotificationOptions = {},
 ): Promise<NotificationEmailResult> {
   const environment = options.environment ?? process.env;
-  if (environment.VERCEL_ENV !== "production" && !options.allowNonProduction) {
-    return { status: "disabled" };
-  }
-
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(notificationId)) {
     return { status: "failed", reason: "invalid-input", retryable: false };
   }

@@ -175,8 +175,8 @@ information, and sanitized delivery results, never credentials or message conten
 The test command also checks delivery status briefly after acceptance when the API key allows it.
 
 For local checks, these two variables can instead be placed in ignored `.env.local`. Automatic
-sends are disabled outside Vercel Production; `email:test` explicitly permits a maintainer test
-from any environment. Never call these commands from normal builds or CI with live credentials.
+sends are enabled in any environment with valid Resend configuration, including Preview and
+local development. Previously paused email jobs can be retried from admin. Never call these commands from normal builds or CI with live credentials.
 
 Messages use PGP/Inline: the entire text body is encrypted before Resend receives it, and no
 plaintext HTML version is supplied. The subject and routing metadata remain visible. Invalid

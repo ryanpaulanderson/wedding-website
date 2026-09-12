@@ -90,24 +90,19 @@ describe("encrypted notification delivery", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("disables automatic sends outside production and permits explicit maintainer tests", async () => {
-    const fetchMock = vi.fn().mockImplementation(accepted);
-    vi.stubGlobal("fetch", fetchMock);
-    for (const VERCEL_ENV of [undefined, "preview", "development"]) {
+  it.each([undefined, "preview", "development"])(
+    "sends configured notifications in environment %s",
+    async (VERCEL_ENV) => {
+      const fetchMock = vi.fn().mockImplementation(accepted);
+      vi.stubGlobal("fetch", fetchMock);
       await expect(
         sendEncryptedRsvpNotification(notificationId, "Test", {
           environment: { ...environment, VERCEL_ENV },
         }),
-      ).resolves.toEqual({ status: "disabled" });
-    }
-    expect(fetchMock).not.toHaveBeenCalled();
-    await expect(
-      sendEncryptedRsvpNotification(notificationId, "Test", {
-        environment: { ...environment, VERCEL_ENV: "preview" },
-        allowNonProduction: true,
-      }),
-    ).resolves.toEqual({ status: "accepted", emailId });
-  });
+      ).resolves.toEqual({ status: "accepted", emailId });
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    },
+  );
 
   it("rejects incomplete configuration and invalid IDs before making a request", async () => {
     const fetchMock = vi.fn();

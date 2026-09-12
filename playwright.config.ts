@@ -49,6 +49,9 @@ export default defineConfig({
       ADMIN_PASSWORD_HASH: ADMIN_TEST_PASSWORD_HASH,
       ADMIN_SESSION_SECRET: ADMIN_TEST_SESSION_SECRET,
       DATABASE_URL: databaseUrl,
+      // Browser fixtures must never send real mail, even if local credentials are present.
+      RESEND_API_KEY: "",
+      RESEND_EMAIL_DOMAIN: "",
     },
     url: baseURL,
     reuseExistingServer: !process.env.CI,

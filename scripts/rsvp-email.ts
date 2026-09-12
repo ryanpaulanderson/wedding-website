@@ -82,9 +82,7 @@ async function main() {
   );
   if (mode === "--check") return;
 
-  const result = await sendEncryptedRsvpNotification(randomUUID(), testMessage, {
-    allowNonProduction: true,
-  });
+  const result = await sendEncryptedRsvpNotification(randomUUID(), testMessage);
   console.log(JSON.stringify(result));
   if (result.status !== "accepted") {
     process.exitCode = 1;

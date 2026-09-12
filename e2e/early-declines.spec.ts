@@ -42,6 +42,7 @@ test("submits an early notice once, confirms it, and tracks review in admin", as
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "Thank you for letting us know." })).toBeVisible();
   await expect(page.getByRole("status")).toBeFocused();
+  await expect(page).toHaveTitle("Unable to attend | Caroline & Ryan");
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.goto("/unable-to-attend");
   await page
@@ -64,7 +65,9 @@ test("submits an early notice once, confirms it, and tracks review in admin", as
   await page.goto("/admin");
   await page.getByRole("link", { name: "Early notices: unable to attend" }).click();
   await expect(page.getByRole("heading", { name: "Alex & Jo Browser Test" })).toBeVisible();
-  await expect(page.getByText("Paused outside production", { exact: false })).toHaveCount(2);
+  await expect(
+    page.getByText("Email configuration needs attention.", { exact: false }),
+  ).toHaveCount(2);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.getByRole("button", { name: "Mark reviewed", exact: true }).click();
   await expect(page.getByRole("status")).toHaveText("Review status updated.");
@@ -96,4 +99,36 @@ test("keeps the form usable at 320px, enlarged text and forced colors", async ({
       () => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1,
     ),
   ).toBe(true);
+});
+
+test("keeps page 2 selected after reviewing and retrying a notice", async ({ page }) => {
+  test.skip(process.env.VERCEL === "1", "Uses local admin bypass.");
+  const db = createTestDatabasePool();
+  try {
+    await db.query(`INSERT INTO early_declines (id, names, email, created_at)
+      SELECT gen_random_uuid(), 'Pagination household ' || n, 'pagination-' || n || '@example.com',
+        TIMESTAMPTZ '2026-09-01 12:00:00+00' + n * INTERVAL '1 minute'
+      FROM generate_series(1, 26) AS n`);
+    await db.query(`INSERT INTO early_decline_emails (id, decline_id, kind, status, updated_at)
+      SELECT gen_random_uuid(), id, 'GUEST_CONFIRMATION', 'PAUSED', now()
+      FROM early_declines WHERE email = 'pagination-1@example.com'`);
+  } finally {
+    await db.end();
+  }
+  await page.goto("/admin/early-declines?page=2");
+  const household = page.getByRole("heading", { name: "Pagination household 1", exact: true });
+  await expect(household).toBeVisible();
+  await page.getByRole("button", { name: "Mark reviewed", exact: true }).click();
+  await expect(page).toHaveURL("/admin/early-declines?page=2&result=reviewed");
+  await expect(household).toBeVisible();
+  await page.getByRole("button", { name: "Mark unreviewed", exact: true }).click();
+  await expect(page).toHaveURL("/admin/early-declines?page=2&result=reviewed");
+  await expect(page.getByRole("button", { name: "Mark reviewed", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Retry confirmation" }).click();
+  await expect(page).toHaveURL("/admin/early-declines?page=2&result=retried");
+  await expect(household).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Notice pages" })).toContainText("Page 2");
+  await expect(
+    page.getByText("Email configuration needs attention.", { exact: false }),
+  ).toBeVisible();
 });
