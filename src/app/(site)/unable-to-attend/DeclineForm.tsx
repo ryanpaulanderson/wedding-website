@@ -34,7 +34,9 @@ export function DeclineForm() {
       )}
       <div>
         <label htmlFor="decline-names">Name(s) unable to attend (required)</label>
-        <p id="names-hint">Include everyone you’re replying for, up to 1,000 characters.</p>
+        <p id="names-hint">
+          List everyone who can’t attend in this one submission (up to 1,000 characters).
+        </p>
         <textarea
           id="decline-names"
           name="names"
@@ -54,9 +56,7 @@ export function DeclineForm() {
       </div>
       <div>
         <label htmlFor="decline-email">Email address (required)</label>
-        <p id="email-hint">
-          We’ll send a confirmation here. Please submit once for everyone listed above.
-        </p>
+        <p id="email-hint">We’ll send a confirmation to this address.</p>
         <input
           id="decline-email"
           name="email"

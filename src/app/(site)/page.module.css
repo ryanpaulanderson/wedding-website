@@ -716,15 +716,32 @@
   line-height: 0.98;
 }
 
-.rsvpStatus {
-  max-inline-size: 24rem;
+.rsvpEarlyNotice a {
+  display: inline-block;
   padding: 1rem 1.5rem;
   border: 1px solid var(--apricot);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  line-height: 1.45;
-  text-transform: uppercase;
+  background: var(--apricot);
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.6;
+  text-align: center;
+  text-decoration: none;
+}
+
+.rsvpEarlyNotice a:hover {
+  background: var(--bone);
+  border-color: var(--bone);
+}
+
+.site .rsvpEarlyNotice a:focus-visible {
+  outline-color: var(--bone);
+}
+
+.rsvpStatus {
+  padding-block-start: 1.25rem;
+  font-size: 0.85rem;
+  line-height: 1.6;
 }
 
 .footer {
@@ -996,7 +1013,7 @@
   .venueCard,
   .detailGrid,
   .detailGrid article,
-  .rsvpStatus {
+  .rsvpEarlyNotice a {
     border: 1px solid CanvasText;
   }
 
