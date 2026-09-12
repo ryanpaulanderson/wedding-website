@@ -9,11 +9,14 @@ import {
 process.env.VERCEL = "1";
 const baseURL = "https://127.0.0.1:3443";
 
-export default defineConfig(baseConfiguration, {
+// A single config object replaces webServer; defineConfig(base, overrides) concatenates servers.
+export default defineConfig({
+  ...baseConfiguration,
   testMatch: "admin.spec.ts",
   outputDir: "test-results/admin-https",
   reporter: [["list"], ["html", { open: "never", outputFolder: "playwright-report/admin-https" }]],
   use: {
+    ...baseConfiguration.use,
     baseURL,
     // Only this isolated browser context accepts the ephemeral loopback certificate.
     ignoreHTTPSErrors: true,
