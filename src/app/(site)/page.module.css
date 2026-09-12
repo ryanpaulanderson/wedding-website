@@ -593,6 +593,71 @@
   line-height: 1.65;
 }
 
+.hotels {
+  padding: clamp(5rem, 9vw, 9rem) max(var(--space-page), calc((100% - 88rem) / 2));
+  background: var(--bone);
+}
+
+.hotelGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 2rem;
+  margin-block-start: 3rem;
+}
+
+.hotelIntro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(2rem, 5vw, 5rem);
+}
+
+.hotelIntro .sectionIntro {
+  align-self: start;
+}
+
+@media (max-width: 52rem) {
+  .hotelIntro {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.hotels .sectionIntro > p:not(.sectionLabel) {
+  max-inline-size: 42rem;
+  margin-block-start: 1.5rem;
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  line-height: 1.7;
+}
+
+.hotelGrid article {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+  min-inline-size: 0;
+  padding-block: 2rem;
+  border-block-start: 1px solid var(--line-dark);
+}
+
+.hotelGrid h3 {
+  font-family: var(--font-cormorant), Georgia, serif;
+  font-size: clamp(2rem, 3vw, 3rem);
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.hotelGrid p {
+  line-height: 1.7;
+}
+
+.hotelGrid a {
+  margin-block-start: auto;
+  padding-block: 0.75rem;
+  font-weight: 650;
+  line-height: 1.6;
+  text-underline-offset: 0.25em;
+}
+
 .rsvp {
   display: grid;
   grid-template-columns: minmax(18rem, 0.8fr) minmax(0, 1.2fr);

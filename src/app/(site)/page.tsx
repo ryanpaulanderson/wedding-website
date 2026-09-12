@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ManagedImage } from "@/components/ui/ManagedImage";
+import { NavyYardMap } from "./_components/NavyYardMap";
 import styles from "./page.module.css";
 
 const detailCards = [
@@ -15,9 +16,9 @@ const detailCards = [
     description: "385 Water Street SE · Navy Yard · Washington, DC",
   },
   {
-    label: "Schedule",
-    title: "Forthcoming",
-    description: "Timing and day-of details will be shared with the formal invitation.",
+    label: "Welcome party",
+    title: "Solace Outpost",
+    description: "Friday evening, March 12, 2027 · Time TBD. All are welcome!",
   },
   {
     label: "RSVP",
@@ -56,6 +57,7 @@ export default function HomePage() {
           <a href="#place">The place</a>
           <a href="#story">Our story</a>
           <a href="#details">Details</a>
+          <a href="#hotels">Hotels</a>
           <a href="#rsvp">RSVP</a>
         </nav>
       </header>
@@ -195,8 +197,7 @@ export default function HomePage() {
               <p className={styles.sectionLabel}>What we know</p>
               <h2 id="details-title">The details so far.</h2>
               <p>
-                We’ll share the schedule, travel, dress code, and RSVP details with the formal
-                invitation.
+                We’ll share the schedule, dress code, and RSVP details with the formal invitation.
               </p>
             </div>
           </div>
@@ -209,6 +210,50 @@ export default function HomePage() {
                 <p>{detail.description}</p>
               </article>
             ))}
+          </div>
+        </section>
+
+        <section id="hotels" className={styles.hotels} aria-labelledby="hotels-title">
+          <div className={styles.hotelIntro}>
+            <div className={styles.sectionIntro}>
+              <p className={styles.sectionLabel}>Stay nearby</p>
+              <h2 id="hotels-title">Hotel blocks.</h2>
+              <p>
+                We’ve arranged room blocks in Navy Yard for Thursday, March 11 through Monday, March
+                15, 2027. All three hotels are within walking distance of our welcome reception at
+                Solace Outpost Navy Yard and our wedding at District Winery.
+              </p>
+              <p>Book using the links below by February 11, 2027.</p>
+            </div>
+            <NavyYardMap />
+          </div>
+
+          <div className={styles.hotelGrid}>
+            <article>
+              <p className={styles.sectionLabel}>Marriott Bonvoy</p>
+              <h3>Residence Inn by Marriott Washington DC – Navy Yard</h3>
+              <a href="https://app.marriott.com/reslink?id=1779114882941&key=GRP&app=resvlink">
+                Book the Residence Inn wedding block <span aria-hidden="true">↗</span>
+              </a>
+            </article>
+            <article>
+              <p className={styles.sectionLabel}>Hilton</p>
+              <h3>Hampton Inn &amp; Suites Washington DC – Navy Yard</h3>
+              <p>
+                The booking link defaults to March 11–14. Adjust your dates if you plan to stay
+                through March 15.
+              </p>
+              <a href="https://www.hilton.com/en/book/reservation/deeplink/?ctyhocn=WASNYHX&groupCode=CHH912&arrivaldate=2027-03-11&departuredate=2027-03-14&cid=OM,WW,HILTONLINK,EN,DirectLink&fromId=HILTONLINKDIRECT">
+                Book the Hampton Inn wedding block <span aria-hidden="true">↗</span>
+              </a>
+            </article>
+            <article>
+              <p className={styles.sectionLabel}>World of Hyatt</p>
+              <h3>Thompson Washington D.C.</h3>
+              <a href="https://www.hyatt.com/thompson-hotels/iadth-thompson-washington-dc?corp_id=85917">
+                Book the Thompson wedding block <span aria-hidden="true">↗</span>
+              </a>
+            </article>
           </div>
         </section>
 

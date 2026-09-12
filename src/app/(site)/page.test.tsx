@@ -18,7 +18,7 @@ describe("HomePage", () => {
       "https://www.districtwinery.com/dc-wedding-venue/",
     );
     expect(
-      screen.getByText(/We’ll share the schedule, travel, dress code, and RSVP details/),
+      screen.getByText(/We’ll share the schedule, dress code, and RSVP details/),
     ).toBeInTheDocument();
     expect(screen.getByText("RSVP opens with the invitation")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "The tree that became our mark." })).toBeVisible();
