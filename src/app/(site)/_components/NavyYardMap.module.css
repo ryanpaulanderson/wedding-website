@@ -1,0 +1,87 @@
+.map {
+  min-inline-size: 0;
+}
+
+.drawing {
+  position: relative;
+  border: 1px solid var(--line-dark);
+}
+
+.drawing img {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+}
+
+.drawing .pin {
+  position: absolute;
+  inset-inline-start: var(--pin-left);
+  inset-block-start: var(--pin-top);
+  display: grid;
+  place-items: center;
+  inline-size: clamp(1.5rem, 2.5vw, 2rem);
+  block-size: clamp(1.5rem, 2.5vw, 2rem);
+  translate: -50% -50%;
+  border: 2px solid var(--bone);
+  border-radius: 50% 50% 50% 0;
+  rotate: -45deg;
+  background: var(--indigo);
+  color: var(--bone);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.pin span {
+  rotate: 45deg;
+}
+
+.drawing .pin:hover,
+.drawing .pin:focus-visible {
+  z-index: 1;
+  background: var(--ink);
+}
+
+.drawing .pin:focus-visible {
+  outline: 3px solid var(--indigo);
+  outline-offset: 3px;
+}
+
+.caption {
+  display: grid;
+  gap: 0.5rem;
+  padding-block-start: 1rem;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.title {
+  font-weight: 700;
+}
+
+.legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.25rem 1.75rem;
+  margin: 0.25rem 0;
+  padding-inline-start: 1.25rem;
+}
+
+.legend li::marker {
+  font-weight: 700;
+}
+
+.attribution {
+  inline-size: fit-content;
+  padding-block: 0.25rem;
+  font-size: 0.7rem;
+  text-underline-offset: 0.2em;
+}
+
+@media (forced-colors: active) {
+  .drawing .pin {
+    border-color: ButtonText;
+    background: ButtonFace;
+    color: ButtonText;
+  }
+}

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ManagedImage } from "@/components/ui/ManagedImage";
+import { NavyYardMap } from "./_components/NavyYardMap";
 import styles from "./page.module.css";
 
 const detailCards = [
@@ -213,15 +214,18 @@ export default function HomePage() {
         </section>
 
         <section id="hotels" className={styles.hotels} aria-labelledby="hotels-title">
-          <div className={styles.sectionIntro}>
-            <p className={styles.sectionLabel}>Stay nearby</p>
-            <h2 id="hotels-title">Hotel blocks.</h2>
-            <p>
-              We’ve arranged room blocks in Navy Yard for Thursday, March 11 through Monday, March
-              15, 2027. All three hotels are within walking distance of our welcome reception at
-              Solace Outpost Navy Yard and our wedding at District Winery.
-            </p>
-            <p>Book using the links below by February 11, 2027.</p>
+          <div className={styles.hotelIntro}>
+            <div className={styles.sectionIntro}>
+              <p className={styles.sectionLabel}>Stay nearby</p>
+              <h2 id="hotels-title">Hotel blocks.</h2>
+              <p>
+                We’ve arranged room blocks in Navy Yard for Thursday, March 11 through Monday, March
+                15, 2027. All three hotels are within walking distance of our welcome reception at
+                Solace Outpost Navy Yard and our wedding at District Winery.
+              </p>
+              <p>Book using the links below by February 11, 2027.</p>
+            </div>
+            <NavyYardMap />
           </div>
 
           <div className={styles.hotelGrid}>

@@ -605,6 +605,23 @@
   margin-block-start: 3rem;
 }
 
+.hotelIntro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(2rem, 5vw, 5rem);
+}
+
+.hotelIntro .sectionIntro {
+  align-self: start;
+}
+
+@media (max-width: 52rem) {
+  .hotelIntro {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .hotels .sectionIntro > p:not(.sectionLabel) {
   max-inline-size: 42rem;
   margin-block-start: 1.5rem;
