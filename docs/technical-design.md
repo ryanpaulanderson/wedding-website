@@ -22,18 +22,18 @@ made and record enough context to revisit them later without reopening every dis
 
 ## Decision summary
 
-| Area                  | Status   | Current direction                                                                   |
-| --------------------- | -------- | ----------------------------------------------------------------------------------- |
-| Application hosting   | Accepted | Vercel Hobby                                                                        |
-| CI/CD                 | Accepted | GitHub required checks + Vercel Git deployments                                     |
-| Public image storage  | Accepted | Gitignored local originals; processed immutable variants in public Vercel Blob      |
-| Temporary site access | Accepted | Shared password on all Vercel deployments; local execution bypasses it              |
-| RSVP database         | Accepted | Separate Neon PostgreSQL resources through Prisma for Preview and Production        |
-| Guest RSVP access     | Accepted | Private per-household invitation link plus name lookup; access flows deferred       |
-| Admin access          | Accepted | Unlinked passphrase-protected `/admin` portal for the sole maintainer               |
-| Email                 | Open     | Maintainer notification on RSVP submission requested; external sending provider TBD |
-| Domain                | Accepted | `www.carolineandryan.org`; apex redirects to `www`                                  |
-| Analytics             | Accepted | Vercel Web Analytics and Speed Insights, with no custom guest-data events           |
+| Area                  | Status   | Current direction                                                              |
+| --------------------- | -------- | ------------------------------------------------------------------------------ |
+| Application hosting   | Accepted | Vercel Hobby                                                                   |
+| CI/CD                 | Accepted | GitHub required checks + Vercel Git deployments                                |
+| Public image storage  | Accepted | Gitignored local originals; processed immutable variants in public Vercel Blob |
+| Temporary site access | Accepted | Shared password on all Vercel deployments; local execution bypasses it         |
+| RSVP database         | Accepted | Separate Neon PostgreSQL resources through Prisma for Preview and Production   |
+| Guest RSVP access     | Accepted | Private per-household invitation link plus name lookup; access flows deferred  |
+| Admin access          | Accepted | Unlinked passphrase-protected `/admin` portal for the sole maintainer          |
+| Email                 | Accepted | Resend via Vercel integration; OpenPGP-encrypted maintainer notifications      |
+| Domain                | Accepted | `www.carolineandryan.org`; apex redirects to `www`                             |
+| Analytics             | Accepted | Vercel Web Analytics and Speed Insights, with no custom guest-data events      |
 
 ## Proposed architecture
 
@@ -269,16 +269,45 @@ access secrets. RSVP deadlines, meal choices, and submission history remain futu
 
 ### RSVP submission notifications
 
-The requested behavior is an email to the maintainer when an RSVP is submitted. Provider selection
-and implementation are deferred alongside the submission flow. Use an external transactional
-email service with SMTP or an HTTPS API; do not run an SMTP server in the Vercel application.
-Keep the recipient, sender identity, and provider credentials in server-side environment variables,
-with production and preview delivery configured independently. Save the RSVP before attempting
-delivery; a mail failure must not discard the response. Decide retry and delivery-status handling
-when implementing submission notifications. No email credentials or sending dependency are added
-by this data-model change.
+**Status:** Accepted
 
-Reference: [Vercel SMTP guidance](https://vercel.com/kb/guide/serverless-functions-and-smtp).
+Use the Resend Vercel integration's `RESEND_API_KEY` and `RESEND_EMAIL_DOMAIN`. Native server-side
+`fetch` sends through Resend's HTTPS API, avoiding another mail transport dependency. The sender
+is `rsvp@` the configured, verified domain. Production and Preview credentials remain independently
+scoped, and automatic delivery is disabled unless `VERCEL_ENV=production`. Explicit maintainer
+test commands may send a synthetic message from another environment.
+
+OpenPGP.js encrypts the whole message body before it leaves the application's server. The sole
+recipient is `ryan@ryanpaulanderson.com`, using the supplied public key with fingerprint
+`58c672499966963f14562e0b87be07b6ee595988`. The server-only recipient module bundles this public
+material so deployments do not depend on a local file or a mutable external key lookup. Validate
+the fingerprint, email identity, and current encryption-key validity on each encryption. Key
+rotation requires an explicit reviewed update to the recipient module. No private key is required
+or stored.
+
+Send the ASCII-armored ciphertext as a PGP/Inline plain-text email with a generic subject,
+`Wedding RSVP notification`. Do not add an unencrypted HTML alternative or guest details in
+headers, subjects, attachment names, or provider tags. PGP-capable mail clients, including Proton
+Mail, can decrypt this format. Mail services still see routing addresses, subject, timing, and
+message size; the Vercel application still processes the original RSVP and PostgreSQL storage
+is not PGP-encrypted by this feature. These emails are encrypted but not PGP-signed.
+
+The delivery function awaits Resend, uses a ten-second timeout per attempt, and retries temporary
+network/provider failures up to three attempts with identical ciphertext and idempotency keys.
+Configuration or encryption failure never falls back to plaintext. Results distinguish provider
+acceptance from failures; acceptance alone does not prove inbox delivery or successful decryption.
+The explicit status command can check Resend's recorded delivery event when the API key permits it.
+
+The guest submission flow remains deferred. Before connecting it, save the RSVP and a durable
+notification/outbox record atomically, retain the exact encrypted request for retries across
+requests, and track pending/accepted/failed notifications. Do not re-encrypt an existing request
+under the same idempotency key: randomized encryption changes its body, and Resend's deduplication
+window is 24 hours. Current bounded retries run only within one invocation; there is no background
+worker or durable automatic resend yet. An email failure must never discard the saved RSVP.
+
+References: [Resend send API](https://resend.com/docs/api-reference/emails/send-email),
+[OpenPGP.js](https://docs.openpgpjs.org/),
+[PGP/Inline compatibility](https://proton.me/support/pgp-mime-pgp-inline).
 
 ### Security and privacy baseline
 
@@ -331,9 +360,19 @@ We should resolve these roughly in order:
 2. Finalize RSVP questions, deadlines, and meal-choice behavior; dietary and plus-one fields are defined.
 3. Decide whether guests receive confirmation or reminder emails.
 4. Choose analytics, monitoring, backup, and post-wedding data-retention policy.
-5. Select an external email provider and configure maintainer submission notifications.
+5. Connect encrypted notifications to the future submission flow with a durable outbox and retry policy.
 
 ## Decision log
+
+### 2026-09-12: Resend and public-key-encrypted notifications
+
+**Status:** Accepted
+
+Use the maintainer-connected Resend Vercel integration and supplied public PGP key. Add an
+encrypted server-side sender and explicit connection, test-delivery, and delivery-status commands.
+The body is encrypted before Resend receives it; the public key is pinned alongside the intended
+recipient. Automatic sends require Production, and no plaintext fallback is permitted. Guest forms,
+submission handling, and durable cross-request retries remain deferred.
 
 ### 2026-09-12: Dietary restrictions and conditional plus-ones
 

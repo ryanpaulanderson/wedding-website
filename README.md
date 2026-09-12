@@ -26,29 +26,32 @@ On Linux, add `--with-deps` to install the required operating-system packages.
 
 ## Common commands
 
-| Command                  | Purpose                                                             |
-| ------------------------ | ------------------------------------------------------------------- |
-| `pnpm dev`               | Start the Next.js development server                                |
-| `pnpm format`            | Format supported files with Prettier                                |
-| `pnpm format:check`      | Check formatting without modifying files                            |
-| `pnpm lint`              | Run ESLint and Next.js rules                                        |
-| `pnpm typecheck`         | Run strict TypeScript checks                                        |
-| `pnpm test`              | Run Vitest unit/component tests once                                |
-| `pnpm test:watch`        | Run Vitest in watch mode                                            |
-| `pnpm test:coverage`     | Generate V8 text, HTML, and LCOV coverage                           |
-| `pnpm test:db`           | Run database integration tests against disposable PostgreSQL        |
-| `pnpm build`             | Create a production Next.js build                                   |
-| `pnpm test:e2e`          | Build/start the app through Playwright and run all browser projects |
-| `pnpm admin:credentials` | Generate a private admin password hash and session secret           |
-| `pnpm db:generate`       | Generate the ignored Prisma client                                  |
-| `pnpm db:migrate:dev`    | Create and apply a migration against local PostgreSQL               |
-| `pnpm db:migrate:deploy` | Apply committed migrations to the configured database               |
-| `pnpm db:migrate:status` | Report migration state for the configured database                  |
-| `pnpm db:studio`         | Open Prisma Studio for the configured local database                |
-| `pnpm images:prepare`    | Validate image sidecars and generate ignored local WebP previews    |
-| `pnpm images:sync`       | Process and upload changed immutable variants to Vercel Blob        |
-| `pnpm images:prune`      | Dry-run reporting for Blob variants absent from the current catalog |
-| `pnpm vercel:setup`      | Authenticate, link Vercel, and provision/pull public Blob storage   |
+| Command                  | Purpose                                                                |
+| ------------------------ | ---------------------------------------------------------------------- |
+| `pnpm dev`               | Start the Next.js development server                                   |
+| `pnpm format`            | Format supported files with Prettier                                   |
+| `pnpm format:check`      | Check formatting without modifying files                               |
+| `pnpm lint`              | Run ESLint and Next.js rules                                           |
+| `pnpm typecheck`         | Run strict TypeScript checks                                           |
+| `pnpm test`              | Run Vitest unit/component tests once                                   |
+| `pnpm test:watch`        | Run Vitest in watch mode                                               |
+| `pnpm test:coverage`     | Generate V8 text, HTML, and LCOV coverage                              |
+| `pnpm test:db`           | Run database integration tests against disposable PostgreSQL           |
+| `pnpm build`             | Create a production Next.js build                                      |
+| `pnpm test:e2e`          | Build/start the app through Playwright and run all browser projects    |
+| `pnpm admin:credentials` | Generate a private admin password hash and session secret              |
+| `pnpm email:check`       | Validate email configuration and public-key encryption without sending |
+| `pnpm email:test`        | Send one encrypted synthetic notification to the maintainer            |
+| `pnpm email:status ID`   | Read the provider's delivery status for a previously accepted email    |
+| `pnpm db:generate`       | Generate the ignored Prisma client                                     |
+| `pnpm db:migrate:dev`    | Create and apply a migration against local PostgreSQL                  |
+| `pnpm db:migrate:deploy` | Apply committed migrations to the configured database                  |
+| `pnpm db:migrate:status` | Report migration state for the configured database                     |
+| `pnpm db:studio`         | Open Prisma Studio for the configured local database                   |
+| `pnpm images:prepare`    | Validate image sidecars and generate ignored local WebP previews       |
+| `pnpm images:sync`       | Process and upload changed immutable variants to Vercel Blob           |
+| `pnpm images:prune`      | Dry-run reporting for Blob variants absent from the current catalog    |
+| `pnpm vercel:setup`      | Authenticate, link Vercel, and provision/pull public Blob storage      |
 
 ## Image workflow
 
@@ -123,6 +126,68 @@ Before production use, configure one Vercel Firewall rate-limit rule for the log
 
 See [Vercel WAF rate limiting](https://vercel.com/docs/vercel-firewall/vercel-waf/rate-limiting)
 for the current dashboard workflow and Hobby allowance.
+
+## Encrypted RSVP email
+
+The Resend Vercel integration supplies these server-only settings:
+
+- `RESEND_API_KEY`: the integration's API key.
+- `RESEND_EMAIL_DOMAIN`: the verified sending domain, such as `mail.example.com`, without a
+  scheme, path, or email address. Messages are sent from `rsvp@` this domain.
+
+The recipient is `ryan@ryanpaulanderson.com`. Their public PGP key and pinned fingerprint
+`58c672499966963f14562e0b87be07b6ee595988` are bundled in
+`src/features/rsvp/notification-recipient.ts`. That file contains only public material; never add
+a private key or passphrase. To rotate the key, replace the public key and fingerprint together
+in a reviewed change, then repeat the delivery/decryption test.
+
+With the Vercel CLI signed in and this checkout linked to the wedding project, validate the
+connection settings in memory without writing the API key to a file:
+
+```bash
+vercel env run -e production -- pnpm email:check
+```
+
+This validates configuration and performs public-key encryption; it does not send an email or
+verify provider acceptance.
+
+This local command works only for environment values that Vercel allows downloading. Values marked
+**Secret** cannot be pulled, including through `env run`. For those, run the check/test inside an
+explicitly requested one-off Preview build, where Vercel injects the existing Preview secrets.
+Use a temporary local Vercel config overriding `buildCommand` to `pnpm email:test && pnpm build`,
+deploy it as Preview only, inspect its sanitized build output, and remove that test deployment
+after verification. Never commit the test build override or put it in normal project settings.
+
+When the environment values are available locally, send one synthetic test and obtain a Resend
+email ID with:
+
+```bash
+vercel env run -e production -- pnpm email:test
+vercel env run -e production -- pnpm email:status EMAIL_ID
+```
+
+Replace `EMAIL_ID` with the accepted ID. The status command requires a Resend key with permission
+to read sent emails; for a sending-only key, check delivery in the Resend dashboard. Confirm the
+test is readable in the recipient's PGP-capable mail client. A provider acceptance or delivery
+event alone cannot confirm decryption. The subject is `Wedding RSVP notification`; the test
+does not read or change any guest data. The CLI logs configuration status, public recipient/key
+information, and sanitized delivery results, never credentials or message contents.
+The test command also checks delivery status briefly after acceptance when the API key allows it.
+
+For local checks, these two variables can instead be placed in ignored `.env.local`. Automatic
+sends are disabled outside Vercel Production; `email:test` explicitly permits a maintainer test
+from any environment. Never call these commands from normal builds or CI with live credentials.
+
+Messages use PGP/Inline: the entire text body is encrypted before Resend receives it, and no
+plaintext HTML version is supplied. The subject and routing metadata remain visible. Invalid
+configuration or encryption failure stops delivery with no plaintext fallback. Temporary failures
+receive at most three attempts using the same encrypted body and idempotency key.
+
+The sending module is ready for the deferred RSVP submission flow, but no submission handler or
+durable outbox exists yet. Before connecting it, persist notifications for retries across
+requests; do not repeatedly call the sender with fresh encryption under the same notification ID.
+Resend's idempotency window lasts 24 hours. Guest submissions must remain saved even when email
+delivery fails. The key setup does not PGP-encrypt PostgreSQL records.
 
 ## Database setup
 
