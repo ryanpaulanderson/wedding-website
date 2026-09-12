@@ -15,7 +15,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
-    "pretypecheck": "pnpm db:generate",
+    "pretypecheck": "pnpm db:generate && next typegen",
     "typecheck": "tsc --noEmit",
     "pretest": "pnpm db:generate",
     "test": "vitest run",

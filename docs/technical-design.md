@@ -141,14 +141,16 @@ References:
 - [Vercel Blob CLI](https://vercel.com/docs/cli/blob)
 - [Next.js image optimization](https://nextjs.org/docs/app/getting-started/images)
 
-### Temporary hosted-site password gate
+### Removable hosted-site password gate
 
 **Status:** Accepted
 
-Protect every Vercel production and preview deployment with a shared password while the website
-is under development. Local execution remains open, including local production builds and browser
-tests. This gate provides temporary development privacy only; it is not guest identity, RSVP
-authorization, or a substitute for authorization at future data boundaries.
+Protect every Vercel production and preview deployment with the shared password distributed on
+the Save the Date, including while guests use the site, to help reduce web scraping. Local execution
+remains open, including local production builds and browser tests. This gate is not guest identity,
+RSVP authorization, or a substitute for authorization at data boundaries. The guest-facing access
+page explains where to find the password and directs guests who lost their Save the Date or do not
+know the password to Ryan at `ryan@ryanpaulanderson.com`.
 
 The gate uses three server-only Vercel environment variables:
 
@@ -173,7 +175,7 @@ Removal is deliberately two-stage:
 2. Remove the isolated proxy, access route, session utility, protected layout, tests, environment
    variables, and temporary documentation in a cleanup pull request.
 
-The first step launches the public site; the second carries no launch dependency.
+Removal is optional and is not required for guest launch.
 
 ### Admin portal access
 
@@ -417,6 +419,17 @@ We should resolve these roughly in order:
 5. Connect encrypted notifications to the future submission flow with a durable outbox and retry policy.
 
 ## Decision log
+
+### 2026-09-12: Guest-facing shared password gate
+
+**Status:** Accepted
+
+Retain the existing removable gate for guest use after Save the Dates are sent, rather than treating
+it only as a development preview. The shared password helps reduce web scraping. Keep the existing
+verification, sessions, rate limits, local bypass, and independent admin and RSVP authorization.
+Use welcoming copy, Save the Date instructions, Ryan’s help email, and the existing wedding tree
+as decorative background artwork. Bundle that artwork as a static import so it loads before
+authentication through the existing allowed static-asset path without widening access to other files.
 
 ### 2026-09-12: Email testing in Preview
 

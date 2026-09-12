@@ -3,13 +3,38 @@ import { expect, test } from "@playwright/test";
 
 test.skip(process.env.VERCEL !== "1", "The site password gate is disabled outside Vercel.");
 
-test("unlocks and relocks a hosted private preview", async ({ context, page, request }) => {
+test("keeps the gate usable on narrow screens with enlarged text", async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 320, height: 740 });
+  await page.goto("/access");
+  await page.addStyleTag({ content: "html { font-size: 200%; }" });
+
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
+  await page.getByLabel("Password", { exact: true }).focus();
+  await page.keyboard.press(browserName === "webkit" ? "Alt+Tab" : "Tab");
+  await expect(page.getByRole("button", { name: "View site" })).toBeFocused();
+  await page.keyboard.press(browserName === "webkit" ? "Alt+Tab" : "Tab");
+  const helpLink = page.getByRole("link", { name: "ryan@ryanpaulanderson.com" });
+  await expect(helpLink).toBeFocused();
+  await expect(helpLink).toBeInViewport();
+});
+
+test("unlocks and relocks the hosted wedding website", async ({ context, page, request }) => {
   const initialResponse = await page.goto("/");
 
   expect(initialResponse?.status()).toBe(200);
   expect(initialResponse?.headers()["x-robots-tag"]).toBe("noindex, nofollow, noarchive");
   await expect(page).toHaveURL(/\/access\?returnTo=%2F$/);
-  await expect(page.getByRole("heading", { level: 1, name: "Wedding website" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Welcome to our wedding" }),
+  ).toBeVisible();
+  const tree = page.locator('img[src*="wedding-tree-logo"]');
+  await expect(tree).toBeVisible();
+  await expect
+    .poll(() => tree.evaluate((image: HTMLImageElement) => image.naturalWidth))
+    .toBeGreaterThan(0);
 
   await page.goto("/access?error=configuration");
   await expect(page.getByLabel("Password")).toBeVisible();
