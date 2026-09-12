@@ -22,18 +22,18 @@ made and record enough context to revisit them later without reopening every dis
 
 ## Decision summary
 
-| Area                  | Status   | Current direction                                                                      |
-| --------------------- | -------- | -------------------------------------------------------------------------------------- |
-| Application hosting   | Accepted | Vercel Hobby                                                                           |
-| CI/CD                 | Accepted | GitHub required checks + Vercel Git deployments                                        |
-| Public image storage  | Accepted | Gitignored local originals; processed immutable variants in public Vercel Blob         |
-| Temporary site access | Accepted | Shared password on all Vercel deployments; local execution bypasses it                 |
-| RSVP database         | Accepted | Separate Neon PostgreSQL resources through Prisma for Preview and Production           |
-| Guest RSVP access     | Open     | Private per-household invitation token or shared lookup flow                           |
-| Admin access          | Accepted | Unlinked passphrase-protected `/admin` portal for the sole maintainer                  |
-| Email                 | Open     | No transactional email initially, or a low-volume provider if confirmations are wanted |
-| Domain                | Accepted | `www.carolineandryan.org`; apex redirects to `www`                                     |
-| Analytics             | Accepted | Vercel Web Analytics and Speed Insights, with no custom guest-data events              |
+| Area                  | Status   | Current direction                                                              |
+| --------------------- | -------- | ------------------------------------------------------------------------------ |
+| Application hosting   | Accepted | Vercel Hobby                                                                   |
+| CI/CD                 | Accepted | GitHub required checks + Vercel Git deployments                                |
+| Public image storage  | Accepted | Gitignored local originals; processed immutable variants in public Vercel Blob |
+| Temporary site access | Accepted | Shared password on all Vercel deployments; local execution bypasses it         |
+| RSVP database         | Accepted | Separate Neon PostgreSQL resources through Prisma for Preview and Production   |
+| Guest RSVP access     | Accepted | Private per-household invitation link plus name lookup; access flows deferred  |
+| Admin access          | Accepted | Unlinked passphrase-protected `/admin` portal for the sole maintainer          |
+| Email                 | Accepted | Resend via Vercel integration; OpenPGP-encrypted maintainer notifications      |
+| Domain                | Accepted | `www.carolineandryan.org`; apex redirects to `www`                             |
+| Analytics             | Accepted | Vercel Web Analytics and Speed Insights, with no custom guest-data events      |
 
 ## Proposed architecture
 
@@ -181,7 +181,7 @@ The first step launches the public site; the second carries no launch dependency
 
 Provide an unlinked administration page at `/admin` for the project's sole maintainer. The portal
 reads narrow RSVP summary DTOs directly through an authenticated server-only Prisma boundary. It
-does not expose an admin API or mutate RSVP records.
+does not expose an admin API or mutate formal RSVP records. The separate early-notice view allows authorized review tracking and retries for unsent notice emails.
 
 Admin authentication is independent from the removable hosted-site password gate and is enforced
 on every Vercel preview and production deployment. Local execution, including local production
@@ -237,15 +237,133 @@ References:
 
 ## Initial RSVP domain model
 
-This model is intentionally conceptual until the guest access flow is chosen.
+The implemented foundation stores households and their named invited guests. The September 12
+extension adds the following fields without enabling uploads or RSVP submission:
 
-- **Household / invitation:** mailing name, invitation token or lookup key, RSVP deadline, notes.
-- **Guest:** name, attendance response, meal choice if applicable, dietary notes, and plus-one
-  relationship.
-- **Submission metadata:** first-submitted and last-updated timestamps; optionally an event log
-  for troubleshooting changes.
+- **Household:** existing display name and response timestamps, plus an optional unique
+  `invitationTokenHash`. Future private links use a high-entropy token and store only its lowercase
+  SHA-256 hash (64 hexadecimal characters). Existing households may have no token; this migration
+  does not generate or distribute invitations.
+- **Named invited guest:** existing display name and attendance, plus optional
+  `dietaryRestrictions` (up to 1,000 characters) and `plusOneAllowed` (false by default).
+  The maintainer's future upload is authoritative for plus-one permission, per named guest.
+- **Optional plus-one:** `plusOneName` (up to 200 characters), `plusOneAttendance`, and
+  `plusOneDietaryRestrictions` (up to 1,000 characters) live on the inviting guest's record.
+  This gives each named guest zero or one additional place without creating an unnamed Guest row
+  or permitting chains of plus-ones. The plus-one uses the same attending/declined enum as guests;
+  null attendance means unanswered. Dietary restrictions are independent for each person.
+- **Database invariants:** an unpermitted plus-one has no name, attendance, or dietary data.
+  An attending plus-one requires a nonblank name and an attending named guest. Future writes must
+  update the related fields atomically; revoking permission must clear all plus-one fields.
 
-Security and privacy baseline:
+Future invitation capacity is the count of named guests plus guests with `plusOneAllowed = true`.
+Future attendance totals must count attending named guests and attending plus-ones separately.
+The current read-only dashboard still counts named Guest rows only; its queries must be extended
+when plus-one upload/submission is implemented, before plus-one responses are collected.
+
+Guests will eventually be able to open a private link directly to their household's RSVP or look
+up the invitation by name. This change adds only the supporting token hash field; it adds no guest
+access endpoint. Name lookup must resolve ambiguous names and define an authorization mechanism
+and abuse controls before exposing private household data. Display names are not unique IDs or
+access secrets. RSVP deadlines, meal choices, and submission history remain future work.
+
+### RSVP submission notifications
+
+**Status:** Accepted
+
+Use the Resend Vercel integration's `RESEND_API_KEY` and `RESEND_EMAIL_DOMAIN`. Native server-side
+`fetch` sends through Resend's HTTPS API, avoiding another mail transport dependency. The sender
+is `rsvp@` the configured, verified domain. Production and Preview credentials remain independently
+scoped. Delivery is enabled wherever valid Resend credentials are configured, including Preview
+and local development, so the maintainer can verify the complete flow before Production.
+
+OpenPGP.js encrypts the whole message body before it leaves the application's server. The sole
+recipient is `ryan@ryanpaulanderson.com`, using the supplied public key with fingerprint
+`58c672499966963f14562e0b87be07b6ee595988`. The server-only recipient module bundles this public
+material so deployments do not depend on a local file or a mutable external key lookup. Validate
+the fingerprint, email identity, and current encryption-key validity on each encryption. Key
+rotation requires an explicit reviewed update to the recipient module. No private key is required
+or stored.
+
+Send the ASCII-armored ciphertext as a PGP/Inline plain-text email with a generic subject,
+`Wedding RSVP notification`. Do not add an unencrypted HTML alternative or guest details in
+headers, subjects, attachment names, or provider tags. PGP-capable mail clients, including Proton
+Mail, can decrypt this format. Mail services still see routing addresses, subject, timing, and
+message size; the Vercel application still processes the original RSVP and PostgreSQL storage
+is not PGP-encrypted by this feature. These emails are encrypted but not PGP-signed.
+
+The delivery function awaits Resend, uses a ten-second timeout per attempt, and retries temporary
+network/provider failures up to three attempts with identical ciphertext and idempotency keys.
+Configuration or encryption failure never falls back to plaintext. Results distinguish provider
+acceptance from failures; acceptance alone does not prove inbox delivery or successful decryption.
+The explicit status command can check Resend's recorded delivery event when the API key permits it.
+
+The formal household RSVP submission flow remains deferred. The separate early-decline flow below
+now uses an atomic database outbox. Reuse that delivery guarantee when connecting formal RSVPs;
+email failure must never discard a saved response.
+
+### Early notices: unable to attend
+
+**Status:** Accepted
+
+At the save-the-date stage, `/unable-to-attend` accepts an optional early notice from anyone who
+already knows they cannot attend. The homepage links to it while retaining the message that formal
+RSVPs open with invitations. No invitation lookup, account, or household token is required. The
+temporary site password gate still applies on hosted deployments while enabled.
+
+Store the original freeform names (up to 1,000 characters) and a normalized, lowercase email address
+(up to 254 characters) in `early_declines`, separate from households and guests. One notice per
+normalized email is enforced by a unique database constraint, including concurrent submissions.
+Duplicates receive the same acknowledgment without overwriting names or creating more email jobs.
+The form asks for everyone in one notice; corrections and changed plans go directly to Ryan.
+This does not verify ownership of an email address and does not automatically change the invitation
+list or formal RSVP totals.
+
+Save the notice and two `early_decline_emails` rows in one database transaction. One is a fixed,
+unpersonalized guest confirmation with Ryan's reply address: thank them for letting us know, say
+we are sorry they cannot attend, and ask them to email Ryan if plans change. No guest public key is
+available, so this confirmation is ordinary email. The other contains the names, email and submission
+time encrypted to Ryan's pinned public PGP key, using the existing generic subject. Guest-supplied
+text is never reflected in the guest email or email headers.
+
+Next.js `after()` attempts delivery after the saved response. Each job claims a two-minute database
+lease, persists its exact serialized request before calling Resend, and retains identical bytes and
+an outbox-ID idempotency key on every retry. Failed mail remains visible for an authorized manual
+retry in `/admin/early-declines`; there is no scheduler or automatic cross-request worker. A process
+interruption leaves a recoverable pending job. After 23 hours from an unresolved first send attempt,
+stop resending and require delivery reconciliation in Resend, ahead of its 24-hour deduplication
+expiry. Do not re-encrypt or reset a possibly accepted job to bypass that limit. Accepted indicates
+provider acceptance, not inbox delivery; provider references support bounce/delivery checks.
+
+Configured Preview and local environments send the same guest confirmations and encrypted admin
+notifications as Production. Missing configuration leaves a failed job available for retry. Legacy
+`PAUSED` jobs from the former environment guard are also retryable without changing the database
+schema or resending accepted jobs. Automated tests mock delivery or explicitly clear mail credentials.
+Existing maintainer-only synthetic email commands remain available. The admin view shows both email
+states, submitted names and address, submission time and
+review status, paginated at 25 notices. Every admin read and mutation independently reauthorizes.
+Marking a notice reviewed is an acknowledgment that the maintainer has dealt with their guest list;
+it does not alter formal guest records.
+
+The public action validates input and consumes a PostgreSQL-backed limit of five attempts per client
+per clock hour, before inserting notices or sending mail. HMAC keys use the existing server-only
+`ADMIN_SESSION_SECRET` with an early-decline/hour namespace and the same trusted Vercel address
+selection as login limiting. No raw IP is retained; expired counters are removed on later submissions.
+Hosted submissions fail closed if this secret is unavailable. Local execution uses a development-only
+key. This limits routine repeat abuse but is not identity verification or a substitute for edge DDoS
+protection. No submission data is sent in analytics events, URLs, provider tags, or logs.
+
+Deployment: explicitly apply committed migrations with `pnpm db:migrate:deploy` using each target's
+unpooled database URL before enabling this feature there. Never apply migrations in a build or at
+startup. The migration only adds separate tables, enums and constraints; it preserves existing data.
+Preview needs its own migration for the form to work. Existing Production Resend variables and admin
+session secret are reused; no new credentials or paid service are required.
+
+References: [Resend send API](https://resend.com/docs/api-reference/emails/send-email),
+[OpenPGP.js](https://docs.openpgpjs.org/),
+[PGP/Inline compatibility](https://proton.me/support/pgp-mime-pgp-inline).
+
+### Security and privacy baseline
 
 - Generate high-entropy invitation tokens; never use sequential database IDs as access secrets.
 - Store a hash of each token when practical, so a database read does not expose usable links.
@@ -292,12 +410,55 @@ Free-tier allowances and terms can change, so re-check them before the public la
 
 We should resolve these roughly in order:
 
-1. Choose how guests identify their invitation and update an RSVP.
-2. Define the exact RSVP questions, household/plus-one rules, and meal-choice behavior.
-3. Decide whether guests receive confirmation or reminder emails.
+1. Design private invitation-link and name-lookup authorization and the RSVP update flow.
+2. Finalize RSVP questions, deadlines, and meal-choice behavior; dietary and plus-one fields are defined.
+3. Decide whether formal RSVP guests receive confirmation or reminder emails; early notices already receive confirmation.
 4. Choose analytics, monitoring, backup, and post-wedding data-retention policy.
+5. Connect encrypted notifications to the future submission flow with a durable outbox and retry policy.
 
 ## Decision log
+
+### 2026-09-12: Email testing in Preview
+
+**Status:** Accepted
+
+Remove the Production-only mail guard at the maintainer's request. Any environment with valid
+Resend configuration can send both guest confirmations and encrypted maintainer notifications.
+Make legacy paused jobs retryable in admin. Preserve idempotency, encryption and authorization;
+automated tests isolate delivery through provider mocks or empty credentials rather than an
+application environment restriction. This supersedes the original Production-only email policy.
+
+### 2026-09-12: Early unable-to-attend notices
+
+**Status:** Accepted
+
+Add a freeform early-notice page for save-the-date planning, separate from formal RSVPs. Collect
+names and email, prevent duplicate notices, send a fixed guest confirmation and an encrypted
+maintainer notification, and provide an independently authorized admin review view. Persist both
+email jobs with the notice to retain failures and prevent duplicate sends across retries. The
+formal invitation lookup and RSVP flow remain deferred. This extends the earlier model-only scope
+at the maintainer's request without changing the formal guest list automatically.
+
+### 2026-09-12: Resend and public-key-encrypted notifications
+
+**Status:** Accepted
+
+Use the maintainer-connected Resend Vercel integration and supplied public PGP key. Add an
+encrypted server-side sender and explicit connection, test-delivery, and delivery-status commands.
+The body is encrypted before Resend receives it; the public key is pinned alongside the intended
+recipient. No plaintext fallback is permitted. The initial Production-only delivery restriction was
+superseded by the Preview-testing decision above; early notices now use the durable outbox.
+
+### 2026-09-12: Dietary restrictions and conditional plus-ones
+
+**Status:** Accepted
+
+Add bounded optional dietary notes separately for named guests and their plus-ones. Plus-one
+permission belongs to the maintainer's upload and defaults to false. A guest record holds at most
+one plus-one's response, enforced with database checks for permission and attending companions.
+Add an optional hashed household invitation token to support private links; guests will also be
+able to use name lookup once its authorization flow is designed. Scope is the data model and
+committed migration only; upload, guest forms, dashboard changes, and email delivery are deferred.
 
 | Date       | Decision                                                   | Status   | Notes                                                                                                            |
 | ---------- | ---------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------- |

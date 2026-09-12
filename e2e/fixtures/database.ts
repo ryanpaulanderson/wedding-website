@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 
-function createTestDatabasePool() {
+export function createTestDatabasePool() {
   const connectionString = process.env.DATABASE_URL;
 
   if (!connectionString) {

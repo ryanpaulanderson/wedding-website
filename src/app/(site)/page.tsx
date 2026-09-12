@@ -279,6 +279,9 @@ export default function HomePage() {
           <div className={styles.rsvpContent}>
             <p>Formal invitation to follow</p>
             <h2 id="rsvp-title">We can’t wait to celebrate with you.</h2>
+            <p className={styles.rsvpEarlyNotice}>
+              <Link href="/unable-to-attend">Already know you can’t make it? Let us know.</Link>
+            </p>
             <p className={styles.rsvpStatus}>RSVP opens with the invitation</p>
           </div>
         </section>
