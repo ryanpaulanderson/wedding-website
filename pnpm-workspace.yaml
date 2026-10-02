@@ -1,9 +1,11 @@
 overrides:
-  # Patched transitive dependencies for Dependabot alerts #13, #15, #16, #19, and #24.
+  # Patched transitive dependencies for Dependabot alerts #13, #15, #16, #19, #24, #28, #31, and #32.
   "@eslint/eslintrc>js-yaml": ^4.3.2
   "@prisma/config>deepmerge-ts": ^8.0.2
   "prisma>mysql2": ^3.23.1
-  "@vercel/blob>undici": ^6.28.0
+  "@vercel/blob>undici": ^6.28.1
+  "ajv>fast-uri": ^3.1.8
+  "minimatch@3>brace-expansion": ^1.1.21
 
 allowBuilds:
   "@prisma/engines": true
