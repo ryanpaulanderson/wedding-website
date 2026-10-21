@@ -40,7 +40,7 @@
     "test:e2e:admin:https": "playwright test --config playwright.admin-https.config.ts"
   },
   "dependencies": {
-    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.10.1",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
