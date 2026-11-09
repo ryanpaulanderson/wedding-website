@@ -27,7 +27,7 @@ describe("HomePage", () => {
   it("provides home and in-page navigation", () => {
     render(<HomePage />);
 
-    expect(screen.getByRole("link", { name: "Caroline and Ryan home" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "C R, Caroline and Ryan home" })).toHaveAttribute(
       "href",
       "/",
     );

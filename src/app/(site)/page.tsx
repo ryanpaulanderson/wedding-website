@@ -50,7 +50,7 @@ export default function HomePage() {
       </a>
 
       <header className={styles.header}>
-        <Link className={styles.wordmark} href="/" aria-label="Caroline and Ryan home">
+        <Link className={styles.wordmark} href="/" aria-label="C R, Caroline and Ryan home">
           C<span aria-hidden="true">/</span>R
         </Link>
         <nav aria-label="Wedding navigation">

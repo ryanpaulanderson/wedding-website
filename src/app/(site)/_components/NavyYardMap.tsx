@@ -33,7 +33,7 @@ export function NavyYardMap() {
               key={place.name}
               className={styles.pin}
               href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${place.name}, ${place.address}, Washington DC`)}`}
-              aria-label={`Directions to ${place.name}`}
+              aria-label={`${index + 1}, directions to ${place.name}`}
               style={pinStyle}
             >
               <span>{index + 1}</span>
